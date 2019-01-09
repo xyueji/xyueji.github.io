@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>月迹的博客</title>
+  
+  <subtitle>用代码书写人生</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://xyueji.github.io/"/>
+  <updated>2019-01-09T10:21:22.915Z</updated>
+  <id>http://xyueji.github.io/</id>
+  
+  <author>
+    <name>Yue Ji</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>iptables禁用启用端口</title>
+    <link href="http://xyueji.github.io/2019/01/04/iptables%E7%A6%81%E7%94%A8%E5%90%AF%E7%94%A8%E7%AB%AF%E5%8F%A3/"/>
+    <id>http://xyueji.github.io/2019/01/04/iptables禁用启用端口/</id>
+    <published>2019-01-04T07:54:38.000Z</published>
+    <updated>2019-01-09T10:21:22.915Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="只允许指定ip访问本机的指定端口"><a href="#只允许指定ip访问本机的指定端口" class="headerlink" title="只允许指定ip访问本机的指定端口"></a>只允许指定ip访问本机的指定端口</h2><ul><li>目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。</li><li>ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100</li></ul><a id="more"></a><p>切换到root用户</p><ul><li><p>1、在tcp协议中，禁止所有的ip访问本机的1521端口。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 8765 -j DROP</span><br></pre></td></tr></table></figure></li><li><p>2、允许192.168.1.123访问本机的1521端口</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 127.0.0.1 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure></li><li><p>3、允许192.168.1.124访问本机的1521端口</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.124 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure></li><li><p>4、允许192.168.1.100访问本机的1521端口</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.100 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure></li></ul><p>以上是临时设置。</p><ul><li><p>5、然后保存iptables</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables save</span><br></pre></td></tr></table></figure></li><li><p>6、重启防火墙</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables restart</span><br></pre></td></tr></table></figure></li></ul><h2 id="删除规则"><a href="#删除规则" class="headerlink" title="删除规则"></a>删除规则</h2><p>首先我们要知道 这条规则的编号，每条规则都有一个编号,通过 iptables -L -n –line-number 可以显示规则和相对应的编号。<br><br>删除INPUT链编号为2的规则<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 2</span><br></pre></td></tr></table></figure></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;只允许指定ip访问本机的指定端口&quot;&gt;&lt;a href=&quot;#只允许指定ip访问本机的指定端口&quot; class=&quot;headerlink&quot; title=&quot;只允许指定ip访问本机的指定端口&quot;&gt;&lt;/a&gt;只允许指定ip访问本机的指定端口&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。&lt;/li&gt;
+&lt;li&gt;ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="Linux" scheme="http://xyueji.github.io/categories/Linux/"/>
+    
+    
+      <category term="iptables" scheme="http://xyueji.github.io/tags/iptables/"/>
+    
+      <category term="端口" scheme="http://xyueji.github.io/tags/%E7%AB%AF%E5%8F%A3/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Phoenix系统表</title>
+    <link href="http://xyueji.github.io/2019/01/04/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
+    <id>http://xyueji.github.io/2019/01/04/Phoenix系统表/</id>
+    <published>2019-01-04T07:21:03.000Z</published>
+    <updated>2019-01-09T10:21:22.914Z</updated>
+    
+    <content type="html"><![CDATA[<p>Phoenix安装完成后，HBase里会创建相应的系统表，分别为SYSTEM.CATALOG、SYSTEM.FUNCTION、SYSTEM.SEQUENCE、SYSTEM.STATS。<br>查询这些系统表时，注意除了CATALOG表其他都要加引号（区分大小写），否则会报错。</p><a id="more"></a><h2 id="SYSTEM-CATALOG"><a href="#SYSTEM-CATALOG" class="headerlink" title="SYSTEM.CATALOG"></a>SYSTEM.CATALOG</h2><p>内容是所有表格的信息，系统表和自建表。</p><ul><li>TABLE_NAME表示索引表名</li><li>DATA_TABLE_NAME表示原数据表名</li><li>TABLE_TYPE表示表类型<ul><li>“s” 系统表</li><li>“u” 用户表</li><li>“v” 视图</li><li>“i” 索引</li></ul></li><li>INDEX_TYPE表示索引类型 GLOBAL(1) LOCAL(2)</li><li>INDEX_STATE表示索引状态<ul><li>BUILDING(“b”)</li><li>USABLE(“e”)</li><li>UNUSABLE(“d”)</li><li>ACTIVE(“a”)</li><li>INACTIVE(“i”)</li><li>DISABLE(“x”)</li><li>REBUILD(“r”)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DISABLE 表示索引将处于不可用的维护状态，同时将不能用于查询中。</span><br><span class="line">REBUILD 表示索引将完成重建，同时一旦重建完成此索引将能被在此用于查询中。</span><br><span class="line">BUILDING 表示将从索引不可用的时间戳处重建索引直到重建完成。</span><br><span class="line">INACTIVE/UNUSABLE 表示索引将不能用于查询中，但索引仍然在不可用的维护状态。</span><br><span class="line">ACTIVE/USABLE 表示索引表能被正常用于查询中。</span><br></pre></td></tr></table></figure></li></ul></li></ul><h2 id="SYSTEM-FUNCTION"><a href="#SYSTEM-FUNCTION" class="headerlink" title="SYSTEM.FUNCTION"></a>SYSTEM.FUNCTION</h2><p>内容是所有函数信息，系统函数和自定义函数。</p><h2 id="SYSTEM-SQEUENCE"><a href="#SYSTEM-SQEUENCE" class="headerlink" title="SYSTEM.SQEUENCE"></a>SYSTEM.SQEUENCE</h2><p>内容是自增ID的一些信息，包括起始值、当前值、CACHE大小、最小值和最大值等等。</p><h2 id="SYSTEM-STATS"><a href="#SYSTEM-STATS" class="headerlink" title="SYSTEM.STATS"></a>SYSTEM.STATS</h2><p>追踪表的操作，主要包含以下内容：</p><ul><li>PHYSICAL_NAME</li><li>COLUMN_FAMILY</li><li>GUIDE_POST_KEY</li><li>GUIDE_POSTS_WIDTH</li><li>LAST_STATS_UPDATE_TIME</li><li>GUIDE_POSTS_ROW_COUNT</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Phoenix安装完成后，HBase里会创建相应的系统表，分别为SYSTEM.CATALOG、SYSTEM.FUNCTION、SYSTEM.SEQUENCE、SYSTEM.STATS。&lt;br&gt;查询这些系统表时，注意除了CATALOG表其他都要加引号（区分大小写），否则会报错。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Phoenix" scheme="http://xyueji.github.io/categories/Phoenix/"/>
+    
+    
+      <category term="Phoenix" scheme="http://xyueji.github.io/tags/Phoenix/"/>
+    
+      <category term="系统表" scheme="http://xyueji.github.io/tags/%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Phoenix安装问题</title>
+    <link href="http://xyueji.github.io/2019/01/03/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98/"/>
+    <id>http://xyueji.github.io/2019/01/03/Phoenix安装问题/</id>
+    <published>2019-01-03T13:14:33.000Z</published>
+    <updated>2019-01-09T10:21:22.914Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="下载Phoenix"><a href="#下载Phoenix" class="headerlink" title="下载Phoenix"></a>下载Phoenix</h2><p>下载地址:<a href="http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)" target="_blank" rel="noopener">http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)</a></p><a id="more"></a><h2 id="配置Phoenix"><a href="#配置Phoenix" class="headerlink" title="配置Phoenix"></a>配置Phoenix</h2><ul><li>解压缩文件</li><li>配置Phoenix环境变量</li><li>将 Phoenix 目录下的phoenix-core-4.14.1-HBase-1.2.jar、phoenix-4.14.1-HBase-1.2-client.jar 拷贝到 hbase 集群各个节点 hbase 安装目录 lib 中。</li><li>将 hbase 集群中的配置文件 hbase-site.xml 拷贝到 Phoenix 的 bin 目录下，覆盖原有的配置文件。</li><li>将 hdfs 集群中的配置文件 core-site.xml、 hdfs-site.xml 拷贝到 Phoenix 的 bin 目录下。</li><li>重启hbase<h2 id="启动Phoenix"><a href="#启动Phoenix" class="headerlink" title="启动Phoenix"></a>启动Phoenix</h2>sqlline.py &lt;hbase.zookeeper.quorum&gt;</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;下载Phoenix&quot;&gt;&lt;a href=&quot;#下载Phoenix&quot; class=&quot;headerlink&quot; title=&quot;下载Phoenix&quot;&gt;&lt;/a&gt;下载Phoenix&lt;/h2&gt;&lt;p&gt;下载地址:&lt;a href=&quot;http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Phoenix" scheme="http://xyueji.github.io/categories/Phoenix/"/>
+    
+    
+      <category term="Phoenix" scheme="http://xyueji.github.io/tags/Phoenix/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Prometheus安装+HDFS指标收集</title>
+    <link href="http://xyueji.github.io/2019/01/02/Prometheus%E5%AE%89%E8%A3%85-HDFS%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86/"/>
+    <id>http://xyueji.github.io/2019/01/02/Prometheus安装-HDFS指标收集/</id>
+    <published>2019-01-02T10:06:19.000Z</published>
+    <updated>2019-01-09T10:21:22.915Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="1-安装Prometheus"><a href="#1-安装Prometheus" class="headerlink" title="1.安装Prometheus"></a>1.安装Prometheus</h2><ul><li>1）在官网下载Prometheus安装包：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/prometheus/prometheus/releases/download/v2.6.0/prometheus-2.6.0.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure></li></ul><a id="more"></a><ul><li>2）解压：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zvxf prometheus-2.6.0.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure></li></ul><h2 id="2-安装jmx-exporter以及配置文件"><a href="#2-安装jmx-exporter以及配置文件" class="headerlink" title="2.安装jmx_exporter以及配置文件"></a>2.安装jmx_exporter以及配置文件</h2><p>在Hadoop集群各个节点上：</p><ul><li><p>1）创建jmx_exporter目录：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir prometheus_jmx_export_0.3.1</span><br></pre></td></tr></table></figure></li><li><p>2）进入目录，下载jmx_exporter:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.3.1/jmx_prometheus_javaagent-0.3.1.jar</span><br></pre></td></tr></table></figure></li><li><p>3）创建NameNode配置</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim namenode.yaml</span><br></pre></td></tr></table></figure></li><li><p>内容如下：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">startDelaySeconds: 0</span><br><span class="line">hostPort: localhost:1234  #1234为想设置的jmx端口（可设置为未被占用的端口）</span><br><span class="line">ssl: false</span><br><span class="line">lowercaseOutputName: false</span><br><span class="line">lowercaseOutputLabelNames: false</span><br></pre></td></tr></table></figure></li><li><p>4）创建DataNode配置</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim datanode.yaml</span><br></pre></td></tr></table></figure></li><li><p>内容如下：  </p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">startDelaySeconds: 0</span><br><span class="line">hostPort: localhost:1235</span><br><span class="line">ssl: false</span><br><span class="line">lowercaseOutputName: false</span><br><span class="line">lowercaseOutputLabelNames: false</span><br></pre></td></tr></table></figure></li><li><p>5）修改$HADOOP_HOME/etc/hadoop/hadoop-env.sh （注意：端口1234（1235）要与之前设置的jmx端口保持一致<br>内容如下：  </p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#jmx_exporter</span><br><span class="line">export HADOOP_NAMENODE_JMX_OPTS=&quot;-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false   -Dcom.sun.management.jmxremote.port=1234 -javaagent:/home/bigdata/local/prometheus_jmx_export_0.3.1/jmx_prometheus_javaagent-0.3.1.jar=9101:/home/bigdata/local/prometheus_jmx_export_0.3.1/namenode.yaml&quot;</span><br><span class="line">export HADOOP_DATANODE_JMX_OPTS=&quot;-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false   -Dcom.sun.management.jmxremote.port=1235 -javaagent:/home/bigdata/local/prometheus_jmx_export_0.3.1/jmx_prometheus_javaagent-0.3.1.jar=9102:/home/bigdata/local/prometheus_jmx_export_0.3.1/datanode.yaml&quot;</span><br></pre></td></tr></table></figure></li><li><p>6）修改$HADOOP_HOME/bin/hdfs 修改 namenode、datanode启动参数如下</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if [ &quot;$COMMAND&quot; = &quot;namenode&quot; ] ; then</span><br><span class="line">CLASS=&apos;org.apache.hadoop.hdfs.server.namenode.NameNode&apos;</span><br><span class="line">HADOOP_OPTS=&quot;$HADOOP_OPTS $HADOOP_NAMENODE_JMX_OPTS $HADOOP_NAMENODE_OPTS&quot;</span><br><span class="line">...</span><br><span class="line">elif [ &quot;$COMMAND&quot; = &quot;datanode&quot; ] ; then</span><br><span class="line">CLASS=&apos;org.apache.hadoop.hdfs.server.datanode.DataNode&apos;</span><br><span class="line">HADOOP_OPTS=&quot;$HADOOP_OPTS $HADOOP_DATANODE_JMX_OPTS&quot;</span><br></pre></td></tr></table></figure></li><li><p>7）依次重启各个节点的DataNode和NameNode</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hadoop-daemon.sh stop datanode</span><br><span class="line">hadoop-daemon.sh start datanode</span><br></pre></td></tr></table></figure></li></ul><h2 id="3-配置Prometheus-修改prometheus-yml"><a href="#3-配置Prometheus-修改prometheus-yml" class="headerlink" title="3.配置Prometheus,修改prometheus.yml"></a>3.配置Prometheus,修改prometheus.yml</h2><ul><li><p>修改内容如下：  </p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &apos;NameNodes&apos;</span><br><span class="line">static_configs:</span><br><span class="line">- targets: [&apos;master:9101&apos;]</span><br><span class="line"></span><br><span class="line">- job_name: &apos;DataNodes&apos;</span><br><span class="line">static_configs:</span><br><span class="line">- targets: [&apos;slave1:9102&apos;]</span><br><span class="line">- targets: [&apos;slave2:9102&apos;]</span><br><span class="line">- targets: [&apos;slave3:9102&apos;]</span><br></pre></td></tr></table></figure></li><li><p>启动Prometheus：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup ./prometheus &gt;&gt; prometheus.log &amp;</span><br></pre></td></tr></table></figure></li></ul><p>&emsp;查看Prometheus是否启动成功：<hostname>:9090</hostname></p><h2 id="4-配置远程存储（Opentsdb所在机器）"><a href="#4-配置远程存储（Opentsdb所在机器）" class="headerlink" title="4.配置远程存储（Opentsdb所在机器）"></a>4.配置远程存储（Opentsdb所在机器）</h2><ul><li><p>1）获取远程存储和读取配置文件：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/yueji12321/opentsdb-adapter</span><br><span class="line">go build github.com/yueji12321/opentsdb-adapter</span><br><span class="line">go get github.com/yueji12321/opentsdb-promql-frontend</span><br><span class="line">go build github.com/yueji12321/opentsdb-promql-frontend</span><br></pre></td></tr></table></figure></li><li><p>2）执行两个可执行文件：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nohup ./remote_storage_adapter --opentsdb-url=&lt;Opentsdb地址+端口&gt; &gt;&gt; adapter_storage.log &amp;</span><br><span class="line">nohup ./opentsdb-promql-frontend ADDR=&lt;Prometheus地址+端口&gt; OPENTSDB_URL=&lt;Opentsdb地址+端口&gt; &gt;&gt; adapter_read.log &amp;</span><br></pre></td></tr></table></figure></li><li><p>3）修改prometheus文件，添加内容：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">remote_write:</span><br><span class="line">   - url: &quot;http://&lt;hostname&gt;:9201/write&quot; #地址为./remote_storage_adapter所在的机器地址</span><br><span class="line"> queue_config:</span><br><span class="line">   capacity: 100000</span><br></pre></td></tr></table></figure></li><li><p>4）重启Prometheus</p></li></ul><h2 id="5-Grafana配置"><a href="#5-Grafana配置" class="headerlink" title="5.Grafana配置"></a>5.Grafana配置</h2><ul><li>读取本地Prometheus数据地址：Prometheus安装所在机器地址+端口9090</li><li>读取远程存储数据地址：./opentsdb-promql-frontend所设定的Prometheus地址</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;1-安装Prometheus&quot;&gt;&lt;a href=&quot;#1-安装Prometheus&quot; class=&quot;headerlink&quot; title=&quot;1.安装Prometheus&quot;&gt;&lt;/a&gt;1.安装Prometheus&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;1）在官网下载Prometheus安装包：&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;wget https://github.com/prometheus/prometheus/releases/download/v2.6.0/prometheus-2.6.0.linux-amd64.tar.gz&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="Prometheus" scheme="http://xyueji.github.io/categories/Prometheus/"/>
+    
+    
+      <category term="Prometheus" scheme="http://xyueji.github.io/tags/Prometheus/"/>
+    
+  </entry>
+  
+</feed>
