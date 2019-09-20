@@ -358,9 +358,9 @@
 <h4 id="事务处理的一些常见问题"><a href="#事务处理的一些常见问题" class="headerlink" title="事务处理的一些常见问题"></a>事务处理的一些常见问题</h4><p>再次强调一下，JanusGraph的逻辑是，当我们对一个graph进行第一次操作的时候，事务就自动被打开了，我们并不需要去手动的创建一个事务，除非我们希望创建一个multi-threaded transaction。</p>
 <p>每个事物都要显式地用commit()和rollback()方法去关闭。</p>
 <p>一个事务在开始的时候，就会去维持它的状态，在多线程应用的环境中，可能会出现不可预知的问题，比如下面这个例子：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span>&gt;returns nothing, v has no edges</span><br><span class="line">//thread is idle for a few seconds, another thread adds edges to v</span><br><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span>&gt;still returns nothing because the transactional state from the beginning is maintained</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;returns nothing, v has no edges</span></span><br><span class="line">//thread is idle for a few seconds, another thread adds edges to v</span><br><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;still returns nothing because the transactional state from the beginning is maintained</span></span><br></pre></td></tr></table></figure>
 <p>这种情况在客户端应用端很常见，server会维持多个线程去相应服务器的请求。比较好的一个习惯是，在没完成一部分工作后，就去显式地terminate任务，如下面这个例子：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">g.V(v).bothE()</span><br><span class="line">graph.tx().commit()</span><br><span class="line">//thread is idle for a few seconds, another thread adds edges to v</span><br><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span>&gt;returns the newly added edge</span><br><span class="line">graph.tx().commit()</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">g.V(v).bothE()</span><br><span class="line">graph.tx().commit()</span><br><span class="line">//thread is idle for a few seconds, another thread adds edges to v</span><br><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;returns the newly added edge</span></span><br><span class="line">graph.tx().commit()</span><br></pre></td></tr></table></figure>
 <p>多线程事务（Multi-Threaded Transactions）还可以通过newTransaction()方法来创建，但要注意的是，在该事务中创建的点和边只在该事务中可用，事务被关闭以后，访问这些点和边就会抛出异常，如果还想使用这些点和边怎么办？答案是显式地去刷新这些点和边，如下面这个例子：</p>
 <ul>
 <li>g.V(existingVertex)</li>
@@ -468,7 +468,7 @@
 <p>docker run –name jg-cassandra -d -e CASSANDRA_START_RPC=true -p 9160:9160 -p 9042:9042 -p 7199:7199 -p 7001:7001 -p 7000:7000 cassandra:3.11<br>Note: Port 9160 is used for the Thrift client API. Port 9042 is for CQL native clients. Ports 7000, 7001 and 7099 are for inter-node communication.</p>
 <h4 id="Remote-Server-Mode"><a href="#Remote-Server-Mode" class="headerlink" title="Remote Server Mode"></a>Remote Server Mode</h4><p>集群模式下，有一个Cassandra集群，然后所有的JanusGraph的instance通过socket的方式去读写Cassandra集群，客户端应用程序也可以和JanusGraph的实例运行在同一个JVM中。</p>
 <p>举个例子，我们启动了一个Cassandra的集群，其中一个机器的IP是77.77.77.77，我们可以通过以下方式连接：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">JanusGraph graph = JanusGraphFactory.build().</span><br><span class="line">set("storage.backend", "cql").</span><br><span class="line">set("storage.hostname", "77.77.77.77").</span><br><span class="line">open();</span><br><span class="line"><span class="meta">&gt;</span>&gt;Remote Server Mode with Gremlin Server</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">JanusGraph graph = JanusGraphFactory.build().</span><br><span class="line">set("storage.backend", "cql").</span><br><span class="line">set("storage.hostname", "77.77.77.77").</span><br><span class="line">open();</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;Remote Server Mode with Gremlin Server</span></span><br></pre></td></tr></table></figure>
 <p>可以在JanusGraph server外面包上一层Gremlin server，这样，不仅可以和JanusGraph server交互，也可以和Gremlin server交互。</p>
 <p>通过：</p>
 <p>bin/gremlin-server.sh<br>启动Gremlin server，然后通过 bin/gremlin.sh 打开Gremlin的终端，然后运行：</p>
@@ -637,15 +637,6 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/09/20/线上HBase表重建/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          线上HBase表重建
-        
-      </div>
-    </a>
-  
   
     <a href="/2019/01/04/iptables禁用启用端口/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iptables禁用启用端口</div>
@@ -726,9 +717,7 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/09/20/线上HBase表重建/" title="上一篇: 线上HBase表重建">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
@@ -737,7 +726,7 @@
             </a>
         
     </div>
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/20/线上HBase表重建/">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/09/12/JanusGraph/">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/iptables禁用启用端口/">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Phoenix系统表/">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Phoenix安装问题/">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Prometheus安装-HDFS指标收集/">Prometheus安装+HDFS指标收集</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/12/JanusGraph/">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/iptables禁用启用端口/">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Phoenix系统表/">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Phoenix安装问题/">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Prometheus安装-HDFS指标收集/">Prometheus安装+HDFS指标收集</a></li></ul>
     <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
     <script>
         $(".post-list").addClass("toc-article");
