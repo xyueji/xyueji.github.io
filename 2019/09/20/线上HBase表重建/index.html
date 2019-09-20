@@ -3,20 +3,20 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>iptables禁用启用端口 | 月迹的博客</title>
+  <title>线上HBase表重建 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
-<meta name="keywords" content="iptables,端口">
+  <meta name="description" content="一、创建临时表 预切分  ​           根据表数据特点选取合适的方式预切分表。 ​      2.创建临时表 ​           选取预切分方式，创建结构与原表格式相同的临时表。 二、数据迁移 原数据表数据导出  ​           为了不影响线上HBase表，使用snapshot的ExportSnapshot方式把snapshot数据迁移到公共Hadoop集群进行处理。执行命令">
+<meta name="keywords" content="HBase">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iptables禁用启用端口">
-<meta property="og:url" content="http://xyueji.github.io/2019/01/04/iptables禁用启用端口/index.html">
+<meta property="og:title" content="线上HBase表重建">
+<meta property="og:url" content="http://xyueji.github.io/2019/09/20/线上HBase表重建/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
+<meta property="og:description" content="一、创建临时表 预切分  ​           根据表数据特点选取合适的方式预切分表。 ​      2.创建临时表 ​           选取预切分方式，创建结构与原表格式相同的临时表。 二、数据迁移 原数据表数据导出  ​           为了不影响线上HBase表，使用snapshot的ExportSnapshot方式把snapshot数据迁移到公共Hadoop集群进行处理。执行命令">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-06T10:50:21.312Z">
+<meta property="og:updated_time" content="2019-09-20T11:49:31.213Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iptables禁用启用端口">
-<meta name="twitter:description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
+<meta name="twitter:title" content="线上HBase表重建">
+<meta name="twitter:description" content="一、创建临时表 预切分  ​           根据表数据特点选取合适的方式预切分表。 ​      2.创建临时表 ​           选取预切分方式，创建结构与原表格式相同的临时表。 二、数据迁移 原数据表数据导出  ​           为了不影响线上HBase表，使用snapshot的ExportSnapshot方式把snapshot数据迁移到公共Hadoop集群进行处理。执行命令">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -176,11 +176,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-iptables禁用启用端口" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-线上HBase表重建" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/01/04/iptables禁用启用端口/" class="article-date">
-      <time datetime="2019-01-04T07:54:38.000Z" itemprop="datePublished">2019-01-04</time>
+      <a href="/2019/09/20/线上HBase表重建/" class="article-date">
+      <time datetime="2019-09-20T11:49:31.000Z" itemprop="datePublished">2019-09-20</time>
 </a>
     </div>
   
@@ -193,7 +193,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      iptables禁用启用端口
+      线上HBase表重建
     </h1>
   
 
@@ -202,13 +202,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    <a class="article-category-link" href="/categories/HBase/">HBase</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iptables/">iptables</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/端口/">端口</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase/">HBase</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -218,36 +218,41 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h2 id="只允许指定ip访问本机的指定端口"><a href="#只允许指定ip访问本机的指定端口" class="headerlink" title="只允许指定ip访问本机的指定端口"></a>只允许指定ip访问本机的指定端口</h2><ul>
-<li>目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。</li>
-<li>ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100</li>
-</ul>
-<a id="more"></a>
-<p>切换到root用户</p>
-<ul>
-<li><p>1、在tcp协议中，禁止所有的ip访问本机的1521端口。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 8765 -j DROP</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>2、允许192.168.1.123访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 127.0.0.1 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3、允许192.168.1.124访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.124 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>4、允许192.168.1.100访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.100 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>以上是临时设置。</p>
-<ul>
-<li><p>5、然后保存iptables</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables save</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>6、重启防火墙</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables restart</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="删除规则"><a href="#删除规则" class="headerlink" title="删除规则"></a>删除规则</h2><p>首先我们要知道 这条规则的编号，每条规则都有一个编号,通过 iptables -L -n –line-number 可以显示规则和相对应的编号。<br><br>删除INPUT链编号为2的规则<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 2</span><br></pre></td></tr></table></figure></p>
+        <h3 id="一、创建临时表"><a href="#一、创建临时表" class="headerlink" title="一、创建临时表"></a>一、创建临时表</h3><ol>
+<li>预切分</li>
+</ol>
+<p>​           根据表数据特点选取合适的方式预切分表。</p>
+<p>​      2.创建临时表</p>
+<p>​           选取预切分方式，创建结构与原表格式相同的临时表。</p>
+<h3 id="二、数据迁移"><a href="#二、数据迁移" class="headerlink" title="二、数据迁移"></a>二、数据迁移</h3><ol>
+<li>原数据表数据导出</li>
+</ol>
+<p>​           为了不影响线上HBase表，使用snapshot的ExportSnapshot方式把snapshot数据迁移到公共Hadoop集群进行处理。执行命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`hbase org.apache.hadoop.hbase.snapshot.ExportSnapshot \ -snapshot table_snapshot -copy-from hdfs://hbase05.zeus.lianjia.com:9000/hbase \ -copy-to hdfs://nn-cluster/hbase -mappers 16 -bandwidth 256`</span><br></pre></td></tr></table></figure>
+<p>​      2.导出Snapshot数据</p>
+<p>​           若没有Snapshot导出工具，仿照org.apache.hadoop.hbase.mapreduce.Export类编写SnapshotExport工具类，参考类容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`Job job = new Job(conf); Path restoreDir = new Path(&quot;XX&quot;); // restore dir should not be a subdirectory of hbase.rootdir Scan scan = new Scan(); TableMapReduceUtil.initTableSnapshotMapperJob(snapshotName, scan, MyTableMapper.class, MyMapKeyOutput.class, MyMapOutputValueWritable.class, job, true, restoreDir);`</span><br></pre></td></tr></table></figure>
+<p>​            执行SnapshotExport工具类，执行命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`hbase com.ke.dtarch.ExportSnapshot \ table_snapshot \ hdfs://nn-cluster/user/bigdata/snapshotTest/resotre_table \ hdfs://nn-cluster/user/bigdata/snapshotTest/snapshot_out`</span><br></pre></td></tr></table></figure>
+<p>​      3.生成HFiles</p>
+<p>​         根据Snapshot导出的数据使用org.apache.hadoop.hbase.mapreduce.Export生成HFiles，执行命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">` hbase org.apache.hadoop.hbase.mapreduce.Import \  -Dimport.bulk.output=hdfs://nn-cluster/user/bigdata/snapshotTest/importOut \  -Dhbase.import.version=1.4.9 \  &apos;临时HBase表名&apos; hdfs://nn-cluster/user/bigdata/snapshotTest/rptOut`</span><br></pre></td></tr></table></figure>
+<p>​      4.使用distcp把HFiles导到HBase集群</p>
+<p>​         执行命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`hadoop distcp \ -bandwidth 20 \ hdfs://nn-cluster/user/bigdata/snapshotTest/importOut \ hdfs://hbase05.zeus.lianjia.com:9000/tmp/`</span><br></pre></td></tr></table></figure>
+<p>​      5.使用BulkLoad把HFile导入临时表</p>
+<p>​         执行命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`hbase org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles \ /tmp/importSplitOut 临时表名`</span><br></pre></td></tr></table></figure>
+<h3 id="三、HBase表替换"><a href="#三、HBase表替换" class="headerlink" title="三、HBase表替换"></a>三、HBase表替换</h3><ol>
+<li>创建snapshot</li>
+</ol>
+<p>​           给原表和临时表创建snapshot，执行命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`snapshot &apos;origin_table&apos;, &apos;origin_table_snapshot&apos; snapshot &apos;tmp_table&apos;, &apos;tmp_table_snapshot&apos;`</span><br></pre></td></tr></table></figure>
+<p>​       2.删除原表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`disable &apos;origin_table&apos; drop &apos;origin_table&apos;`</span><br></pre></td></tr></table></figure>
+<p>​       3.修改表名称</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`clone_snapshot &apos;tmp_table_snapshot&apos;, &apos;origin_table&apos;`</span><br></pre></td></tr></table></figure>
+<p>​       4.检查HBase表状态，无异常后，删除多余的表和数据</p>
 
       
       
@@ -257,13 +262,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2019/01/04/iptables禁用启用端口/">iptables禁用启用端口</a></p>
+        <p><span>本文标题:</span><a href="/2019/09/20/线上HBase表重建/">线上HBase表重建</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2019年01月04日 - 15时54分</p>
-        <p><span>最后更新:</span>2019年09月06日 - 18时50分</p>
+        <p><span>发布时间:</span>2019年09月20日 - 19时49分</p>
+        <p><span>最后更新:</span>2019年09月20日 - 19时49分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2019/01/04/iptables禁用启用端口/" title="iptables禁用启用端口">http://xyueji.github.io/2019/01/04/iptables禁用启用端口/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/01/04/iptables禁用启用端口/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2019/09/20/线上HBase表重建/" title="线上HBase表重建">http://xyueji.github.io/2019/09/20/线上HBase表重建/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/09/20/线上HBase表重建/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -276,18 +281,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/09/12/JanusGraph/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          JanusGraph
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/01/04/Phoenix系统表/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Phoenix系统表</div>
+    <a href="/2019/09/12/JanusGraph/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">JanusGraph</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -298,7 +294,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#只允许指定ip访问本机的指定端口"><span class="toc-number">1.</span> <span class="toc-text">只允许指定ip访问本机的指定端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#删除规则"><span class="toc-number">2.</span> <span class="toc-text">删除规则</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、创建临时表"><span class="toc-number">1.</span> <span class="toc-text">一、创建临时表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、数据迁移"><span class="toc-number">2.</span> <span class="toc-text">二、数据迁移</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、HBase表替换"><span class="toc-number">3.</span> <span class="toc-text">三、HBase表替换</span></a></li></ol>
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -348,7 +344,7 @@
 <script src="https://www.wenjunjiang.win/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Fri Jan 04 2019 15:54:38 GMT+0800',
+      id: 'Fri Sep 20 2019 19:49:31 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -365,13 +361,11 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/09/12/JanusGraph/" title="上一篇: JanusGraph">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2019/01/04/Phoenix系统表/" title="下一篇: Phoenix系统表">
+            <a href="/2019/09/12/JanusGraph/" title="下一篇: JanusGraph">
                 <i class="fa fa-angle-right"></i>
             </a>
         
