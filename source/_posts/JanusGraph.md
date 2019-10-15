@@ -1,6 +1,6 @@
 ---
 title: JanusGraph
-date: 2019-09-12 10:21:21
+date: 2019-10-15 15:04:51
 tags:
 - JanusGraph
 
@@ -13,11 +13,10 @@ categories:
 有以下两种方式构建JanusGraph对象：
 
 1、通过配置文件构建图对象
-
 configuration里面至少要说明storage backend是什么，参考此。
 如果需要高级功能（e.g full-text search, geo search, or range queries），就需要一个indexing backend。
 一个基于Cassandra+ElasticSearch的配置例子：
-
+<!--more-->
 ```yaml
 storage.backend=hbase
 storage.hostname=localhost
@@ -348,6 +347,119 @@ graph.graphname这个属性指定了上述配置是针对哪张graph的。
 
 - 支持两类graph indexing: Graph Index和Vertex-centric Index。
 - graph index包含两类：Composite Index和Mixed Index。
+
+实际上在操作时会遇到很多问题，其中最头疼的就是在执行 awaitGraphIndexStatus()方法时，会报 “Script evaluation exceeded the configured 'scriptEvaluationTimeout' threshold of 30000 ms or evaluation was otherwise cancelled directly for request [mgmt.awaitGraphIndexStatus(graph, 'byNameComposite').call()]” 的错误。
+
+　  上面的命令其实忽略了关键的几步，下面具体说明以下。
+
+1. 创建索引之前，确定JanusGraph没有其它事务正在运行
+
+   查询事务命令：graph.getOpenTransactions()
+
+   关闭其他事务：graph.getOpenTransactions().forEach { tx -> tx.rollback() }
+
+2. 执行 REGISTER_INDEX ACTION，使索引状态INSTALLED 转为 REGISTERED
+
+   官方文档里没有这关键的一步，在创建完索引后，需要执行以下命令：
+
+   ```java
+   m = graph.openManagement()
+   m.updateIndex(m.getGraphIndex('index'), SchemaAction.REGISTER_INDEX).get()
+   m.commit()
+   ```
+
+​       其中第三条命令执行后实际上是在后台运行的，此时如果我们执行ManagementSystem.awaitGraphIndexStatus(graph,"byNameComposite").status(SchemaStatus.REGISTERED).call() ，等待30s后很可能依然返回超时错误。这时候需要**耐心等待**。期间，我可以直接查看索引的状态：
+
+```java
+mgmt = graph.openManagement()
+index = mgmt.getGraphIndex('index')
+index.getIndexStatus(mgmt.getPropertyKey('name'))
+```
+
+等待一段时间后，索引的状态最终会变为 **REGISTERED**，此时再执行awaitGraphIndexStatus() ，会返回
+
+```java
+GraphIndexStatusReport[success=true, indexName='byTitleLowercaseComposite', targetStatus=[REGISTERED], notConverged={}, converged={title_lowercase=REGISTERED}, elapsed=PT0.001S]
+
+```
+
+**注意**：若索引迟迟没有变为REGISTERED，也可尝试进行下一步，更新到ENABLE。
+
+3. 执行REINDEX与ENABLE_INDEX，完成索引
+
+   与上一步类似，需要通过updateIndex()方法来改变索引状态。如果要索引的属性中还未导入数据，则不需要REINDEX的操作，下面的命令二选一：
+
+   * REINDEX ACTION
+
+   ```java
+   m = graph.openManagement()
+   m.updateIndex(m.getGraphIndex('index'), SchemaAction.REINDEX).get()
+   m.commit()
+    
+   ManagementSystem.awaitGraphIndexStatus(graph,'byNameComposite').status(SchemaStatus.ENABLED).call()
+   ```
+
+   * ENABLED ACTION
+
+   ```java
+   m = graph.openManagement()
+   m.updateIndex(m.getGraphIndex('index'), SchemaAction.ENABLE_INDEX).get() 
+   m.commit() 
+    
+   ManagementSystem.awaitGraphIndexStatus(graph, 'byNameComposite').status(SchemaStatus.ENABLED).call()
+    
+   // 错误示例: 
+   i = m.getGraphIndex('index')
+   m.updateIndex(i, SchemeAction.ENABLE_INDEX)
+   m.commit()
+    
+   // 必须要加‘get()’
+   ```
+
+   　　到最后， 执行awaitGraphIndexStatus()返回成功信息：
+
+   ```java
+   GraphIndexStatusReport[success=true, indexName='byTitleLowercaseComposite', targetStatus=[ENABLED], notConverged={}, converged={title_lowercase=ENABLED}, elapsed=PT0.001S]
+   ```
+
+#### Janusgraph索引状态不变更的问题
+
+JanusGraph的索引因为要同步不同实例及不同后端的数据，因此不是实时能够完成的，视配置，网络和数据量不同，建立/生效索引通常需要一段时间，这也是为什么创建索引时会创建wait()的原因。
+
+在实践中，我们经常遇到timeout()异常的出现，这一方面有数据量，网络，配置的原因，另外一方面，如果系统中有未关闭的事务或者无效的实例，均会导致索引创建阻塞，不断等待，最后超时。下面是我们团队在使用JansuGraph总结出的，解决索引超时的实践，希望对后来者有所帮助。
+
+**1.存在没有关闭的Transaction**
+
+如果图中存在有没有关系的Transaction，则索引状态不会变更，虽然在官方文档中提到了使用：
+
+```java
+graph.tx().rollback()
+```
+
+但该方法只能关闭当前事务，对系统中其他打开的事务无效，可以使用下面的语句替换：
+
+```java
+for(i=0;i<graph.getOpenTransactions().size();i++) {graph.getOpenTransactions().getAt(i).rollback()}
+```
+
+**2.存在幽灵实例**
+
+使用下面的语句查询：
+
+```java
+mgmt = graph.openManagement()
+mgmt.getOpenInstances();
+mgmt.commit();
+```
+
+使用下面的语句关闭：
+
+```java
+mgmt = graph.openManagement();
+ids = mgmt.getOpenInstances();
+for(String id : ids){if(!id.contains("(")){mgmt.forceCloseInstance(id)}};
+mgmt.commit();
+```
 
 #### Composite Index
 
@@ -978,6 +1090,7 @@ UUID
 
 如果使用 Elasticsearch，可以索引cardinality为 SET 或者 LIST 的属性，如下面的例子：
 
+```java
 mgmt = graph.openManagement()
 nameProperty = mgmt.makePropertyKey("names").dataType(String.class).cardinality(Cardinality.SET).make()
 mgmt.buildIndex("search", Vertex.class).addKey(nameProperty, Mapping.STRING.asParameter()).buildMixedIndex("search")
@@ -990,6 +1103,7 @@ graph.tx().commit()
 //Now query it
 g.V().has("names", "Bob").count().next() //1
 g.V().has("names", "Robert").count().next() //1
+```
 
 #### 索引参数和全局搜索
 
@@ -1008,7 +1122,7 @@ Full-Text Search
 
 默认地，string会使用text层面的索引，可以通过下面的方式显示地去创建：
 
-```
+```java
 mgmt = graph.openManagement()
 summary = mgmt.makePropertyKey(‘booksummary‘).dataType(String.class).make()
 mgmt.buildIndex(‘booksBySummary‘, Vertex.class).addKey(summary, Mapping.TEXT.asParameter()).buildMixedIndex("search")
@@ -1021,7 +1135,7 @@ mgmt.commit()
 
 当我们使用text层面的index的时候，只有全局索引的谓语才真正用到了我们创建的索引，包括textContains方法，textContainsPrefix方法，textContainsRegex方法和textContainsFuzzy方法，注意，full-text search是case-insensitive的，下面是具体的例子：
 
-```
+```java
 import static org.janusgraph.core.attribute.Text.*
 g.V().has(‘booksummary‘, textContains(‘unicorns‘))
 g.V().has(‘booksummary‘, textContainsPrefix(‘uni‘))
@@ -1129,89 +1243,122 @@ HTTPS authentification
 HTTP authentification
 可以通过配置 index.[X].elasticsearch.http.auth.basic.realm 参数来通过HTTP协议做认证。
 
+```java
 index.search.elasticsearch.http.auth.type=basic
 index.search.elasticsearch.http.auth.basic.username=httpuser
 index.search.elasticsearch.http.auth.basic.password=httppassword
 tips:
+```
 
 可以自己实现class来实现认证：
 
+```java
 index.search.elasticsearch.http.auth.custom.authenticator-class=fully.qualified.class.Name
 index.search.elasticsearch.elasticsearch.http.auth.custom.authenticator-args=arg1,arg2,...
+```
+
 自己实现的class必须实现 org.janusgraph.diskstorage.es.rest.util.RestClientAuthenticator 接口。
 
-高级功能
-Advanced Schema
-Static Vertex
-Vertex label可以定义为static的，一旦创建，就不能修改了。
+### 高级功能
 
+#### Advanced Schema
+
+1. Static Vertex
+   Vertex label可以定义为static的，一旦创建，就不能修改了。
+
+```java
 mgmt = graph.openManagement()
 tweet = mgmt.makeVertexLabel(‘tweet‘).setStatic().make()
 mgmt.commit()
-Edge and Vertex TTL
-边和顶点可以配置对应的time-to-live(TTL)，这个概念有点类似于数据库中的临时表的概念，用这种方式创建的点和边在使用一段时间以后会被自动移除掉。
+```
 
-Edge TTL
-mgmt = graph.openManagement()
-visits = mgmt.makeEdgeLabel(‘visits‘).make()
-mgmt.setTTL(visits, Duration.ofDays(7))
-mgmt.commit()
-需要注意的是，这种方法后端数据库必须支持cell level TTL，目前只有Cassandra和HBase支持。
+2. Edge and Vertex TTL
+   边和顶点可以配置对应的time-to-live(TTL)，这个概念有点类似于数据库中的临时表的概念，用这种方式创建的点和边在使用一段时间以后会被自动移除掉。
 
-Property TTL
-mgmt = graph.openManagement()
-sensor = mgmt.makePropertyKey(‘sensor‘).cardinality(Cardinality.LIST).dataType(Double.class).make()
-mgmt.setTTL(sensor, Duration.ofDays(21))
-mgmt.commit()
-Vertex TTL
-mgmt = graph.openManagement()
-tweet = mgmt.makeVertexLabel(‘tweet‘).setStatic().make()
-mgmt.setTTL(tweet, Duration.ofHours(36))
-mgmt.commit()
-Undirected Edges
-mgmt = graph.openManagement()
-mgmt.makeEdgeLabel(‘author‘).unidirected().make()
-mgmt.commit()
-这种undirected edge只能通过out-going的方向去遍历，这有点像万维网。
+* Edge TTL
 
-Eventually-Consistent Storage Backends
+  ```java
+  mgmt = graph.openManagement()
+  visits = mgmt.makeEdgeLabel(‘visits‘).make()
+  mgmt.setTTL(visits, Duration.ofDays(7))
+  mgmt.commit()
+  ```
+
+  需要注意的是，这种方法后端数据库必须支持cell level TTL，目前只有Cassandra和HBase支持。
+
+* Property TTL
+
+  ```java
+  mgmt = graph.openManagement()
+  sensor = mgmt.makePropertyKey(‘sensor‘).cardinality(Cardinality.LIST).dataType(Double.class).make()
+  mgmt.setTTL(sensor, Duration.ofDays(21))
+  mgmt.commit()
+  ```
+
+* Vertex TTL
+
+  ```java
+  mgmt = graph.openManagement()
+  tweet = mgmt.makeVertexLabel(‘tweet‘).setStatic().make()
+  mgmt.setTTL(tweet, Duration.ofHours(36))
+  mgmt.commit()
+  Undirected Edges
+  mgmt = graph.openManagement()
+  mgmt.makeEdgeLabel(‘author‘).unidirected().make()
+  mgmt.commit()
+  ```
+
+  这种undirected edge只能通过out-going的方向去遍历，这有点像万维网。
+
+#### Eventually-Consistent Storage Backends
+
 底层数据的最终一致性问题。
 
 Eventually consistent storage backend有哪些？Apache Cassandra 或者 Apache HBase其实都是这种数据库类型。
 
-数据的一致性
-通过 JanusGraphManagement.setConsistency(element, ConsistencyModifier.LOCK) 方法去定义数据的一致性问题， 如下面的例子：
+* 数据的一致性
+  通过 JanusGraphManagement.setConsistency(element, ConsistencyModifier.LOCK) 方法去定义数据的一致性问题， 如下面的例子：
 
-mgmt = graph.openManagement()
-name = mgmt.makePropertyKey(‘consistentName‘).dataType(String.class).make()
-index = mgmt.buildIndex(‘byConsistentName‘, Vertex.class).addKey(name).unique().buildCompositeIndex()
-mgmt.setConsistency(name, ConsistencyModifier.LOCK) // Ensures only one name per vertex
-mgmt.setConsistency(index, ConsistencyModifier.LOCK) // Ensures name uniqueness in the graph
-mgmt.commit()
-使用锁其实开销还是很大的，在对数据一致性要求不高的情形，最好不用锁，让后期数据库自己在读操作中去解决数据一致性问题。
+  ```java
+  mgmt = graph.openManagement()
+  name = mgmt.makePropertyKey(‘consistentName‘).dataType(String.class).make()
+  index = mgmt.buildIndex(‘byConsistentName‘, Vertex.class).addKey(name).unique().buildCompositeIndex()
+  mgmt.setConsistency(name, ConsistencyModifier.LOCK) // Ensures only one name per vertex
+  mgmt.setConsistency(index, ConsistencyModifier.LOCK) // Ensures name uniqueness in the graph
+  mgmt.commit()
+  ```
+
+  使用锁其实开销还是很大的，在对数据一致性要求不高的情形，最好不用锁，让后期数据库自己在读操作中去解决数据一致性问题。
 
 当有两个事务同时对一个元素进行写操作的时候，怎么办呢？我们可以先让写操作成功，然后后期再去解决一致性问题，具体有两种思路解决这个问题：
 
-Forking Edges
-思想就是，每一个事务fork一个对应的要修改的edge，再根据时间戳去在后期修改。
+1. Forking Edges
+   思想就是，每一个事务fork一个对应的要修改的edge，再根据时间戳去在后期修改。
 
 下面是个例子：
 
+```java
 mgmt = graph.openManagement()
 related = mgmt.makeEdgeLabel(‘related‘).make()
 mgmt.setConsistency(related, ConsistencyModifier.FORK)
 mgmt.commit()
+```
+
+
 这里，我们创建了一个edge label，叫做 related，然后我们把一致性属性设置成了 ConsistencyModifier.FORK。
 
 这个策略只对MULTI类别的边适用。其他的multiplicity并不适用，因为其它multiplicity显式地应用了锁。
 
-Failure & Recovery
+#### Failure & Recovery
+
 失败和恢复，主要是两个部分：
 
-事务的失败和恢复
-实例的宕机和恢复
-事务的失败和恢复
-事务如果在调用 commit() 之前失败，是可以恢复的。commit() 之前的改变也会被回滚。
+* 事务的失败和恢复
+* 实例的宕机和恢复
+
+1. 事务的失败和恢复
+
+   事务如果在调用 commit() 之前失败，是可以恢复的。commit() 之前的改变也会被回滚。
 
 有时候，数据persist到存储系统的过程成功了，但创建index的的过程却失败了。这种情况下，该事务会被认为成功了，因为底层存储才是source of graph。
 
@@ -1226,43 +1373,50 @@ transaction write-ahead log 本身也有维护成本，因为涉及到大量的�
 
 对于这样的系统，如何 fine tune log system 也是需要仔细考虑的因素。
 
-实例的恢复
-如果某个JanusGraph instance宕机了，其他的实例应该不能受影响。如果涉及到schema相关的操作，比如创建索引，这就需要不同instance保持协作了，JanusGraph会自动地去维护一份running instance的列表，如果某一个实例被意外关闭了，创建索引的操作就会失败。
+2. 实例的恢复
+   如果某个JanusGraph instance宕机了，其他的实例应该不能受影响。如果涉及到schema相关的操作，比如创建索引，这就需要不同instance保持协作了，JanusGraph会自动地去维护一份running instance的列表，如果某一个实例被意外关闭了，创建索引的操作就会失败。
 
 在这种情况下，有一个方案是去手动地remove某一个实例：
 
+```java
 mgmt = graph.openManagement()
 mgmt.getOpenInstances() //all open instances
 ==>7f0001016161-dunwich1(current)
 ==>7f0001016161-atlantis1
 mgmt.forceCloseInstance(‘7f0001016161-atlantis1‘) //remove an instance
 mgmt.commit()
+```
+
 但这样做有数据不一致的风险，应该尽量少使用这种方式。
 
-索引的管理
-重新索引
+#### 索引的管理
+
+1. 重新索引
+
 一般来讲，我们在创建schema的时候，就应该把索引建立好，如果事先没有创建好索引，就需要重新索引了。
 
 可以通过两种方式来执行重索引：
 
-MapReduce
-JanusGraphManagement
-具体的代码可以参考：https://docs.janusgraph.org/latest/index-admin.html
+* MapReduce
+* JanusGraphManagement
+具体的代码可以参考：https://docs.janusgraph.org/index-management/index-reindexing/
 
-删除索引
-删除索引分两步：
+2. 删除索引
+   删除索引分两步：
 
 JanusGraph通知所有其他的实例，说明索引即将被删除，索引便会标记成 DISABLED 状态，此时JanusGraph便会停止使用该索引去回答查询，或者更新索引，索引相关的底层数据还保留但会被忽略。
 根据索引是属于composite索引还是mixed索引，如果是composite索引，可以直接用 JanusGraphManagement 或者 MapReduce 去删除，如果是mixed索引就比较麻烦了，因为这涉及到后端存储的索引，所以需要手动地去后端drop掉对应的索引。
-重建索引的相关问题v
-当一个索引刚刚被建立，就执行重索引的时候，可能会报如下错误：
+
+3. 重建索引的相关问题
+   当一个索引刚刚被建立，就执行重索引的时候，可能会报如下错误：
 
 The index mixedExample is in an invalid state and cannot be indexed.
 The following index keys have invalid status: desc has status INSTALLED
 (status must be one of [REGISTERED, ENABLED])
 这是因为建立索引后，索引信息会被慢慢地广播到集群中其他的Instances，这需要一定的时间，所以，最好不要在索引刚刚建立以后就去执行重索引任务。
 
-大规模导入（Bulk Loading）
+#### 大规模导入（Bulk Loading）
+
 大规模导入需要的配置
 通过 storage.batch-loading 参数来支持 Bulk loading。
 
@@ -1272,38 +1426,34 @@ The following index keys have invalid status: desc has status INSTALLED
 
 对于这个参数，有个技巧：Rule of thumb: Set ids.block-size to the number of vertices you expect to add per JanusGraph instance per hour.
 
-Note：要保证所有JanusGraph instance这个参数的配置都一样，如果需要调整这个参数，最好先关闭所有的instance，调整好后再上线。
+* Note：要保证所有JanusGraph instance这个参数的配置都一样，如果需要调整这个参数，最好先关闭所有的instance，调整好后再上线。
 
 如果有多个实例，这些实例在不断地分配id，可能会造成冲突问题，有时候甚至会报出异常，一般来说，对于这个问题，可以调整下面几个参数：
 
-ids.authority.wait-time：单位是milliseconds，id pool mamager在等待id block应用程序获得底层存储所需要等待的时间，这个时间越短，越容易出问题。
-Rule of thumb: Set this to the sum of the 95th percentile read and write times measured on the storage backend cluster under load. Important: This value should be the same across all JanusGraph instances.
+* ids.authority.wait-time：单位是milliseconds，id pool mamager在等待id block应用程序获得底层存储所需要等待的时间，这个时间越短，越容易出问题。
+* Rule of thumb: Set this to the sum of the 95th percentile read and write times measured on the storage backend cluster under load. Important: This value should be the same across all JanusGraph instances.
 
-ids.renew-timeout：单位是milliseconds，JanusGraph 的 id pool manager 在获取新一个id之前会等待的总时间。
-Rule of thumb: Set this value to be as large feasible to not have to wait too long for unrecoverable failures. The only downside of increasing it is that JanusGraph will try for a long time on an unavailable storage backend cluster.
+* ids.renew-timeout：单位是milliseconds，JanusGraph 的 id pool manager 在获取新一个id之前会等待的总时间。
+* Rule of thumb: Set this value to be as large feasible to not have to wait too long for unrecoverable failures. The only downside of increasing it is that JanusGraph will try for a long time on an unavailable storage backend cluster.
 
 还有一些需要注意的读写参数：
 
-storage.buffer-size：我们执行很多query的时候，JanusGraph会把它们封装成一个个的小batch，然后推送到后端的存储执行，当我们在短时间内执行大量的写操作的时候，后端存储可能承受不了这么大的压力。在这种情况下，我们可以增大这个buffer参数，但与此相对的代价是每秒中可以发送的request数量会减小。这个参数不建议在用事务的方式导入数据的时候进行修改。
+* storage.buffer-size：我们执行很多query的时候，JanusGraph会把它们封装成一个个的小batch，然后推送到后端的存储执行，当我们在短时间内执行大量的写操作的时候，后端存储可能承受不了这么大的压力。在这种情况下，我们可以增大这个buffer参数，但与此相对的代价是每秒中可以发送的request数量会减小。这个参数不建议在用事务的方式导入数据的时候进行修改。
 
-storage.read-attempts 和 storage.write-attempts 参数，这个参数指的是每个推送到后端的batch会被尝试多少次（直至认为这个batch fail），如果希望在导数据的时候支持 high load，最好调大这几个参数。
+* storage.read-attempts 和 storage.write-attempts 参数，这个参数指的是每个推送到后端的batch会被尝试多少次（直至认为这个batch fail），如果希望在导数据的时候支持 high load，最好调大这几个参数。
 
-storage.attempt-wait 参数指定了JanusGraph在重新执行一次失败的操作之前会等待的时间（millisecond)，这个值越大，后端能抗住的load越高。
+* storage.attempt-wait 参数指定了JanusGraph在重新执行一次失败的操作之前会等待的时间（millisecond)，这个值越大，后端能抗住的load越高。
 
-Graph Partitioning
+#### Graph Partitioning
+
 分区策略，主要是两种：
 
-Edge Cut
+* Edge Cut
 砍边策略，经常一起遍历到的点尽量放在同一个机器上。
 
-Vertex Cut
-砍点策略。砍边策略的目的是减小通信量，砍点策略主要是为了处理hotspot问题（超级点问题），比如有的点，入度非常大，这种情况下，用邻接表的方式+砍边的方式存储的话，势必造成某一个分区上某一个点的存储量过大（偏移），这个时候，利用砍点策略，把这种点均匀地分布到不同的partition上面就显得很重要了。
+* Vertex Cut
+  砍点策略。砍边策略的目的是减小通信量，砍点策略主要是为了处理hotspot问题（超级点问题），比如有的点，入度非常大，这种情况下，用邻接表的方式+砍边的方式存储的话，势必造成某一个分区上某一个点的存储量过大（偏移），这个时候，利用砍点策略，把这种点均匀地分布到不同的partition上面就显得很重要了。
 
 一个典型的场景是 User 和 Product 的关系，product 可能只有几千个，但用户却有上百万个，这种情况下，product 最好就始终砍点策略。
 
 对与分区这个问题，如果数据量小，就用随机分区（默认的）就好，如果数据量过大，就要好好地去fine tune分区的策略了。
-
-JanusGraph with TinkerPop’s Hadoop-Gremlin
-JanusGraph和TinkerPop的Hadoop框架的整合问题。JanusGraph和Apache Spark还有Hadoop的整合主要是依靠社区的力量。
-
-JanusGraph文档整理
