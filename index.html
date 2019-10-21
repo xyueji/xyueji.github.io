@@ -187,7 +187,7 @@
   
     <div class="article-meta">
       <a href="/2019/10/21/hbase的hbck工具/" class="article-date">
-      <time datetime="2019-10-21T08:14:53.000Z" itemprop="datePublished">2019-10-21</time>
+      <time datetime="2019-10-21T08:18:24.000Z" itemprop="datePublished">2019-10-21</time>
 </a>
     </div>
   
@@ -210,18 +210,11 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <hr>
-<p>title: hbase hbck<br>date: 2019-10-21 16:14:09<br>tags:</p>
-<ul>
-<li>hbck</li>
-</ul>
-<p>categories:</p>
-<ul>
-<li>hbase
+              <p>hbase hbck是hbase自带的一项非常实用的工具，很多hbase中出现的问题都可以尝试用hbase hbck修复。<br>新版本的hbck从 hdfs目录、META、RegionServer这三处获得region的Table和Region的相关信息，根据这些信息判断并尝试进行repair。<br>新版本的 hbck 可以修复各种错误，修复选项是：（请注意选项后面是否需要加具体表名）<br>（1）-fix<br>    向下兼容用，被-fixAssignments替代<br>（2）-fixAssignments<br>    用于修复region assignments错误<br>（3）-fixMeta<br>
           
       
       
-    </li></ul></div>
+    </p></div>
     
     <div class="article-info article-info-index">
       
