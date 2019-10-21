@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xyueji.github.io/"/>
-  <updated>2019-10-15T07:04:51.103Z</updated>
+  <updated>2019-10-21T08:14:54.018Z</updated>
   <id>http://xyueji.github.io/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>hbase的hbck工具</title>
+    <link href="http://xyueji.github.io/2019/10/21/hbase%E7%9A%84hbck%E5%B7%A5%E5%85%B7/"/>
+    <id>http://xyueji.github.io/2019/10/21/hbase的hbck工具/</id>
+    <published>2019-10-21T08:14:53.000Z</published>
+    <updated>2019-10-21T08:14:54.018Z</updated>
+    
+    <content type="html"><![CDATA[<hr><p>title: hbase hbck<br>date: 2019-10-21 16:14:09<br>tags:</p><ul><li>hbck</li></ul><p>categories:</p><ul><li>hbase<a id="more"></a></li></ul><hr>]]></content>
+    
+    <summary type="html">
+    
+      &lt;hr&gt;
+&lt;p&gt;title: hbase hbck&lt;br&gt;date: 2019-10-21 16:14:09&lt;br&gt;tags:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;hbck&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;categories:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;hbase
+    
+    </summary>
+    
+      <category term="hbase" scheme="http://xyueji.github.io/categories/hbase/"/>
+    
+    
+      <category term="hbck" scheme="http://xyueji.github.io/tags/hbck/"/>
+    
+  </entry>
   
   <entry>
     <title>JanusGraph</title>
