@@ -7,7 +7,7 @@ date: 2019-01-05 20:47:17
 <br>
  - 月迹/男/1994
  - 本科/中石大软件工程 
- - 工作年限：实习中。。。
+ - 工作年限：2019.7~至今 贝壳
  - 技术博客：https://xyueji.github.io
  - Github：http://github.com/xyueji
  - 工作地点：北京
