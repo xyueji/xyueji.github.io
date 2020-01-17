@@ -3,20 +3,22 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Phoenix安装问题 | 月迹的博客</title>
+  <title>Linux-top命令详解 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="下载Phoenix下载地址:http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)">
-<meta name="keywords" content="Phoenix">
+  <meta name="description" content="Linux top命令详解 第一行，任务队列信息，同 uptime 命令的执行结果  系统时间：07:27:05">
+<meta name="keywords" content="top">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Phoenix安装问题">
-<meta property="og:url" content="http://xyueji.github.io/2019/01/03/Phoenix安装问题/index.html">
+<meta property="og:title" content="Linux-top命令详解">
+<meta property="og:url" content="http://xyueji.github.io/2020/01/17/Linux-top命令详解/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="下载Phoenix下载地址:http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)">
+<meta property="og:description" content="Linux top命令详解 第一行，任务队列信息，同 uptime 命令的执行结果  系统时间：07:27:05">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-12T02:32:40.880Z">
+<meta property="og:image" content="http://xyueji.github.io/Users/xiongzhigang/Library/Application%20Support/typora-user-images/image-20200116174612220.png">
+<meta property="og:updated_time" content="2020-01-17T02:37:54.407Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Phoenix安装问题">
-<meta name="twitter:description" content="下载Phoenix下载地址:http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)">
+<meta name="twitter:title" content="Linux-top命令详解">
+<meta name="twitter:description" content="Linux top命令详解 第一行，任务队列信息，同 uptime 命令的执行结果  系统时间：07:27:05">
+<meta name="twitter:image" content="http://xyueji.github.io/Users/xiongzhigang/Library/Application%20Support/typora-user-images/image-20200116174612220.png">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -176,11 +178,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Phoenix安装问题" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Linux-top命令详解" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/01/03/Phoenix安装问题/" class="article-date">
-      <time datetime="2019-01-03T13:14:33.000Z" itemprop="datePublished">2019-01-03</time>
+      <a href="/2020/01/17/Linux-top命令详解/" class="article-date">
+      <time datetime="2020-01-17T02:37:54.000Z" itemprop="datePublished">2020-01-17</time>
 </a>
     </div>
   
@@ -193,7 +195,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Phoenix安装问题
+      Linux-top命令详解
     </h1>
   
 
@@ -202,13 +204,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Phoenix/">Phoenix</a>
+    <a class="article-category-link" href="/categories/linux/">linux</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Phoenix/">Phoenix</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/top/">top</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -218,16 +220,12 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h2 id="下载Phoenix"><a href="#下载Phoenix" class="headerlink" title="下载Phoenix"></a>下载Phoenix</h2><p>下载地址:<a href="http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)" target="_blank" rel="noopener">http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)</a></p>
-<a id="more"></a>
-<h2 id="配置Phoenix"><a href="#配置Phoenix" class="headerlink" title="配置Phoenix"></a>配置Phoenix</h2><ul>
-<li>解压缩文件</li>
-<li>配置Phoenix环境变量</li>
-<li>将 Phoenix 目录下的phoenix-core-4.14.1-HBase-1.2.jar、phoenix-4.14.1-HBase-1.2-client.jar 拷贝到 hbase 集群各个节点 hbase 安装目录 lib 中。</li>
-<li>将 hbase 集群中的配置文件 hbase-site.xml 拷贝到 Phoenix 的 bin 目录下，覆盖原有的配置文件。</li>
-<li>将 hdfs 集群中的配置文件 core-site.xml、 hdfs-site.xml 拷贝到 Phoenix 的 bin 目录下。</li>
-<li>重启hbase<h2 id="启动Phoenix"><a href="#启动Phoenix" class="headerlink" title="启动Phoenix"></a>启动Phoenix</h2>sqlline.py &lt;hbase.zookeeper.quorum&gt;</li>
-</ul>
+        <h1 id="Linux-top命令详解"><a href="#Linux-top命令详解" class="headerlink" title="Linux top命令详解"></a>Linux top命令详解</h1><p><img src="/Users/xiongzhigang/Library/Application Support/typora-user-images/image-20200116174612220.png" alt="image-20200116174612220"></p>
+<p><strong>第一行，任务队列信息，同 uptime 命令的执行结果</strong></p>
+<blockquote>
+<p>系统时间：07:27:05</p>
+</blockquote>
+<a id="more"></a>&gt; 运行时间：up 1:57 min,<br>&gt;<br>&gt; 当前登录用户： 3 user<br>&gt;<br>&gt; 负载均衡(uptime) load average: 0.00, 0.00, 0.00<br>&gt;<br>&gt;    average后面的三个数分别是1分钟、5分钟、15分钟的负载情况。<br>&gt;<br>&gt; load average数据是每隔5秒钟检查一次活跃的进程数，然后按特定算法计算出的数值。如果这个数除以逻辑CPU的数量，结果高于5的时候就表明系统在超负荷运转了<br><br><strong>第二行，Tasks — 任务（进程）</strong><br><br>&gt; 总进程:150 total, 运行:1 running, 休眠:149 sleeping, 停止: 0 stopped, 僵尸进程: 0 zombie<br><br><strong>第三行，cpu状态信息</strong><br><br>&gt; 0.0%us【user space】— 用户空间占用CPU的百分比。<br>&gt;<br>&gt; 0.3%sy【sysctl】— 内核空间占用CPU的百分比。<br>&gt;<br>&gt; 0.0%ni【】— 改变过优先级的进程占用CPU的百分比<br>&gt;<br>&gt; 99.7%id【idolt】— 空闲CPU百分比<br>&gt;<br>&gt; 0.0%wa【wait】— IO等待占用CPU的百分比<br>&gt;<br>&gt; 0.0%hi【Hardware IRQ】— 硬中断占用CPU的百分比<br>&gt;<br>&gt; 0.0%si【Software Interrupts】— 软中断占用CPU的百分比<br><br><strong>第四行,内存状态</strong><br><br>&gt;  1003020k total,  234464k used,  777824k free,  24084k buffers【缓存的内存量】<br><br><strong>第五行，swap交换分区信息</strong><br><br>&gt; 2031612k total,   536k used, 2031076k free,  505864k cached【缓冲的交换区总量】<br><br>&gt; 备注：<br>&gt;<br>&gt; 可用内存=free + buffer + cached<br>&gt;<br>&gt; 对于内存监控，在top里我们要时刻监控第五行swap交换分区的used，如果这个数值在不断的变化，说明内核在不断进行内存和swap的数据交换，这是真正的内存不够用了。<br>&gt;<br>&gt; 第四行中使用中的内存总量（used）指的是现在系统内核控制的内存数，<br>&gt;<br>&gt; 第四行中空闲内存总量（free）是内核还未纳入其管控范围的数量。<br>&gt;<br>&gt; 纳入内核管理的内存不见得都在使用中，还包括过去使用过的现在可以被重复利用的内存，内核并不把这些可被重新使用的内存交还到free中去，因此在linux上free内存会越来越少，但不用为此担心。<br><br><strong>第六行，空行</strong><br><br><strong>第七行以下：各进程（任务）的状态监控</strong><br><br>&gt; PID — 进程id<br>&gt; USER — 进程所有者<br>&gt; PR — 进程优先级<br>&gt; NI — nice值。负值表示高优先级，正值表示低优先级<br>&gt; VIRT — 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES<br>&gt; RES — 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA<br>&gt; SHR — 共享内存大小，单位kb<br>&gt; S —进程状态。D=不可中断的睡眠状态 R=运行 S=睡眠 T=跟踪/停止 Z=僵尸进程<br>&gt; %CPU — 上次更新到现在的CPU时间占用百分比<br>&gt; %MEM — 进程使用的物理内存百分比<br>&gt; TIME+ — 进程使用的CPU时间总计，单位1/100秒<br>&gt; COMMAND — 进程名称（命令名/命令行）<br><br>详解<br><br>&gt; <strong>VIRT：virtual memory usage 虚拟内存<br>&gt; </strong>1、进程“需要的”虚拟内存大小，包括进程使用的库、代码、数据等<br>&gt; 2、假如进程申请100m的内存，但实际只使用了10m，那么它会增长100m，而不是实际的使用量<br>&gt;<br>&gt; <strong>RES：resident memory usage 常驻内存</strong><br>&gt; 1、进程当前使用的内存大小，但不包括swap out<br>&gt; 2、包含其他进程的共享<br>&gt; 3、如果申请100m的内存，实际使用10m，它只增长10m，与VIRT相反<br>&gt; 4、关于库占用内存的情况，它只统计加载的库文件所占内存大小<br>&gt;<br>&gt; <strong>SHR：shared memory 共享内存</strong><br>&gt; 1、除了自身进程的共享内存，也包括其他进程的共享内存<br>&gt; 2、虽然进程只使用了几个共享库的函数，但它包含了整个共享库的大小<br>&gt; 3、计算某个进程所占的物理内存大小公式：RES – SHR<br>&gt; 4、swap out后，它将会降下来<br>&gt;<br>&gt; <strong>DATA</strong><br>&gt; 1、数据占用的内存。如果top没有显示，按f键可以显示出来。<br>&gt; 2、真正的该程序要求的数据空间，是真正在运行中要使用的。<br>&gt;<br>&gt; <strong>top 运行中可以通过 top 的内部命令对进程的显示方式进行控制。内部命令如下：</strong><br>&gt; s – 改变画面更新频率<br>&gt; l – 关闭或开启第一部分第一行 top 信息的表示<br>&gt; t – 关闭或开启第一部分第二行 Tasks 和第三行 Cpus 信息的表示<br>&gt; m – 关闭或开启第一部分第四行 Mem 和 第五行 Swap 信息的表示<br>&gt; N – 以 PID 的大小的顺序排列表示进程列表<br>&gt; P – 以 CPU 占用率大小的顺序排列进程列表<br>&gt; M – 以内存占用率大小的顺序排列进程列表<br>&gt; h – 显示帮助<br>&gt; n – 设置在进程列表所显示进程的数量<br>&gt; q – 退出 top<br>&gt; s – 改变画面更新周期<br><br><br><br>## 附：Linux查看物理CPU个数、核数、逻辑CPU个数<br><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 总核数 = 物理CPU个数 X 每颗物理CPU的核数 </span><br><span class="line"><span class="meta">#</span> 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 查看物理CPU个数</span><br><span class="line">cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 查看每个物理CPU中core的个数(即核数)</span><br><span class="line">cat /proc/cpuinfo| grep "cpu cores"| uniq</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 查看逻辑CPU的个数</span><br><span class="line">cat /proc/cpuinfo| grep "processor"| wc -l</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> 查看CPU信息（型号）</span><br><span class="line">cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c</span><br></pre></td></tr></table></figure>
 
       
       
@@ -237,13 +235,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2019/01/03/Phoenix安装问题/">Phoenix安装问题</a></p>
+        <p><span>本文标题:</span><a href="/2020/01/17/Linux-top命令详解/">Linux-top命令详解</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2019年01月03日 - 21时14分</p>
-        <p><span>最后更新:</span>2019年09月12日 - 10时32分</p>
+        <p><span>发布时间:</span>2020年01月17日 - 10时37分</p>
+        <p><span>最后更新:</span>2020年01月17日 - 10时37分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2019/01/03/Phoenix安装问题/" title="Phoenix安装问题">http://xyueji.github.io/2019/01/03/Phoenix安装问题/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/01/03/Phoenix安装问题/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2020/01/17/Linux-top命令详解/" title="Linux-top命令详解">http://xyueji.github.io/2020/01/17/Linux-top命令详解/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/17/Linux-top命令详解/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -256,18 +254,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/01/04/Phoenix系统表/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          Phoenix系统表
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/01/02/Prometheus安装-HDFS指标收集/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Prometheus安装+HDFS指标收集</div>
+    <a href="/2020/01/17/Linux-free命令详解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux-free命令详解</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -278,7 +267,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#下载Phoenix"><span class="toc-number">1.</span> <span class="toc-text">下载Phoenix</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置Phoenix"><span class="toc-number">2.</span> <span class="toc-text">配置Phoenix</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动Phoenix"><span class="toc-number">3.</span> <span class="toc-text">启动Phoenix</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-top命令详解"><span class="toc-number">1.</span> <span class="toc-text">Linux top命令详解</span></a></li></ol>
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -328,7 +317,7 @@
 <script src="https://www.wenjunjiang.win/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Thu Jan 03 2019 21:14:33 GMT+0800',
+      id: 'Fri Jan 17 2020 10:37:54 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -345,13 +334,11 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/01/04/Phoenix系统表/" title="上一篇: Phoenix系统表">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2019/01/02/Prometheus安装-HDFS指标收集/" title="下一篇: Prometheus安装+HDFS指标收集">
+            <a href="/2020/01/17/Linux-free命令详解/" title="下一篇: Linux-free命令详解">
                 <i class="fa fa-angle-right"></i>
             </a>
         
