@@ -3,20 +3,19 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Prometheus安装+HDFS指标收集 | 月迹的博客</title>
+  <title>test | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1.安装Prometheus 1）在官网下载Prometheus安装包：1wget https://github.com/prometheus/prometheus/releases/download/v2.6.0/prometheus-2.6.0.linux-amd64.tar.gz">
-<meta name="keywords" content="Prometheus">
+  <meta name="description" content="Java、大数据">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Prometheus安装+HDFS指标收集">
-<meta property="og:url" content="http://xyueji.github.io/2019/01/02/Prometheus安装-HDFS指标收集/index.html">
+<meta property="og:title" content="test">
+<meta property="og:url" content="http://xyueji.github.io/2020/01/17/test/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="1.安装Prometheus 1）在官网下载Prometheus安装包：1wget https://github.com/prometheus/prometheus/releases/download/v2.6.0/prometheus-2.6.0.linux-amd64.tar.gz">
+<meta property="og:description" content="Java、大数据">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-12T02:32:40.881Z">
+<meta property="og:updated_time" content="2020-01-17T02:52:00.112Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Prometheus安装+HDFS指标收集">
-<meta name="twitter:description" content="1.安装Prometheus 1）在官网下载Prometheus安装包：1wget https://github.com/prometheus/prometheus/releases/download/v2.6.0/prometheus-2.6.0.linux-amd64.tar.gz">
+<meta name="twitter:title" content="test">
+<meta name="twitter:description" content="Java、大数据">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -176,11 +175,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Prometheus安装-HDFS指标收集" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-test" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/01/02/Prometheus安装-HDFS指标收集/" class="article-date">
-      <time datetime="2019-01-02T10:06:19.000Z" itemprop="datePublished">2019-01-02</time>
+      <a href="/2020/01/17/test/" class="article-date">
+      <time datetime="2020-01-17T02:52:00.000Z" itemprop="datePublished">2020-01-17</time>
 </a>
     </div>
   
@@ -193,7 +192,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Prometheus安装+HDFS指标收集
+      test
     </h1>
   
 
@@ -201,16 +200,8 @@
       
       <div class="article-info article-info-post">
         
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Prometheus/">Prometheus</a>
-    </div>
-
 
         
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Prometheus/">Prometheus</a></li></ul>
-    </div>
-
         <div class="clearfix"></div>
       </div>
       
@@ -218,72 +209,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h2 id="1-安装Prometheus"><a href="#1-安装Prometheus" class="headerlink" title="1.安装Prometheus"></a>1.安装Prometheus</h2><ul>
-<li>1）在官网下载Prometheus安装包：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/prometheus/prometheus/releases/download/v2.6.0/prometheus-2.6.0.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<a id="more"></a>
-<ul>
-<li>2）解压：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zvxf prometheus-2.6.0.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="2-安装jmx-exporter以及配置文件"><a href="#2-安装jmx-exporter以及配置文件" class="headerlink" title="2.安装jmx_exporter以及配置文件"></a>2.安装jmx_exporter以及配置文件</h2><p>在Hadoop集群各个节点上：</p>
-<ul>
-<li><p>1）创建jmx_exporter目录：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir prometheus_jmx_export_0.3.1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>2）进入目录，下载jmx_exporter:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.3.1/jmx_prometheus_javaagent-0.3.1.jar</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3）创建NameNode配置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim namenode.yaml</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>内容如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">startDelaySeconds: 0</span><br><span class="line">hostPort: localhost:1234  #1234为想设置的jmx端口（可设置为未被占用的端口）</span><br><span class="line">ssl: false</span><br><span class="line">lowercaseOutputName: false</span><br><span class="line">lowercaseOutputLabelNames: false</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>4）创建DataNode配置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim datanode.yaml</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>内容如下：  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">startDelaySeconds: 0</span><br><span class="line">hostPort: localhost:1235</span><br><span class="line">ssl: false</span><br><span class="line">lowercaseOutputName: false</span><br><span class="line">lowercaseOutputLabelNames: false</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>5）修改$HADOOP_HOME/etc/hadoop/hadoop-env.sh （注意：端口1234（1235）要与之前设置的jmx端口保持一致<br>内容如下：  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#jmx_exporter</span><br><span class="line">export HADOOP_NAMENODE_JMX_OPTS=&quot;-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false   -Dcom.sun.management.jmxremote.port=1234 -javaagent:/home/bigdata/local/prometheus_jmx_export_0.3.1/jmx_prometheus_javaagent-0.3.1.jar=9101:/home/bigdata/local/prometheus_jmx_export_0.3.1/namenode.yaml&quot;</span><br><span class="line">export HADOOP_DATANODE_JMX_OPTS=&quot;-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false   -Dcom.sun.management.jmxremote.port=1235 -javaagent:/home/bigdata/local/prometheus_jmx_export_0.3.1/jmx_prometheus_javaagent-0.3.1.jar=9102:/home/bigdata/local/prometheus_jmx_export_0.3.1/datanode.yaml&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>6）修改$HADOOP_HOME/bin/hdfs 修改 namenode、datanode启动参数如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if [ &quot;$COMMAND&quot; = &quot;namenode&quot; ] ; then</span><br><span class="line">CLASS=&apos;org.apache.hadoop.hdfs.server.namenode.NameNode&apos;</span><br><span class="line">HADOOP_OPTS=&quot;$HADOOP_OPTS $HADOOP_NAMENODE_JMX_OPTS $HADOOP_NAMENODE_OPTS&quot;</span><br><span class="line">...</span><br><span class="line">elif [ &quot;$COMMAND&quot; = &quot;datanode&quot; ] ; then</span><br><span class="line">CLASS=&apos;org.apache.hadoop.hdfs.server.datanode.DataNode&apos;</span><br><span class="line">HADOOP_OPTS=&quot;$HADOOP_OPTS $HADOOP_DATANODE_JMX_OPTS&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>7）依次重启各个节点的DataNode和NameNode</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hadoop-daemon.sh stop datanode</span><br><span class="line">hadoop-daemon.sh start datanode</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="3-配置Prometheus-修改prometheus-yml"><a href="#3-配置Prometheus-修改prometheus-yml" class="headerlink" title="3.配置Prometheus,修改prometheus.yml"></a>3.配置Prometheus,修改prometheus.yml</h2><ul>
-<li><p>修改内容如下：  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &apos;NameNodes&apos;</span><br><span class="line">static_configs:</span><br><span class="line">- targets: [&apos;master:9101&apos;]</span><br><span class="line"></span><br><span class="line">- job_name: &apos;DataNodes&apos;</span><br><span class="line">static_configs:</span><br><span class="line">- targets: [&apos;slave1:9102&apos;]</span><br><span class="line">- targets: [&apos;slave2:9102&apos;]</span><br><span class="line">- targets: [&apos;slave3:9102&apos;]</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>启动Prometheus：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup ./prometheus &gt;&gt; prometheus.log &amp;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>&emsp;查看Prometheus是否启动成功：<hostname>:9090</hostname></p>
-<h2 id="4-配置远程存储（Opentsdb所在机器）"><a href="#4-配置远程存储（Opentsdb所在机器）" class="headerlink" title="4.配置远程存储（Opentsdb所在机器）"></a>4.配置远程存储（Opentsdb所在机器）</h2><ul>
-<li><p>1）获取远程存储和读取配置文件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/yueji12321/opentsdb-adapter</span><br><span class="line">go build github.com/yueji12321/opentsdb-adapter</span><br><span class="line">go get github.com/yueji12321/opentsdb-promql-frontend</span><br><span class="line">go build github.com/yueji12321/opentsdb-promql-frontend</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>2）执行两个可执行文件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nohup ./remote_storage_adapter --opentsdb-url=&lt;Opentsdb地址+端口&gt; &gt;&gt; adapter_storage.log &amp;</span><br><span class="line">nohup ./opentsdb-promql-frontend ADDR=&lt;Prometheus地址+端口&gt; OPENTSDB_URL=&lt;Opentsdb地址+端口&gt; &gt;&gt; adapter_read.log &amp;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3）修改prometheus文件，添加内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">remote_write:</span><br><span class="line">   - url: &quot;http://&lt;hostname&gt;:9201/write&quot; #地址为./remote_storage_adapter所在的机器地址</span><br><span class="line">	 queue_config:</span><br><span class="line">	   capacity: 100000</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>4）重启Prometheus</p>
-</li>
-</ul>
-<h2 id="5-Grafana配置"><a href="#5-Grafana配置" class="headerlink" title="5.Grafana配置"></a>5.Grafana配置</h2><ul>
-<li>读取本地Prometheus数据地址：Prometheus安装所在机器地址+端口9090</li>
-<li>读取远程存储数据地址：./opentsdb-promql-frontend所设定的Prometheus地址</li>
-</ul>
-
+        
       
       
     </div>
@@ -292,13 +218,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2019/01/02/Prometheus安装-HDFS指标收集/">Prometheus安装+HDFS指标收集</a></p>
+        <p><span>本文标题:</span><a href="/2020/01/17/test/">test</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2019年01月02日 - 18时06分</p>
-        <p><span>最后更新:</span>2019年09月12日 - 10时32分</p>
+        <p><span>发布时间:</span>2020年01月17日 - 10时52分</p>
+        <p><span>最后更新:</span>2020年01月17日 - 10时52分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2019/01/02/Prometheus安装-HDFS指标收集/" title="Prometheus安装+HDFS指标收集">http://xyueji.github.io/2019/01/02/Prometheus安装-HDFS指标收集/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/01/02/Prometheus安装-HDFS指标收集/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2020/01/17/test/" title="test">http://xyueji.github.io/2020/01/17/test/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/17/test/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -311,15 +237,20 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/01/03/Phoenix安装问题/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/01/17/Linux-free命令详解/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          Phoenix安装问题
+          Linux-free命令详解
         
       </div>
     </a>
   
+  
+    <a href="/2019/10/21/hbase的hbck工具/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">hbase的hbck工具</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
   
 </nav>
 
@@ -328,7 +259,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-安装Prometheus"><span class="toc-number">1.</span> <span class="toc-text">1.安装Prometheus</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-安装jmx-exporter以及配置文件"><span class="toc-number">2.</span> <span class="toc-text">2.安装jmx_exporter以及配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-配置Prometheus-修改prometheus-yml"><span class="toc-number">3.</span> <span class="toc-text">3.配置Prometheus,修改prometheus.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-配置远程存储（Opentsdb所在机器）"><span class="toc-number">4.</span> <span class="toc-text">4.配置远程存储（Opentsdb所在机器）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Grafana配置"><span class="toc-number">5.</span> <span class="toc-text">5.Grafana配置</span></a></li></ol>
+    
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -378,7 +309,7 @@
 <script src="https://www.wenjunjiang.win/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Wed Jan 02 2019 18:06:19 GMT+0800',
+      id: 'Fri Jan 17 2020 10:52:00 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -395,13 +326,15 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/01/03/Phoenix安装问题/" title="上一篇: Phoenix安装问题">
+            <a href="/2020/01/17/Linux-free命令详解/" title="上一篇: Linux-free命令详解">
                 <i class="fa fa-angle-left"></i>
             </a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+            <a href="/2019/10/21/hbase的hbck工具/" title="下一篇: hbase的hbck工具">
+                <i class="fa fa-angle-right"></i>
+            </a>
         
     </div>
     <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/01/17/Linux-free命令详解/">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/17/test/">test</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/21/hbase的hbck工具/">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/15/JanusGraph/">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/iptables禁用启用端口/">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Phoenix系统表/">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Phoenix安装问题/">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Prometheus安装-HDFS指标收集/">Prometheus安装+HDFS指标收集</a></li></ul>
