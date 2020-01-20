@@ -3,20 +3,20 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Phoenix系统表 | 月迹的博客</title>
+  <title>Linux-top命令详解 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Phoenix安装完成后，HBase里会创建相应的系统表，分别为SYSTEM.CATALOG、SYSTEM.FUNCTION、SYSTEM.SEQUENCE、SYSTEM.STATS。查询这些系统表时，注意除了CATALOG表其他都要加引号（区分大小写），否则会报错。">
-<meta name="keywords" content="Phoenix,系统表">
+  <meta name="description" content="queryserver存活报警 查询portal卡死原因">
+<meta name="keywords" content="t1,t2">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Phoenix系统表">
-<meta property="og:url" content="http://xyueji.github.io/2019/01/04/Phoenix系统表/index.html">
+<meta property="og:title" content="Linux-top命令详解">
+<meta property="og:url" content="http://xyueji.github.io/2020/01/20/周报暂存/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="Phoenix安装完成后，HBase里会创建相应的系统表，分别为SYSTEM.CATALOG、SYSTEM.FUNCTION、SYSTEM.SEQUENCE、SYSTEM.STATS。查询这些系统表时，注意除了CATALOG表其他都要加引号（区分大小写），否则会报错。">
+<meta property="og:description" content="queryserver存活报警 查询portal卡死原因">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-12T02:32:40.881Z">
+<meta property="og:updated_time" content="2020-01-20T03:11:20.778Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Phoenix系统表">
-<meta name="twitter:description" content="Phoenix安装完成后，HBase里会创建相应的系统表，分别为SYSTEM.CATALOG、SYSTEM.FUNCTION、SYSTEM.SEQUENCE、SYSTEM.STATS。查询这些系统表时，注意除了CATALOG表其他都要加引号（区分大小写），否则会报错。">
+<meta name="twitter:title" content="Linux-top命令详解">
+<meta name="twitter:description" content="queryserver存活报警 查询portal卡死原因">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -176,11 +176,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Phoenix系统表" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-周报暂存" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/01/04/Phoenix系统表/" class="article-date">
-      <time datetime="2019-01-04T07:21:03.000Z" itemprop="datePublished">2019-01-04</time>
+      <a href="/2020/01/20/周报暂存/" class="article-date">
+      <time datetime="2020-01-20T03:11:20.000Z" itemprop="datePublished">2020-01-20</time>
 </a>
     </div>
   
@@ -193,7 +193,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Phoenix系统表
+      Linux-top命令详解
     </h1>
   
 
@@ -202,13 +202,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Phoenix/">Phoenix</a>
+    <a class="article-category-link" href="/categories/周报/">周报</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Phoenix/">Phoenix</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/系统表/">系统表</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/t1/">t1</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/t2/">t2</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -218,43 +218,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p>Phoenix安装完成后，HBase里会创建相应的系统表，分别为SYSTEM.CATALOG、SYSTEM.FUNCTION、SYSTEM.SEQUENCE、SYSTEM.STATS。<br>查询这些系统表时，注意除了CATALOG表其他都要加引号（区分大小写），否则会报错。</p>
-<a id="more"></a>
-<h2 id="SYSTEM-CATALOG"><a href="#SYSTEM-CATALOG" class="headerlink" title="SYSTEM.CATALOG"></a>SYSTEM.CATALOG</h2><p>内容是所有表格的信息，系统表和自建表。</p>
-<ul>
-<li>TABLE_NAME表示索引表名</li>
-<li>DATA_TABLE_NAME表示原数据表名</li>
-<li>TABLE_TYPE表示表类型<ul>
-<li>“s” 系统表</li>
-<li>“u” 用户表</li>
-<li>“v” 视图</li>
-<li>“i” 索引</li>
-</ul>
-</li>
-<li>INDEX_TYPE表示索引类型 GLOBAL(1) LOCAL(2)</li>
-<li>INDEX_STATE表示索引状态<ul>
-<li>BUILDING(“b”)</li>
-<li>USABLE(“e”)</li>
-<li>UNUSABLE(“d”)</li>
-<li>ACTIVE(“a”)</li>
-<li>INACTIVE(“i”)</li>
-<li>DISABLE(“x”)</li>
-<li>REBUILD(“r”)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DISABLE 表示索引将处于不可用的维护状态，同时将不能用于查询中。</span><br><span class="line">REBUILD 表示索引将完成重建，同时一旦重建完成此索引将能被在此用于查询中。</span><br><span class="line">BUILDING 表示将从索引不可用的时间戳处重建索引直到重建完成。</span><br><span class="line">INACTIVE/UNUSABLE 表示索引将不能用于查询中，但索引仍然在不可用的维护状态。</span><br><span class="line">ACTIVE/USABLE 表示索引表能被正常用于查询中。</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="SYSTEM-FUNCTION"><a href="#SYSTEM-FUNCTION" class="headerlink" title="SYSTEM.FUNCTION"></a>SYSTEM.FUNCTION</h2><p>内容是所有函数信息，系统函数和自定义函数。</p>
-<h2 id="SYSTEM-SQEUENCE"><a href="#SYSTEM-SQEUENCE" class="headerlink" title="SYSTEM.SQEUENCE"></a>SYSTEM.SQEUENCE</h2><p>内容是自增ID的一些信息，包括起始值、当前值、CACHE大小、最小值和最大值等等。</p>
-<h2 id="SYSTEM-STATS"><a href="#SYSTEM-STATS" class="headerlink" title="SYSTEM.STATS"></a>SYSTEM.STATS</h2><p>追踪表的操作，主要包含以下内容：</p>
-<ul>
-<li>PHYSICAL_NAME</li>
-<li>COLUMN_FAMILY</li>
-<li>GUIDE_POST_KEY</li>
-<li>GUIDE_POSTS_WIDTH</li>
-<li>LAST_STATS_UPDATE_TIME</li>
-<li>GUIDE_POSTS_ROW_COUNT</li>
-</ul>
+        <p>queryserver存活报警</p>
+<p>查询portal卡死原因<br><a id="more"></a></p>
 
       
       
@@ -264,13 +229,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2019/01/04/Phoenix系统表/">Phoenix系统表</a></p>
+        <p><span>本文标题:</span><a href="/2020/01/20/周报暂存/">Linux-top命令详解</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2019年01月04日 - 15时21分</p>
-        <p><span>最后更新:</span>2019年09月12日 - 10时32分</p>
+        <p><span>发布时间:</span>2020年01月20日 - 11时11分</p>
+        <p><span>最后更新:</span>2020年01月20日 - 11时11分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2019/01/04/Phoenix系统表/" title="Phoenix系统表">http://xyueji.github.io/2019/01/04/Phoenix系统表/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/01/04/Phoenix系统表/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2020/01/20/周报暂存/" title="Linux-top命令详解">http://xyueji.github.io/2020/01/20/周报暂存/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/20/周报暂存/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -283,18 +248,18 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/01/04/iptables禁用启用端口/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/01/20/Alluxio+Presto多版本测试/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          iptables禁用启用端口
+          Linux-top命令详解
         
       </div>
     </a>
   
   
-    <a href="/2019/01/03/Phoenix安装问题/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Phoenix安装问题</div>
+    <a href="/2020/01/17/Linux-top命令详解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux-top命令详解</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -305,7 +270,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SYSTEM-CATALOG"><span class="toc-number">1.</span> <span class="toc-text">SYSTEM.CATALOG</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SYSTEM-FUNCTION"><span class="toc-number">2.</span> <span class="toc-text">SYSTEM.FUNCTION</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SYSTEM-SQEUENCE"><span class="toc-number">3.</span> <span class="toc-text">SYSTEM.SQEUENCE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SYSTEM-STATS"><span class="toc-number">4.</span> <span class="toc-text">SYSTEM.STATS</span></a></li></ol>
+    
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -355,7 +320,7 @@
 <script src="https://www.wenjunjiang.win/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Fri Jan 04 2019 15:21:03 GMT+0800',
+      id: 'Mon Jan 20 2020 11:11:20 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -372,13 +337,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/01/04/iptables禁用启用端口/" title="上一篇: iptables禁用启用端口">
+            <a href="/2020/01/20/Alluxio+Presto多版本测试/" title="上一篇: Linux-top命令详解">
                 <i class="fa fa-angle-left"></i>
             </a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2019/01/03/Phoenix安装问题/" title="下一篇: Phoenix安装问题">
+            <a href="/2020/01/17/Linux-top命令详解/" title="下一篇: Linux-top命令详解">
                 <i class="fa fa-angle-right"></i>
             </a>
         

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Linux-top命令详解 | 月迹的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）">
+<meta name="keywords" content="测试,alluxio,presto">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux-top命令详解">
+<meta property="og:url" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/index.html">
+<meta property="og:site_name" content="月迹的博客">
+<meta property="og:description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114102936.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114121991.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114207933.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114219180.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114254746.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114302859.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114312334.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114349956.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114359496.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114406068.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114502901.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114509332.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114521096.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114916236.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114925624.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114959135.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120115011627.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120115052564.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120115103149.png">
+<meta property="og:updated_time" content="2020-01-20T03:54:41.841Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux-top命令详解">
+<meta name="twitter:description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）">
+<meta name="twitter:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114102936.png">
+  
+    <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.jpg" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">Yue Ji</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">用代码书写人生</p>
+        
+        
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">博客首页</a></li>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="/categories">文章分类</a></li>
+                        
+                            <li><a href="/tags">静心阅读</a></li>
+                        
+                            <li><a href="/about">关于作者</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jerryzone.cn/">杰瑞博客</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫、追小说、喜影视、迷于严谨和逻辑的编码之中！！！</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">Yue Ji</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.jpg" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">Yue Ji</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">用代码书写人生</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">博客首页</a></li>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="/categories">文章分类</a></li>
+                
+                    <li><a href="/tags">静心阅读</a></li>
+                
+                    <li><a href="/about">关于作者</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Alluxio+Presto多版本测试" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2020/01/20/Alluxio+Presto多版本测试/" class="article-date">
+      <time datetime="2020-01-20T03:54:41.000Z" itemprop="datePublished">2020-01-20</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux-top命令详解
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/Alluxio/">Alluxio</a><a class="article-category-link" href="/categories/Alluxio/Presto/">Presto</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/alluxio/">alluxio</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/presto/">presto</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/测试/">测试</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="Alluxio-Presto多版本测试"><a href="#Alluxio-Presto多版本测试" class="headerlink" title="Alluxio+Presto多版本测试"></a>Alluxio+Presto多版本测试</h2><h4 id="一、测试环境"><a href="#一、测试环境" class="headerlink" title="一、测试环境"></a>一、测试环境</h4><table>
+<thead>
+<tr>
+<th>Prestosql</th>
+<th>1台主节点，4台worker节点（版本0.211&amp;327）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prestodb</td>
+<td>1台主节点，4台worker节点（版本0.211&amp;0.229）</td>
+</tr>
+<tr>
+<td>Alluxio</td>
+<td>1台主节点，4台worker节点（版本2.1.0）</td>
+</tr>
+</tbody>
+</table>
+<a id="more"></a>
+<p>| 硬件信息  | 共5台机器，每台48核cpu、125G内存            |<br>| 测试工具  | Jmeter                                      |</p>
+<h6 id="Presto关键配置"><a href="#Presto关键配置" class="headerlink" title="Presto关键配置"></a>Presto关键配置</h6><p>Jvm.comfig配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-server</span><br><span class="line">-Xmx80G</span><br><span class="line">-XX:+UseG1GC</span><br><span class="line">-XX:G1HeapRegionSize=32M</span><br><span class="line">-XX:+UseGCOverheadLimit</span><br><span class="line">-XX:+ExplicitGCInvokesConcurrent</span><br><span class="line">-XX:+HeapDumpOnOutOfMemoryError</span><br><span class="line">-XX:+ExitOnOutOfMemoryError</span><br></pre></td></tr></table></figure>
+<p>Config.properties配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">query.max-memory=120GB</span><br><span class="line">query.max-memory-per-node=20GB</span><br><span class="line">query.max-total-memory-per-node=20GB</span><br><span class="line">memory.heap-headroom-per-node=16GB</span><br></pre></td></tr></table></figure>
+<p>内存分布如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>RESERVED_POOL</th>
+<th>GENERAL_POOL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单个worker</td>
+<td>20G</td>
+<td>44G</td>
+</tr>
+</tbody>
+</table>
+<p>resource_groups.json配置如下： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">          &quot;name&quot;: &quot;pipeline&quot;,</span><br><span class="line">          &quot;softMemoryLimit&quot;: &quot;80%&quot;,</span><br><span class="line">          &quot;hardConcurrencyLimit&quot;: 90,</span><br><span class="line">          &quot;maxQueued&quot;: 1500, </span><br><span class="line">          &quot;schedulingWeight&quot;: 1,</span><br><span class="line">          &quot;jmxExport&quot;: true,</span><br><span class="line">          &quot;subGroups&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">              &quot;name&quot;: &quot;pipeline_$&#123;USER&#125;&quot;,</span><br><span class="line">              &quot;softMemoryLimit&quot;: &quot;50%&quot;,</span><br><span class="line">              &quot;hardConcurrencyLimit&quot;: 30, </span><br><span class="line">              &quot;maxQueued&quot;: 500</span><br><span class="line">            &#125;</span><br><span class="line">          ]</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h6 id="Alluxio关键配置"><a href="#Alluxio关键配置" class="headerlink" title="Alluxio关键配置"></a>Alluxio关键配置</h6> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">alluxio.worker.memory.size=40GB</span><br><span class="line">alluxio.worker.tieredstore.levels=1</span><br><span class="line">alluxio.worker.tieredstore.level0.alias=MEM</span><br><span class="line">alluxio.worker.tieredstore.level0.dirs.path=/dev/shm/alluxio</span><br><span class="line">alluxio.worker.tieredstore.level0.dirs.quota=40GB</span><br><span class="line">alluxio.worker.tieredstore.level0.watermark.high.ratio=0.9</span><br><span class="line">alluxio.worker.tieredstore.level0.watermark.low.ratio=0.7</span><br></pre></td></tr></table></figure>
+<h4 id="二、测试过程"><a href="#二、测试过程" class="headerlink" title="二、测试过程"></a>二、测试过程</h4><h5 id="Presto-0-211-压测"><a href="#Presto-0-211-压测" class="headerlink" title="Presto(0.211)压测"></a>Presto(0.211)压测</h5><p>测试一：</p>
+<p>选取一天线上执行的400条sql。</p>
+<table>
+<thead>
+<tr>
+<th>并发</th>
+<th>用户</th>
+<th>每用户sql</th>
+<th>总sql</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>90</td>
+<td>3</td>
+<td>400</td>
+<td>1200</td>
+</tr>
+</tbody>
+</table>
+<p>执行情况：</p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114102936.png" alt="image-20200120114102936"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114121991.png" alt="image-20200120114121991"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114207933.png" alt="image-20200120114207933"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114219180.png" alt="image-20200120114219180"></p>
+<p>测试二：</p>
+<p>选取线上一天内cpu负载最高的时间区间，取出执行sql进行测试。（2019.12.27 08:00~09:00）</p>
+<p>第一组：</p>
+<table>
+<thead>
+<tr>
+<th>并发</th>
+<th>用户</th>
+<th>sql</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>300</td>
+<td>1</td>
+<td>300</td>
+</tr>
+</tbody>
+</table>
+<p>执行情况</p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114254746.png" alt="image-20200120114254746"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114302859.png" alt="image-20200120114302859"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114312334.png" alt="image-20200120114312334"></p>
+<p>第二组：</p>
+<table>
+<thead>
+<tr>
+<th>并发</th>
+<th>用户</th>
+<th>sql</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>300</td>
+<td>1</td>
+<td>1000</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114349956.png" alt="image-20200120114349956"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114359496.png" alt="image-20200120114359496"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114406068.png" alt="image-20200120114406068"></p>
+<p>第三组</p>
+<table>
+<thead>
+<tr>
+<th>并发</th>
+<th>用户</th>
+<th>sql</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>300</td>
+<td>1</td>
+<td>2000</td>
+</tr>
+</tbody>
+</table>
+<p>执行情况</p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114502901.png" alt="image-20200120114502901"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114509332.png" alt="image-20200120114509332"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114521096.png" alt="image-20200120114521096"></p>
+<h5 id="Alluxio-presto-0-211-测试（alluxio和presto混合部署）"><a href="#Alluxio-presto-0-211-测试（alluxio和presto混合部署）" class="headerlink" title="Alluxio+presto(0.211)测试（alluxio和presto混合部署）"></a>Alluxio+presto(0.211)测试（alluxio和presto混合部署）</h5><p>随机选取线上执行的一条SQL，把相关表使用alluxio加速和不加速分别测试。</p>
+<p>测试结果</p>
+<p>第一组：1并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs</td>
+<td>50</td>
+<td>2543</td>
+<td>1037</td>
+<td>15442</td>
+<td>47</td>
+</tr>
+<tr>
+<td>Alluxio</td>
+<td>50</td>
+<td>1247</td>
+<td>1029</td>
+<td>1762</td>
+<td>50</td>
+</tr>
+</tbody>
+</table>
+<p>第二组：10并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs</td>
+<td>500</td>
+<td>5358</td>
+<td>1001</td>
+<td>31227</td>
+<td>458</td>
+</tr>
+<tr>
+<td>Alluxio</td>
+<td>500</td>
+<td>5428</td>
+<td>1663</td>
+<td>10883</td>
+<td>499</td>
+</tr>
+</tbody>
+</table>
+<p>第三组：20并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs</td>
+<td>1000</td>
+<td>6604</td>
+<td>1414</td>
+<td>23482</td>
+<td>896</td>
+</tr>
+<tr>
+<td>Alluxio</td>
+<td>1000</td>
+<td>7002</td>
+<td>491</td>
+<td>11381</td>
+<td>963</td>
+</tr>
+</tbody>
+</table>
+<p>第四组：40并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs</td>
+<td>2000</td>
+<td>10971</td>
+<td>1147</td>
+<td>55482</td>
+<td>1173</td>
+</tr>
+<tr>
+<td>Alluxio</td>
+<td>2000</td>
+<td>10027</td>
+<td>1194</td>
+<td>35920</td>
+<td>1130</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114916236.png" alt="image-20200120114916236"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114925624.png" alt="image-20200120114925624"></p>
+<h5 id="Alluxio-prestodb-0-229-测试（alluxio和presto混合部署）"><a href="#Alluxio-prestodb-0-229-测试（alluxio和presto混合部署）" class="headerlink" title="Alluxio+prestodb(0.229)测试（alluxio和presto混合部署）"></a>Alluxio+prestodb(0.229)测试（alluxio和presto混合部署）</h5><p>测试结果</p>
+<p>第一组：1并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+presto0.211</td>
+<td>50</td>
+<td>2543</td>
+<td>1037</td>
+<td>15442</td>
+<td>47</td>
+</tr>
+<tr>
+<td>Hdfs+presto0.229</td>
+<td>50</td>
+<td>1873</td>
+<td>998</td>
+<td>6408</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.211</td>
+<td>50</td>
+<td>1247</td>
+<td>1029</td>
+<td>1762</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.229</td>
+<td>50</td>
+<td>869</td>
+<td>408</td>
+<td>1240</td>
+<td>50</td>
+</tr>
+</tbody>
+</table>
+<p>第二组：10并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+presto0.211</td>
+<td>500</td>
+<td>5358</td>
+<td>1001</td>
+<td>31227</td>
+<td>458</td>
+</tr>
+<tr>
+<td>Hdfs+presto0.229</td>
+<td>500</td>
+<td>5158</td>
+<td>1452</td>
+<td>28068</td>
+<td>454</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.211</td>
+<td>500</td>
+<td>5428</td>
+<td>1663</td>
+<td>10883</td>
+<td>499</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.229</td>
+<td>500</td>
+<td>3346</td>
+<td>728</td>
+<td>5745</td>
+<td>500</td>
+</tr>
+</tbody>
+</table>
+<p>第三组：20并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+presto0.211</td>
+<td>1000</td>
+<td>6604</td>
+<td>1414</td>
+<td>23482</td>
+<td>896</td>
+</tr>
+<tr>
+<td>Hdfs+presto0.229</td>
+<td>1000</td>
+<td>6230</td>
+<td>893</td>
+<td>30044</td>
+<td>924</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.211</td>
+<td>1000</td>
+<td>7002</td>
+<td>491</td>
+<td>11381</td>
+<td>963</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.229</td>
+<td>1000</td>
+<td>5801</td>
+<td>461</td>
+<td>10650</td>
+<td>996</td>
+</tr>
+</tbody>
+</table>
+<p>第四组：40并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+presto0.211</td>
+<td>2000</td>
+<td>10971</td>
+<td>1147</td>
+<td>55482</td>
+<td>1173</td>
+</tr>
+<tr>
+<td>Hdfs+presto0.229</td>
+<td>2000</td>
+<td>10004</td>
+<td>1436</td>
+<td>35411</td>
+<td>1305</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.211</td>
+<td>2000</td>
+<td>10027</td>
+<td>1194</td>
+<td>35920</td>
+<td>1130</td>
+</tr>
+<tr>
+<td>Alluxio+presto0.229</td>
+<td>2000</td>
+<td>9098</td>
+<td>812</td>
+<td>16986</td>
+<td>1330</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120114959135.png" alt="image-20200120114959135"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120115011627.png" alt="image-20200120115011627"></p>
+<h5 id="Alluxio-prestosql-327-测试（alluxio和presto混合部署）"><a href="#Alluxio-prestosql-327-测试（alluxio和presto混合部署）" class="headerlink" title="Alluxio+prestosql(327)测试（alluxio和presto混合部署）"></a>Alluxio+prestosql(327)测试（alluxio和presto混合部署）</h5><p>测试结果</p>
+<p>第一组：1并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+prestosql0.211</td>
+<td>50</td>
+<td>2543</td>
+<td>1037</td>
+<td>15442</td>
+<td>47</td>
+</tr>
+<tr>
+<td>Hdfs+prestodb0.229</td>
+<td>50</td>
+<td>1873</td>
+<td>998</td>
+<td>6408</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Hdfs++prestosql327</td>
+<td>50</td>
+<td>2448</td>
+<td>615</td>
+<td>17361</td>
+<td>48</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql0.211</td>
+<td>50</td>
+<td>1247</td>
+<td>1029</td>
+<td>1762</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Alluxio+prestodb0.229</td>
+<td>50</td>
+<td>869</td>
+<td>408</td>
+<td>1240</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql327</td>
+<td>50</td>
+<td>510</td>
+<td>360</td>
+<td>1026</td>
+<td>50</td>
+</tr>
+</tbody>
+</table>
+<p>第二组：10并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+prestosql0.211</td>
+<td>500</td>
+<td>5358</td>
+<td>1001</td>
+<td>31227</td>
+<td>458</td>
+</tr>
+<tr>
+<td>Hdfs+prestodb0.229</td>
+<td>500</td>
+<td>5158</td>
+<td>1452</td>
+<td>28068</td>
+<td>454</td>
+</tr>
+<tr>
+<td>Hdfs+prestosql327</td>
+<td>500</td>
+<td>4987</td>
+<td>614</td>
+<td>20588</td>
+<td>454</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql0.211</td>
+<td>500</td>
+<td>5428</td>
+<td>1663</td>
+<td>10883</td>
+<td>499</td>
+</tr>
+<tr>
+<td>Alluxio+prestodb0.229</td>
+<td>500</td>
+<td>3346</td>
+<td>728</td>
+<td>5745</td>
+<td>500</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql327</td>
+<td>500</td>
+<td>2650</td>
+<td>369</td>
+<td>5737</td>
+<td>500</td>
+</tr>
+</tbody>
+</table>
+<p>第三组：20并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+prestosql0.211</td>
+<td>1000</td>
+<td>6604</td>
+<td>1414</td>
+<td>23482</td>
+<td>896</td>
+</tr>
+<tr>
+<td>Hdfs+prestodb0.229</td>
+<td>1000</td>
+<td>6230</td>
+<td>893</td>
+<td>30044</td>
+<td>924</td>
+</tr>
+<tr>
+<td>Hdfs+prestosql327</td>
+<td>1000</td>
+<td>5660</td>
+<td>924</td>
+<td>19574</td>
+<td>926</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql0.211</td>
+<td>1000</td>
+<td>7002</td>
+<td>491</td>
+<td>11381</td>
+<td>963</td>
+</tr>
+<tr>
+<td>Alluxio+prestodb0.229</td>
+<td>1000</td>
+<td>5801</td>
+<td>461</td>
+<td>10650</td>
+<td>996</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql327</td>
+<td>1000</td>
+<td>4998</td>
+<td>421</td>
+<td>10152</td>
+<td>999</td>
+</tr>
+</tbody>
+</table>
+<p>第四组：40并发，重复试验50次</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>样本值</th>
+<th>平均值</th>
+<th>最小值</th>
+<th>最大值</th>
+<th>少于10s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hdfs+prestosql0.211</td>
+<td>2000</td>
+<td>10971</td>
+<td>1147</td>
+<td>55482</td>
+<td>1173</td>
+</tr>
+<tr>
+<td>Hdfs+prestodb0.229</td>
+<td>2000</td>
+<td>10004</td>
+<td>1436</td>
+<td>35411</td>
+<td>1305</td>
+</tr>
+<tr>
+<td>Hdfs+prestosql327</td>
+<td>2000</td>
+<td>10436</td>
+<td>554</td>
+<td>52987</td>
+<td>1377</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql0.211</td>
+<td>2000</td>
+<td>10027</td>
+<td>1194</td>
+<td>35920</td>
+<td>1130</td>
+</tr>
+<tr>
+<td>Alluxio+prestodb0.229</td>
+<td>2000</td>
+<td>9098</td>
+<td>812</td>
+<td>16986</td>
+<td>1330</td>
+</tr>
+<tr>
+<td>Alluxio+prestosql327</td>
+<td>2000</td>
+<td>9231</td>
+<td>1032</td>
+<td>16277</td>
+<td>1290</td>
+</tr>
+</tbody>
+</table>
+<p>​                  <img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120115052564.png" alt="image-20200120115052564"></p>
+<p><img src="/2020/01/20/Alluxio+Presto多版本测试/image-20200120115103149.png" alt="image-20200120115103149"></p>
+<h4 id="三、测试结论和思考"><a href="#三、测试结论和思考" class="headerlink" title="三、测试结论和思考"></a>三、测试结论和思考</h4><p>结论</p>
+<ol>
+<li><p>目前presto集群资源足够支撑线上业务，最大性能限制在CPU，5台机器最大可支撑线上300sql并发查询。</p>
+</li>
+<li><p>alluxio+presto模式在并发查询量少时性能提升很大，并且查询性能非常稳定。但并发在达到40并发时，性能提升和查询10s内占比提升并不明显。</p>
+</li>
+<li><p>升级presto版本对查询性能有明显提升，但并发达到一定程度时效果逐渐不明显。</p>
+</li>
+</ol>
+<p>思考</p>
+<ol>
+<li><p>考虑到presto集群在查询出现排队时会严重影响查询性能，可以适当调整resource_groups.json配置，包括最大并发、排队队列大小、多租户调整，尽量使线上用户查询没有排队的情况。</p>
+</li>
+<li><p>目前alluxio+presto模式并没用到alluxiuo的数据本地性读写，需进行深入研究，利用起alluxio的本地性。</p>
+</li>
+<li><p>presto新版本对查询性能有很大提升，通过对prestodb-0.229和prestosql-327两个最新版本的测试，且考虑到两种版本的社区活跃度和版本更新速度，建议采用prestosql-327进行presto集群的版本升级。</p>
+</li>
+<li><p>需探索alluxio更多的使用场景，比如说yarn、spark、tensorflow等。</p>
+</li>
+</ol>
+
+      
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2020/01/20/Alluxio+Presto多版本测试/">Linux-top命令详解</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
+        <p><span>发布时间:</span>2020年01月20日 - 11时54分</p>
+        <p><span>最后更新:</span>2020年01月20日 - 11时54分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2020/01/20/Alluxio+Presto多版本测试/" title="Linux-top命令详解">http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+  
+    <a href="/2020/01/20/周报暂存/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux-top命令详解</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Alluxio-Presto多版本测试"><span class="toc-number">1.</span> <span class="toc-text">Alluxio+Presto多版本测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、测试环境"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、测试环境</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Presto关键配置"><span class="toc-number">1.0.1.0.1.</span> <span class="toc-text">Presto关键配置</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Alluxio关键配置"><span class="toc-number">1.0.1.0.2.</span> <span class="toc-text">Alluxio关键配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、测试过程"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、测试过程</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Presto-0-211-压测"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">Presto(0.211)压测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Alluxio-presto-0-211-测试（alluxio和presto混合部署）"><span class="toc-number">1.0.2.2.</span> <span class="toc-text">Alluxio+presto(0.211)测试（alluxio和presto混合部署）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Alluxio-prestodb-0-229-测试（alluxio和presto混合部署）"><span class="toc-number">1.0.2.3.</span> <span class="toc-text">Alluxio+prestodb(0.229)测试（alluxio和presto混合部署）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Alluxio-prestosql-327-测试（alluxio和presto混合部署）"><span class="toc-number">1.0.2.4.</span> <span class="toc-text">Alluxio+prestosql(327)测试（alluxio和presto混合部署）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、测试结论和思考"><span class="toc-number">1.0.3.</span> <span class="toc-text">三、测试结论和思考</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <div id="gitments"></div>
+<script src="https://www.wenjunjiang.win/js/gitment.js"></script>
+<script>
+    var gitment = new Gitment({
+      id: 'Mon Jan 20 2020 11:54:41 GMT+0800',
+      owner: 'xyueji',
+      repo: 'xyueji.github.io',
+      oauth: {
+        client_id: '8864436c2b03c3753a80',
+        client_secret: '252abc963e694743b034294b00a36ec6c7ee2152',
+      },
+    })
+    gitment.render('gitments')
+</script>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/2020/01/20/周报暂存/" title="下一篇: Linux-top命令详解">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/01/20/Alluxio+Presto多版本测试/">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/20/周报暂存/">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/17/Linux-top命令详解/">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/17/Linux-free命令详解/">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/21/hbase的hbck工具/">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/15/JanusGraph/">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/iptables禁用启用端口/">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/04/Phoenix系统表/">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/03/Phoenix安装问题/">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/02/Prometheus安装-HDFS指标收集/">Prometheus安装+HDFS指标收集</a></li></ul>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2020 Yue Ji
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style="display:none">
+                        <span id="site-visit">蜜蜂到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style="display:none">
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 24;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  <link rel="stylesheet" href="/galmenu/GalMenu.css">
+  <script src="/galmenu/GalMenu.js"></script>
+  <div class="GalMenu GalDropDown">
+      <div class="circle" id="gal">
+        <div class="ring">
+          
+            <a href="/" title="" class="menuItem">首页</a>
+          
+            <a href="/tags" title="" class="menuItem">标签</a>
+          
+            <a href="/categories" title="" class="menuItem">分类</a>
+          
+            <a href="/archives" title="" class="menuItem">归档</a>
+          
+            <a href="/about" title="" class="menuItem">关于</a>
+          
+        </div>
+        
+          <audio id="audio" src="#"></audio>
+        
+      </div> 
+</div>
+<div id="overlay" style="opacity: 1; cursor: pointer;"></div>
+  <script type="text/javascript">var items = document.querySelectorAll('.menuItem');
+    for (var i = 0,
+    l = items.length; i < l; i++) {
+      items[i].style.left = (50 - 35 * Math.cos( - 0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%";
+      items[i].style.top = (50 + 35 * Math.sin( - 0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%"
+    }</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('body').GalMenu({
+      'menu': 'GalDropDown'
+    })
+  });
+</script>
+
+
+
+  </div>
+</body>
+</html>
