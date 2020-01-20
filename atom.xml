@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xyueji.github.io/"/>
-  <updated>2020-01-20T05:40:15.979Z</updated>
+  <updated>2020-01-20T07:48:53.352Z</updated>
   <id>http://xyueji.github.io/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>线上HBase表重建</title>
+    <link href="http://xyueji.github.io/2020/01/20/%E7%BA%BF%E4%B8%8AHBase%E8%A1%A8%E9%87%8D%E5%BB%BA/"/>
+    <id>http://xyueji.github.io/2020/01/20/线上HBase表重建/</id>
+    <published>2020-01-20T07:48:53.000Z</published>
+    <updated>2020-01-20T07:48:53.352Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="一、创建临时表"><a href="#一、创建临时表" class="headerlink" title="一、创建临时表"></a>一、创建临时表</h3><ol><li>预切分</li></ol><p>​           根据表数据特点选取合适的方式预切分表。</p><ol start="2"><li>创建临时表</li></ol><a id="more"></a><p>​           选取预切分方式，创建结构与原表格式相同的临时表。</p><h3 id="二、数据迁移"><a href="#二、数据迁移" class="headerlink" title="二、数据迁移"></a>二、数据迁移</h3><ol><li>原数据表数据导出</li></ol><p>​           为了不影响线上HBase表，使用snapshot的ExportSnapshot方式把snapshot数据迁移到公共Hadoop集群进行处理。执行命令如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.snapshot.ExportSnapshot \ -snapshot table_snapshot -copy-from hdfs://master:9000/hbase \ -copy-to hdfs://nn-cluster/hbase -mappers 16 -bandwidth 256</span><br></pre></td></tr></table></figure><p>​      2.导出Snapshot数据</p><p>​           若没有Snapshot导出工具，仿照org.apache.hadoop.hbase.mapreduce.Export类编写SnapshotExport工具类，参考类容如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Job job = new Job(conf); Path restoreDir = new Path("XX"); // restore dir should not be a subdirectory of hbase.rootdir Scan scan = new Scan(); TableMapReduceUtil.initTableSnapshotMapperJob(snapshotName, scan, MyTableMapper.class, MyMapKeyOutput.class, MyMapOutputValueWritable.class, job, true, restoreDir);</span><br></pre></td></tr></table></figure><p>​            执行SnapshotExport工具类，执行命令如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase com.ke.dtarch.ExportSnapshot \ </span><br><span class="line">table_snapshot \ </span><br><span class="line">hdfs://nn-cluster/user/bigdata/snapshotTest/resotre_table \ </span><br><span class="line">hdfs://nn-cluster/user/bigdata/snapshotTest/snapshot_out</span><br></pre></td></tr></table></figure><p>​      3.生成HFiles</p><p>​         根据Snapshot导出的数据使用org.apache.hadoop.hbase.mapreduce.Export生成HFiles，执行命令如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.Import \  </span><br><span class="line">-Dimport.bulk.output=hdfs://nn-cluster/user/bigdata/snapshotTest/importOut \  </span><br><span class="line">-Dhbase.import.version=1.4.9 \  </span><br><span class="line">&lt;临时HBase表名&gt; hdfs://nn-cluster/user/bigdata/snapshotTest/rptOut</span><br></pre></td></tr></table></figure><p>​      4.使用distcp把HFiles导到HBase集群</p><p>​         执行命令如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp \ </span><br><span class="line">-bandwidth 20 \ </span><br><span class="line">hdfs://nn-cluster/user/bigdata/snapshotTest/importOut \ </span><br><span class="line">hdfs://master:9000/tmp/</span><br></pre></td></tr></table></figure><p>​      5.使用BulkLoad把HFile导入临时表</p><p>​         执行命令如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles \ </span><br><span class="line">/tmp/importSplitOut &lt;临时表名&gt;</span><br></pre></td></tr></table></figure><h3 id="三、HBase表替换"><a href="#三、HBase表替换" class="headerlink" title="三、HBase表替换"></a>三、HBase表替换</h3><ol><li>创建snapshot</li></ol><p>​           给原表和临时表创建snapshot，执行命令如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snapshot 'origin_table', 'origin_table_snapshot' snapshot 'tmp_table', 'tmp_table_snapshot'</span><br></pre></td></tr></table></figure><p>​       2.删除原表</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">disable 'origin_table' drop 'origin_table'</span><br></pre></td></tr></table></figure><p>​       3.修改表名称</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clone_snapshot 'tmp_table_snapshot', 'origin_table'</span><br></pre></td></tr></table></figure><p>​       4.检查HBase表状态，无异常后，删除多余的表和数据</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;一、创建临时表&quot;&gt;&lt;a href=&quot;#一、创建临时表&quot; class=&quot;headerlink&quot; title=&quot;一、创建临时表&quot;&gt;&lt;/a&gt;一、创建临时表&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;预切分&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;​           根据表数据特点选取合适的方式预切分表。&lt;/p&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;创建临时表&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="HBase" scheme="http://xyueji.github.io/categories/HBase/"/>
+    
+    
+      <category term="HBase表重建" scheme="http://xyueji.github.io/tags/HBase%E8%A1%A8%E9%87%8D%E5%BB%BA/"/>
+    
+  </entry>
   
   <entry>
     <title>IDE破解</title>

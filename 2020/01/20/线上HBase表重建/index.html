@@ -3,30 +3,20 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>IDE破解 | 月迹的博客</title>
+  <title>线上HBase表重建 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="IDE破解目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~ 相关破解补丁如下： 链接:https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ  密码:3ga4">
-<meta name="keywords" content="idea,pycharm">
+  <meta name="description" content="一、创建临时表 预切分  ​           根据表数据特点选取合适的方式预切分表。  创建临时表">
+<meta name="keywords" content="HBase表重建">
 <meta property="og:type" content="article">
-<meta property="og:title" content="IDE破解">
-<meta property="og:url" content="http://xyueji.github.io/2020/01/20/IDE破解/index.html">
+<meta property="og:title" content="线上HBase表重建">
+<meta property="og:url" content="http://xyueji.github.io/2020/01/20/线上HBase表重建/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="IDE破解目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~ 相关破解补丁如下： 链接:https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ  密码:3ga4">
+<meta property="og:description" content="一、创建临时表 预切分  ​           根据表数据特点选取合适的方式预切分表。  创建临时表">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120123216303.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120123815581.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120123839842.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120123903184.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120124010963.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120124039554.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120124221374.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120124510846.png">
-<meta property="og:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120124549013.png">
-<meta property="og:updated_time" content="2020-01-20T05:40:15.979Z">
+<meta property="og:updated_time" content="2020-01-20T07:48:53.352Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IDE破解">
-<meta name="twitter:description" content="IDE破解目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~ 相关破解补丁如下： 链接:https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ  密码:3ga4">
-<meta name="twitter:image" content="http://xyueji.github.io/2020/01/20/IDE破解/image-20200120123216303.png">
+<meta name="twitter:title" content="线上HBase表重建">
+<meta name="twitter:description" content="一、创建临时表 预切分  ​           根据表数据特点选取合适的方式预切分表。  创建临时表">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -186,11 +176,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-IDE破解" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-线上HBase表重建" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2020/01/20/IDE破解/" class="article-date">
-      <time datetime="2020-01-20T04:47:55.000Z" itemprop="datePublished">2020-01-20</time>
+      <a href="/2020/01/20/线上HBase表重建/" class="article-date">
+      <time datetime="2020-01-20T07:48:53.000Z" itemprop="datePublished">2020-01-20</time>
 </a>
     </div>
   
@@ -203,7 +193,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      IDE破解
+      线上HBase表重建
     </h1>
   
 
@@ -212,13 +202,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/工具/">工具</a>
+    <a class="article-category-link" href="/categories/HBase/">HBase</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/idea/">idea</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pycharm/">pycharm</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HBase表重建/">HBase表重建</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -228,33 +218,44 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h1 id="IDE破解"><a href="#IDE破解" class="headerlink" title="IDE破解"></a>IDE破解</h1><p>目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~</p>
-<p>相关破解补丁如下：</p>
-<p>链接:<a href="https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ" target="_blank" rel="noopener">https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ</a>  密码:3ga4</p>
+        <h3 id="一、创建临时表"><a href="#一、创建临时表" class="headerlink" title="一、创建临时表"></a>一、创建临时表</h3><ol>
+<li>预切分</li>
+</ol>
+<p>​           根据表数据特点选取合适的方式预切分表。</p>
+<ol start="2">
+<li>创建临时表</li>
+</ol>
 <a id="more"></a>
-<p><img src="/2020/01/20/IDE破解/image-20200120123216303.png" alt="image-20200120123216303"></p>
-<h2 id="Idea2019破解"><a href="#Idea2019破解" class="headerlink" title="Idea2019破解"></a>Idea2019破解</h2><p><strong>1. 下载破解补丁和激活码</strong></p>
-<p>把破解补丁jetbrains-agent.jar放在安装目录的bin目录下（位置随意，放这是为了防止误删）。</p>
-<p><strong>2. 进入项目界面</strong></p>
-<p>如果你之前已经使用有效期激活过可跳过此步骤，如果你是刚下载的idea，则需要点击激活窗口的“Evaluate for free”免费试用，然后再创建一个空项目，这样就可以进入到Idea的工作页面。</p>
-<p><img src="/2020/01/20/IDE破解/image-20200120123815581.png" alt="image-20200120123815581"></p>
-<p><img src="/2020/01/20/IDE破解/image-20200120123839842.png" alt="image-20200120123839842"></p>
-<p><img src="/2020/01/20/IDE破解/image-20200120123903184.png" alt="image-20200120123903184"></p>
-<p><strong>3. 修改配置文件</strong></p>
-<p>进入到项目界面后，点击Idea最上面的菜单栏中的 “Help” -&gt; “Edit Custom VM Options …”，如果提示是否要创建文件，请点”Yes”。</p>
-<p><img src="/2020/01/20/IDE破解/image-20200120124010963.png" alt="image-20200120124010963"></p>
-<p>在打开的vmoptions编辑窗口末行添加：<code>-javaagent:你Idea的安装目录jetbrains-agent.jar</code></p>
-<p><img src="/2020/01/20/IDE破解/image-20200120124039554.png" alt="image-20200120124039554"></p>
-<p>修改完配置文件之后重启Idea</p>
-<p><strong>4. 输入激活码</strong></p>
-<p>重启Idea之后，点击菜单栏中的 “Help” -&gt; “Register …”</p>
-<p><img src="/2020/01/20/IDE破解/image-20200120124221374.png" alt="image-20200120124221374"></p>
-<h2 id="Pycharm2019-3-1破解"><a href="#Pycharm2019-3-1破解" class="headerlink" title="Pycharm2019.3.1破解"></a>Pycharm2019.3.1破解</h2><p>Pycharm激活过程跟idea类似，只是在修改配置文件时修改的是Edit Custom VM Options。</p>
-<p><strong>修改配置文件</strong></p>
-<p>点击Pycharm最上面的菜单栏中的 “Help” -&gt; “Edit Custom VM Options …”，如果提示是否要创建文件，请点”Yes”。</p>
-<p><img src="/2020/01/20/IDE破解/image-20200120124510846.png" alt="image-20200120124510846"></p>
-<p> 在打开的vmoptions编辑窗口末行添加：-javaagent:你pycharm的安装目录\jetbrains-agent.jar</p>
-<p><img src="/2020/01/20/IDE破解/image-20200120124549013.png" alt="image-20200120124549013"></p>
+<p>​           选取预切分方式，创建结构与原表格式相同的临时表。</p>
+<h3 id="二、数据迁移"><a href="#二、数据迁移" class="headerlink" title="二、数据迁移"></a>二、数据迁移</h3><ol>
+<li>原数据表数据导出</li>
+</ol>
+<p>​           为了不影响线上HBase表，使用snapshot的ExportSnapshot方式把snapshot数据迁移到公共Hadoop集群进行处理。执行命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.snapshot.ExportSnapshot \ -snapshot table_snapshot -copy-from hdfs://master:9000/hbase \ -copy-to hdfs://nn-cluster/hbase -mappers 16 -bandwidth 256</span><br></pre></td></tr></table></figure>
+<p>​      2.导出Snapshot数据</p>
+<p>​           若没有Snapshot导出工具，仿照org.apache.hadoop.hbase.mapreduce.Export类编写SnapshotExport工具类，参考类容如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Job job = new Job(conf); Path restoreDir = new Path("XX"); // restore dir should not be a subdirectory of hbase.rootdir Scan scan = new Scan(); TableMapReduceUtil.initTableSnapshotMapperJob(snapshotName, scan, MyTableMapper.class, MyMapKeyOutput.class, MyMapOutputValueWritable.class, job, true, restoreDir);</span><br></pre></td></tr></table></figure>
+<p>​            执行SnapshotExport工具类，执行命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase com.ke.dtarch.ExportSnapshot \ </span><br><span class="line">table_snapshot \ </span><br><span class="line">hdfs://nn-cluster/user/bigdata/snapshotTest/resotre_table \ </span><br><span class="line">hdfs://nn-cluster/user/bigdata/snapshotTest/snapshot_out</span><br></pre></td></tr></table></figure>
+<p>​      3.生成HFiles</p>
+<p>​         根据Snapshot导出的数据使用org.apache.hadoop.hbase.mapreduce.Export生成HFiles，执行命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.Import \  </span><br><span class="line">-Dimport.bulk.output=hdfs://nn-cluster/user/bigdata/snapshotTest/importOut \  </span><br><span class="line">-Dhbase.import.version=1.4.9 \  </span><br><span class="line">&lt;临时HBase表名&gt; hdfs://nn-cluster/user/bigdata/snapshotTest/rptOut</span><br></pre></td></tr></table></figure>
+<p>​      4.使用distcp把HFiles导到HBase集群</p>
+<p>​         执行命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hadoop distcp \ </span><br><span class="line">-bandwidth 20 \ </span><br><span class="line">hdfs://nn-cluster/user/bigdata/snapshotTest/importOut \ </span><br><span class="line">hdfs://master:9000/tmp/</span><br></pre></td></tr></table></figure>
+<p>​      5.使用BulkLoad把HFile导入临时表</p>
+<p>​         执行命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hbase org.apache.hadoop.hbase.mapreduce.LoadIncrementalHFiles \ </span><br><span class="line">/tmp/importSplitOut &lt;临时表名&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="三、HBase表替换"><a href="#三、HBase表替换" class="headerlink" title="三、HBase表替换"></a>三、HBase表替换</h3><ol>
+<li>创建snapshot</li>
+</ol>
+<p>​           给原表和临时表创建snapshot，执行命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snapshot 'origin_table', 'origin_table_snapshot' snapshot 'tmp_table', 'tmp_table_snapshot'</span><br></pre></td></tr></table></figure>
+<p>​       2.删除原表</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">disable 'origin_table' drop 'origin_table'</span><br></pre></td></tr></table></figure>
+<p>​       3.修改表名称</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clone_snapshot 'tmp_table_snapshot', 'origin_table'</span><br></pre></td></tr></table></figure>
+<p>​       4.检查HBase表状态，无异常后，删除多余的表和数据</p>
 
       
       
@@ -264,13 +265,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2020/01/20/IDE破解/">IDE破解</a></p>
+        <p><span>本文标题:</span><a href="/2020/01/20/线上HBase表重建/">线上HBase表重建</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2020年01月20日 - 12时47分</p>
-        <p><span>最后更新:</span>2020年01月20日 - 13时40分</p>
+        <p><span>发布时间:</span>2020年01月20日 - 15时48分</p>
+        <p><span>最后更新:</span>2020年01月20日 - 15时48分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2020/01/20/IDE破解/" title="IDE破解">http://xyueji.github.io/2020/01/20/IDE破解/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/20/IDE破解/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2020/01/20/线上HBase表重建/" title="线上HBase表重建">http://xyueji.github.io/2020/01/20/线上HBase表重建/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/20/线上HBase表重建/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -283,18 +284,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2020/01/20/线上HBase表重建/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          线上HBase表重建
-        
-      </div>
-    </a>
   
-  
-    <a href="/2020/01/20/Alluxio+Presto多版本测试/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Alluxio+Presto多版本测试</div>
+    <a href="/2020/01/20/IDE破解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">IDE破解</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -305,7 +297,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#IDE破解"><span class="toc-number">1.</span> <span class="toc-text">IDE破解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Idea2019破解"><span class="toc-number">1.1.</span> <span class="toc-text">Idea2019破解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pycharm2019-3-1破解"><span class="toc-number">1.2.</span> <span class="toc-text">Pycharm2019.3.1破解</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、创建临时表"><span class="toc-number">1.</span> <span class="toc-text">一、创建临时表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、数据迁移"><span class="toc-number">2.</span> <span class="toc-text">二、数据迁移</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、HBase表替换"><span class="toc-number">3.</span> <span class="toc-text">三、HBase表替换</span></a></li></ol>
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -356,7 +348,7 @@
 <script src="https://billts.site/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Mon Jan 20 2020 12:47:55 GMT+0800',
+      id: 'Mon Jan 20 2020 15:48:53 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -373,13 +365,11 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2020/01/20/线上HBase表重建/" title="上一篇: 线上HBase表重建">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2020/01/20/Alluxio+Presto多版本测试/" title="下一篇: Alluxio+Presto多版本测试">
+            <a href="/2020/01/20/IDE破解/" title="下一篇: IDE破解">
                 <i class="fa fa-angle-right"></i>
             </a>
         
