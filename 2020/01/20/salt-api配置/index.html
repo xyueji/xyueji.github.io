@@ -5,18 +5,18 @@
   
   <title>salt-api配置 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="salt-api配置一、安装salt-api相关软件123456789101112yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -y&amp;lt;!--more--&amp;gt;yum install salt-api.noarch -yyum install p">
-<meta name="keywords" content="SaltStack">
+  <meta name="description" content="salt-api配置一、安装salt-api相关软件12345678910yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -yyum install salt-api.noarch -yyum install pyOpenSSL.x86_64 -y #设">
+<meta name="keywords" content="salt-api">
 <meta property="og:type" content="article">
 <meta property="og:title" content="salt-api配置">
 <meta property="og:url" content="http://xyueji.github.io/2020/01/20/salt-api配置/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="salt-api配置一、安装salt-api相关软件123456789101112yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -y&amp;lt;!--more--&amp;gt;yum install salt-api.noarch -yyum install p">
+<meta property="og:description" content="salt-api配置一、安装salt-api相关软件12345678910yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -yyum install salt-api.noarch -yyum install pyOpenSSL.x86_64 -y #设">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-01-20T08:30:15.806Z">
+<meta property="og:updated_time" content="2020-01-20T08:33:17.888Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="salt-api配置">
-<meta name="twitter:description" content="salt-api配置一、安装salt-api相关软件123456789101112yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -y&amp;lt;!--more--&amp;gt;yum install salt-api.noarch -yyum install p">
+<meta name="twitter:description" content="salt-api配置一、安装salt-api相关软件12345678910yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -yyum install salt-api.noarch -yyum install pyOpenSSL.x86_64 -y #设">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -202,13 +202,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/工具/">工具</a>
+    <a class="article-category-link" href="/categories/SaltStack/">SaltStack</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SaltStack/">SaltStack</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/salt-api/">salt-api</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -218,7 +218,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h1 id="salt-api配置"><a href="#salt-api配置" class="headerlink" title="salt-api配置"></a>salt-api配置</h1><h3 id="一、安装salt-api相关软件"><a href="#一、安装salt-api相关软件" class="headerlink" title="一、安装salt-api相关软件"></a>一、安装salt-api相关软件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">yum install salt-minion.noarch -y</span><br><span class="line">yum install salt-master.noarch -y</span><br><span class="line">yum install salt-syndic.noarch -y</span><br><span class="line"></span><br><span class="line">&lt;!--more--&gt;</span><br><span class="line">yum install salt-api.noarch -y</span><br><span class="line">yum install pyOpenSSL.x86_64 -y </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">设置开机自启动</span></span><br><span class="line">chkconfig salt-api on</span><br><span class="line">chkconfig salt-master on</span><br><span class="line">chkconfig salt-minion on</span><br></pre></td></tr></table></figure>
+        <h1 id="salt-api配置"><a href="#salt-api配置" class="headerlink" title="salt-api配置"></a>salt-api配置</h1><h3 id="一、安装salt-api相关软件"><a href="#一、安装salt-api相关软件" class="headerlink" title="一、安装salt-api相关软件"></a>一、安装salt-api相关软件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">yum install salt-minion.noarch -y</span><br><span class="line">yum install salt-master.noarch -y</span><br><span class="line">yum install salt-syndic.noarch -y</span><br><span class="line">yum install salt-api.noarch -y</span><br><span class="line">yum install pyOpenSSL.x86_64 -y </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">设置开机自启动</span></span><br><span class="line">chkconfig salt-api on</span><br><span class="line">chkconfig salt-master on</span><br><span class="line">chkconfig salt-minion on</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 <h3 id="二、配置salt-api"><a href="#二、配置salt-api" class="headerlink" title="二、配置salt-api"></a>二、配置salt-api</h3><ol>
 <li>在salt-master的/etc/salt/下创建master.d文件夹创建api.conf和eauth.conf文件，具体内容如下：</li>
 </ol>
@@ -231,6 +232,7 @@
 <li>重启salt-master和salt-api</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service salt-master restart</span><br><span class="line">service salt-api restart</span><br></pre></td></tr></table></figure>
+
       
       
     </div>
@@ -242,7 +244,7 @@
         <p><span>本文标题:</span><a href="/2020/01/20/salt-api配置/">salt-api配置</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
         <p><span>发布时间:</span>2020年01月20日 - 16时30分</p>
-        <p><span>最后更新:</span>2020年01月20日 - 16时30分</p>
+        <p><span>最后更新:</span>2020年01月20日 - 16时33分</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2020/01/20/salt-api配置/" title="salt-api配置">http://xyueji.github.io/2020/01/20/salt-api配置/</a>
             <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/20/salt-api配置/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
