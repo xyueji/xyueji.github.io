@@ -5,13 +5,13 @@
   
   <title>Linux-top命令详解 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）">
+  <meta name="description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）   硬件信息 共5台机器，每台48核cpu、125G内存   测试工具 Jmeter">
 <meta name="keywords" content="测试,alluxio,presto">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux-top命令详解">
 <meta property="og:url" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）">
+<meta property="og:description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）   硬件信息 共5台机器，每台48核cpu、125G内存   测试工具 Jmeter">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114102936.png">
 <meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114121991.png">
@@ -32,10 +32,10 @@
 <meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120115011627.png">
 <meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120115052564.png">
 <meta property="og:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120115103149.png">
-<meta property="og:updated_time" content="2020-01-20T03:54:41.841Z">
+<meta property="og:updated_time" content="2020-01-20T03:59:11.567Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux-top命令详解">
-<meta name="twitter:description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）">
+<meta name="twitter:description" content="Alluxio+Presto多版本测试一、测试环境   Prestosql 1台主节点，4台worker节点（版本0.211&amp;amp;327）     Prestodb 1台主节点，4台worker节点（版本0.211&amp;amp;0.229）   Alluxio 1台主节点，4台worker节点（版本2.1.0）   硬件信息 共5台机器，每台48核cpu、125G内存   测试工具 Jmeter">
 <meta name="twitter:image" content="http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/image-20200120114102936.png">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
@@ -254,10 +254,17 @@
 <td>Alluxio</td>
 <td>1台主节点，4台worker节点（版本2.1.0）</td>
 </tr>
+<tr>
+<td>硬件信息</td>
+<td>共5台机器，每台48核cpu、125G内存</td>
+</tr>
+<tr>
+<td>测试工具</td>
+<td>Jmeter</td>
+</tr>
 </tbody>
 </table>
 <a id="more"></a>
-<p>| 硬件信息  | 共5台机器，每台48核cpu、125G内存            |<br>| 测试工具  | Jmeter                                      |</p>
 <h6 id="Presto关键配置"><a href="#Presto关键配置" class="headerlink" title="Presto关键配置"></a>Presto关键配置</h6><p>Jvm.comfig配置如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-server</span><br><span class="line">-Xmx80G</span><br><span class="line">-XX:+UseG1GC</span><br><span class="line">-XX:G1HeapRegionSize=32M</span><br><span class="line">-XX:+UseGCOverheadLimit</span><br><span class="line">-XX:+ExplicitGCInvokesConcurrent</span><br><span class="line">-XX:+HeapDumpOnOutOfMemoryError</span><br><span class="line">-XX:+ExitOnOutOfMemoryError</span><br></pre></td></tr></table></figure>
 <p>Config.properties配置如下：</p>
@@ -977,7 +984,7 @@
         <p><span>本文标题:</span><a href="/2020/01/20/Alluxio+Presto多版本测试/">Linux-top命令详解</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
         <p><span>发布时间:</span>2020年01月20日 - 11时54分</p>
-        <p><span>最后更新:</span>2020年01月20日 - 11时54分</p>
+        <p><span>最后更新:</span>2020年01月20日 - 11时59分</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2020/01/20/Alluxio+Presto多版本测试/" title="Linux-top命令详解">http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/</a>
             <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
