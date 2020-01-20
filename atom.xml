@@ -71,31 +71,6 @@
   
   <entry>
     <title>Linux-top命令详解</title>
-    <link href="http://xyueji.github.io/2020/01/20/%E5%91%A8%E6%8A%A5%E6%9A%82%E5%AD%98/"/>
-    <id>http://xyueji.github.io/2020/01/20/周报暂存/</id>
-    <published>2020-01-20T03:11:20.000Z</published>
-    <updated>2020-01-20T03:11:20.778Z</updated>
-    
-    <content type="html"><![CDATA[<p>queryserver存活报警</p><p>查询portal卡死原因<br><a id="more"></a></p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;queryserver存活报警&lt;/p&gt;
-&lt;p&gt;查询portal卡死原因&lt;br&gt;&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="周报" scheme="http://xyueji.github.io/categories/%E5%91%A8%E6%8A%A5/"/>
-    
-    
-      <category term="t1" scheme="http://xyueji.github.io/tags/t1/"/>
-    
-      <category term="t2" scheme="http://xyueji.github.io/tags/t2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Linux-top命令详解</title>
     <link href="http://xyueji.github.io/2020/01/17/Linux-top%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"/>
     <id>http://xyueji.github.io/2020/01/17/Linux-top命令详解/</id>
     <published>2020-01-17T08:38:31.000Z</published>
