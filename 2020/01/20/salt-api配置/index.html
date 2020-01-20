@@ -3,20 +3,20 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Phoenix安装问题 | 月迹的博客</title>
+  <title>salt-api配置 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="下载Phoenix下载地址:http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)">
-<meta name="keywords" content="Phoenix">
+  <meta name="description" content="salt-api配置一、安装salt-api相关软件123456789101112yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -y&amp;lt;!--more--&amp;gt;yum install salt-api.noarch -yyum install p">
+<meta name="keywords" content="SaltStack">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Phoenix安装问题">
-<meta property="og:url" content="http://xyueji.github.io/2019/01/03/Phoenix安装问题/index.html">
+<meta property="og:title" content="salt-api配置">
+<meta property="og:url" content="http://xyueji.github.io/2020/01/20/salt-api配置/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="下载Phoenix下载地址:http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)">
+<meta property="og:description" content="salt-api配置一、安装salt-api相关软件123456789101112yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -y&amp;lt;!--more--&amp;gt;yum install salt-api.noarch -yyum install p">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-12T02:32:40.880Z">
+<meta property="og:updated_time" content="2020-01-20T08:30:15.806Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Phoenix安装问题">
-<meta name="twitter:description" content="下载Phoenix下载地址:http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)">
+<meta name="twitter:title" content="salt-api配置">
+<meta name="twitter:description" content="salt-api配置一、安装salt-api相关软件123456789101112yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -y&amp;lt;!--more--&amp;gt;yum install salt-api.noarch -yyum install p">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -176,11 +176,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Phoenix安装问题" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-salt-api配置" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/01/03/Phoenix安装问题/" class="article-date">
-      <time datetime="2019-01-03T13:14:33.000Z" itemprop="datePublished">2019-01-03</time>
+      <a href="/2020/01/20/salt-api配置/" class="article-date">
+      <time datetime="2020-01-20T08:30:15.000Z" itemprop="datePublished">2020-01-20</time>
 </a>
     </div>
   
@@ -193,7 +193,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Phoenix安装问题
+      salt-api配置
     </h1>
   
 
@@ -202,13 +202,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Phoenix/">Phoenix</a>
+    <a class="article-category-link" href="/categories/工具/">工具</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Phoenix/">Phoenix</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SaltStack/">SaltStack</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -218,17 +218,19 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h2 id="下载Phoenix"><a href="#下载Phoenix" class="headerlink" title="下载Phoenix"></a>下载Phoenix</h2><p>下载地址:<a href="http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)" target="_blank" rel="noopener">http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)</a></p>
-<a id="more"></a>
-<h2 id="配置Phoenix"><a href="#配置Phoenix" class="headerlink" title="配置Phoenix"></a>配置Phoenix</h2><ul>
-<li>解压缩文件</li>
-<li>配置Phoenix环境变量</li>
-<li>将 Phoenix 目录下的phoenix-core-4.14.1-HBase-1.2.jar、phoenix-4.14.1-HBase-1.2-client.jar 拷贝到 hbase 集群各个节点 hbase 安装目录 lib 中。</li>
-<li>将 hbase 集群中的配置文件 hbase-site.xml 拷贝到 Phoenix 的 bin 目录下，覆盖原有的配置文件。</li>
-<li>将 hdfs 集群中的配置文件 core-site.xml、 hdfs-site.xml 拷贝到 Phoenix 的 bin 目录下。</li>
-<li>重启hbase<h2 id="启动Phoenix"><a href="#启动Phoenix" class="headerlink" title="启动Phoenix"></a>启动Phoenix</h2>sqlline.py &lt;hbase.zookeeper.quorum&gt;</li>
-</ul>
-
+        <h1 id="salt-api配置"><a href="#salt-api配置" class="headerlink" title="salt-api配置"></a>salt-api配置</h1><h3 id="一、安装salt-api相关软件"><a href="#一、安装salt-api相关软件" class="headerlink" title="一、安装salt-api相关软件"></a>一、安装salt-api相关软件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">yum install salt-minion.noarch -y</span><br><span class="line">yum install salt-master.noarch -y</span><br><span class="line">yum install salt-syndic.noarch -y</span><br><span class="line"></span><br><span class="line">&lt;!--more--&gt;</span><br><span class="line">yum install salt-api.noarch -y</span><br><span class="line">yum install pyOpenSSL.x86_64 -y </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">设置开机自启动</span></span><br><span class="line">chkconfig salt-api on</span><br><span class="line">chkconfig salt-master on</span><br><span class="line">chkconfig salt-minion on</span><br></pre></td></tr></table></figure>
+<h3 id="二、配置salt-api"><a href="#二、配置salt-api" class="headerlink" title="二、配置salt-api"></a>二、配置salt-api</h3><ol>
+<li>在salt-master的/etc/salt/下创建master.d文件夹创建api.conf和eauth.conf文件，具体内容如下：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> api.conf</span></span><br><span class="line">rest_cherrypy:</span><br><span class="line">  port: 8000                          #  salt-api 监听端口</span><br><span class="line">  ssl_crt: /etc/pki/tls/certs/localhost.crt          # ssl认证的证书</span><br><span class="line">  ssl_key: /etc/pki/tls/private/localhost_nopass.key</span><br><span class="line"> </span><br><span class="line"><span class="meta">#</span><span class="bash"> eauth.conf</span></span><br><span class="line">external_auth:</span><br><span class="line">  pam:</span><br><span class="line">    hbaseapi:</span><br><span class="line">      - .*</span><br><span class="line">      - '@wheel' # to allow access to all wheel modules</span><br><span class="line">      - '@runner' # to allow access to all runner modules</span><br><span class="line">      - '@jobs' # to allow access to the jobs runner and/or wheel module</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>创建localhost.crt和localhost_nopass.key</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/pki/tls/certs/</span><br><span class="line">make testcert</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line"> </span><br><span class="line">cd ../private/</span><br><span class="line">openssl rsa -in localhost.key -out localhost_nopass.key</span><br><span class="line">hbaseapi</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>重启salt-master和salt-api</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service salt-master restart</span><br><span class="line">service salt-api restart</span><br></pre></td></tr></table></figure>
       
       
     </div>
@@ -237,13 +239,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2019/01/03/Phoenix安装问题/">Phoenix安装问题</a></p>
+        <p><span>本文标题:</span><a href="/2020/01/20/salt-api配置/">salt-api配置</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2019年01月03日 - 21时14分</p>
-        <p><span>最后更新:</span>2019年09月12日 - 10时32分</p>
+        <p><span>发布时间:</span>2020年01月20日 - 16时30分</p>
+        <p><span>最后更新:</span>2020年01月20日 - 16时30分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2019/01/03/Phoenix安装问题/" title="Phoenix安装问题">http://xyueji.github.io/2019/01/03/Phoenix安装问题/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/01/03/Phoenix安装问题/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2020/01/20/salt-api配置/" title="salt-api配置">http://xyueji.github.io/2020/01/20/salt-api配置/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/01/20/salt-api配置/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -256,18 +258,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/01/04/Phoenix系统表/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          Phoenix系统表
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/01/02/Prometheus安装-HDFS指标收集/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Prometheus安装+HDFS指标收集</div>
+    <a href="/2020/01/20/线上HBase表重建/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">线上HBase表重建</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -278,7 +271,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#下载Phoenix"><span class="toc-number">1.</span> <span class="toc-text">下载Phoenix</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置Phoenix"><span class="toc-number">2.</span> <span class="toc-text">配置Phoenix</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动Phoenix"><span class="toc-number">3.</span> <span class="toc-text">启动Phoenix</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#salt-api配置"><span class="toc-number">1.</span> <span class="toc-text">salt-api配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、安装salt-api相关软件"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、安装salt-api相关软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、配置salt-api"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、配置salt-api</span></a></li></ol></li></ol>
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -329,7 +322,7 @@
 <script src="https://billts.site/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Thu Jan 03 2019 21:14:33 GMT+0800',
+      id: 'Mon Jan 20 2020 16:30:15 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -346,13 +339,11 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/01/04/Phoenix系统表/" title="上一篇: Phoenix系统表">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2019/01/02/Prometheus安装-HDFS指标收集/" title="下一篇: Prometheus安装+HDFS指标收集">
+            <a href="/2020/01/20/线上HBase表重建/" title="下一篇: 线上HBase表重建">
                 <i class="fa fa-angle-right"></i>
             </a>
         

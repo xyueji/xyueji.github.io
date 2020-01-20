@@ -181,6 +181,80 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-salt-api配置" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2020/01/20/salt-api配置/" class="article-date">
+      <time datetime="2020-01-20T08:30:15.000Z" itemprop="datePublished">2020-01-20</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/20/salt-api配置/">salt-api配置</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="salt-api配置"><a href="#salt-api配置" class="headerlink" title="salt-api配置"></a>salt-api配置</h1><h3 id="一、安装salt-api相关软件"><a href="#一、安装salt-api相关软件" class="headerlink" title="一、安装salt-api相关软件"></a>一、安装salt-api相关软件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">yum install salt-minion.noarch -y</span><br><span class="line">yum install salt-master.noarch -y</span><br><span class="line">yum install salt-syndic.noarch -y</span><br><span class="line"></span><br><span class="line">&lt;!--more--&gt;</span><br><span class="line">yum install salt-api.noarch -y</span><br><span class="line">yum install pyOpenSSL.x86_64 -y </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">设置开机自启动</span></span><br><span class="line">chkconfig salt-api on</span><br><span class="line">chkconfig salt-master on</span><br><span class="line">chkconfig salt-minion on</span><br></pre></td></tr></table></figure>
+<h3 id="二、配置salt-api"><a href="#二、配置salt-api" class="headerlink" title="二、配置salt-api"></a>二、配置salt-api</h3><ol>
+<li>在salt-master的/etc/salt/下创建master.d文件夹创建api.conf和eauth.conf文件，具体内容如下：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> api.conf</span></span><br><span class="line">rest_cherrypy:</span><br><span class="line">  port: 8000                          #  salt-api 监听端口</span><br><span class="line">  ssl_crt: /etc/pki/tls/certs/localhost.crt          # ssl认证的证书</span><br><span class="line">  ssl_key: /etc/pki/tls/private/localhost_nopass.key</span><br><span class="line"> </span><br><span class="line"><span class="meta">#</span><span class="bash"> eauth.conf</span></span><br><span class="line">external_auth:</span><br><span class="line">  pam:</span><br><span class="line">    hbaseapi:</span><br><span class="line">      - .*</span><br><span class="line">      - '@wheel' # to allow access to all wheel modules</span><br><span class="line">      - '@runner' # to allow access to all runner modules</span><br><span class="line">      - '@jobs' # to allow access to the jobs runner and/or wheel module</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>创建localhost.crt和localhost_nopass.key</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/pki/tls/certs/</span><br><span class="line">make testcert</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line"> </span><br><span class="line">cd ../private/</span><br><span class="line">openssl rsa -in localhost.key -out localhost_nopass.key</span><br><span class="line">hbaseapi</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>重启salt-master和salt-api</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service salt-master restart</span><br><span class="line">service salt-api restart</span><br></pre></td></tr></table></figure>
+      
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/工具/">工具</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SaltStack/">SaltStack</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-线上HBase表重建" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
@@ -808,73 +882,6 @@
       
         <p class="article-more-link">
           <a href="/2019/01/04/Phoenix系统表/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Phoenix安装问题" class="article article-type-post" itemscope="" itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2019/01/03/Phoenix安装问题/" class="article-date">
-      <time datetime="2019-01-03T13:14:33.000Z" itemprop="datePublished">2019-01-03</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/03/Phoenix安装问题/">Phoenix安装问题</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h2 id="下载Phoenix"><a href="#下载Phoenix" class="headerlink" title="下载Phoenix"></a>下载Phoenix</h2><p>下载地址:<a href="http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)" target="_blank" rel="noopener">http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)</a></p>
-          
-      
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Phoenix/">Phoenix</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Phoenix/">Phoenix</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2019/01/03/Phoenix安装问题/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>

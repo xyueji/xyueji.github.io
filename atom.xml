@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xyueji.github.io/"/>
-  <updated>2020-01-20T08:00:04.041Z</updated>
+  <updated>2020-01-20T08:30:15.806Z</updated>
   <id>http://xyueji.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>salt-api配置</title>
+    <link href="http://xyueji.github.io/2020/01/20/salt-api%E9%85%8D%E7%BD%AE/"/>
+    <id>http://xyueji.github.io/2020/01/20/salt-api配置/</id>
+    <published>2020-01-20T08:30:15.000Z</published>
+    <updated>2020-01-20T08:30:15.806Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="salt-api配置"><a href="#salt-api配置" class="headerlink" title="salt-api配置"></a>salt-api配置</h1><h3 id="一、安装salt-api相关软件"><a href="#一、安装salt-api相关软件" class="headerlink" title="一、安装salt-api相关软件"></a>一、安装salt-api相关软件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">yum install salt-minion.noarch -y</span><br><span class="line">yum install salt-master.noarch -y</span><br><span class="line">yum install salt-syndic.noarch -y</span><br><span class="line"></span><br><span class="line">&lt;!--more--&gt;</span><br><span class="line">yum install salt-api.noarch -y</span><br><span class="line">yum install pyOpenSSL.x86_64 -y </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">设置开机自启动</span></span><br><span class="line">chkconfig salt-api on</span><br><span class="line">chkconfig salt-master on</span><br><span class="line">chkconfig salt-minion on</span><br></pre></td></tr></table></figure><h3 id="二、配置salt-api"><a href="#二、配置salt-api" class="headerlink" title="二、配置salt-api"></a>二、配置salt-api</h3><ol><li>在salt-master的/etc/salt/下创建master.d文件夹创建api.conf和eauth.conf文件，具体内容如下：</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> api.conf</span></span><br><span class="line">rest_cherrypy:</span><br><span class="line">  port: 8000                          #  salt-api 监听端口</span><br><span class="line">  ssl_crt: /etc/pki/tls/certs/localhost.crt          # ssl认证的证书</span><br><span class="line">  ssl_key: /etc/pki/tls/private/localhost_nopass.key</span><br><span class="line"> </span><br><span class="line"><span class="meta">#</span><span class="bash"> eauth.conf</span></span><br><span class="line">external_auth:</span><br><span class="line">  pam:</span><br><span class="line">    hbaseapi:</span><br><span class="line">      - .*</span><br><span class="line">      - '@wheel' # to allow access to all wheel modules</span><br><span class="line">      - '@runner' # to allow access to all runner modules</span><br><span class="line">      - '@jobs' # to allow access to the jobs runner and/or wheel module</span><br></pre></td></tr></table></figure><ol start="2"><li>创建localhost.crt和localhost_nopass.key</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/pki/tls/certs/</span><br><span class="line">make testcert</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line"> </span><br><span class="line">cd ../private/</span><br><span class="line">openssl rsa -in localhost.key -out localhost_nopass.key</span><br><span class="line">hbaseapi</span><br></pre></td></tr></table></figure><ol start="3"><li>重启salt-master和salt-api</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service salt-master restart</span><br><span class="line">service salt-api restart</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;salt-api配置&quot;&gt;&lt;a href=&quot;#salt-api配置&quot; class=&quot;headerlink&quot; title=&quot;salt-api配置&quot;&gt;&lt;/a&gt;salt-api配置&lt;/h1&gt;&lt;h3 id=&quot;一、安装salt-api相关软件&quot;&gt;&lt;a href=&quot;#一、安装s
+      
+    
+    </summary>
+    
+      <category term="工具" scheme="http://xyueji.github.io/categories/%E5%B7%A5%E5%85%B7/"/>
+    
+    
+      <category term="SaltStack" scheme="http://xyueji.github.io/tags/SaltStack/"/>
+    
+  </entry>
   
   <entry>
     <title>线上HBase表重建</title>
