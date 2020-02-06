@@ -3,20 +3,22 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>iptables禁用启用端口 | 月迹的博客</title>
+  <title>HBase基本知识 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
-<meta name="keywords" content="iptables,端口">
+  <meta name="description" content="数据模型  Name Space ​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。  Region">
+<meta name="keywords" content="hbase">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iptables禁用启用端口">
-<meta property="og:url" content="http://xyueji.github.io/2019/01/04/iptables禁用启用端口/index.html">
+<meta property="og:title" content="HBase基本知识">
+<meta property="og:url" content="http://xyueji.github.io/2020/02/06/HBase基本知识/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
+<meta property="og:description" content="数据模型  Name Space ​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。  Region">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-12T02:32:40.881Z">
+<meta property="og:image" content="http://xyueji.github.io/2020/02/06/HBase基本知识/image-20200206155538738.png">
+<meta property="og:updated_time" content="2020-02-06T09:56:57.437Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iptables禁用启用端口">
-<meta name="twitter:description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
+<meta name="twitter:title" content="HBase基本知识">
+<meta name="twitter:description" content="数据模型  Name Space ​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。  Region">
+<meta name="twitter:image" content="http://xyueji.github.io/2020/02/06/HBase基本知识/image-20200206155538738.png">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -176,11 +178,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-iptables禁用启用端口" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-HBase基本知识" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/01/04/iptables禁用启用端口/" class="article-date">
-      <time datetime="2019-01-04T07:54:38.000Z" itemprop="datePublished">2019-01-04</time>
+      <a href="/2020/02/06/HBase基本知识/" class="article-date">
+      <time datetime="2020-02-06T09:56:57.000Z" itemprop="datePublished">2020-02-06</time>
 </a>
     </div>
   
@@ -193,7 +195,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      iptables禁用启用端口
+      HBase基本知识
     </h1>
   
 
@@ -202,13 +204,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    <a class="article-category-link" href="/categories/HBase/">HBase</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iptables/">iptables</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/端口/">端口</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbase/">hbase</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -218,36 +220,65 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h2 id="只允许指定ip访问本机的指定端口"><a href="#只允许指定ip访问本机的指定端口" class="headerlink" title="只允许指定ip访问本机的指定端口"></a>只允许指定ip访问本机的指定端口</h2><ul>
-<li>目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。</li>
-<li>ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100</li>
-</ul>
+        <p><strong>数据模型</strong></p>
+<ol>
+<li><p>Name Space</p>
+<p>​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。</p>
+</li>
+<li><p>Region</p>
+</li>
+</ol>
 <a id="more"></a>
-<p>切换到root用户</p>
+<p>   ​    类似于关系型数据库的表概念。不同的是，HBase 定义表时只需要声明列族即可，不需 要声明具体的列。这意味着，往 HBase 写入数据时，字段可以动态、按需指定。因此，和关 系型数据库相比，HBase 能够轻松应对字段变更的场景。</p>
+<ol start="3">
+<li><p>Row</p>
+<p>​    HBase 表中的每行数据都由一个 RowKey 和多个 Column(列)组成，数据是按照 RowKey 的字典顺序存储的，并且查询数据时只能根据 RowKey 进行检索，所以 RowKey 的设计十分重要。</p>
+</li>
+<li><p>Column</p>
+</li>
+</ol>
+<p>   ​    HBase 中的每个列都由 Column Family(列族)和 Column Qualifier(列限定符)进行限 定，例如 info:name，info:age。建表时，只需指明列族，而列限定符无需预先定义。</p>
+<ol start="5">
+<li><p>Time Stamp</p>
+<p>​    用于标识数据的不同版本(version)，每条数据写入时，如果不指定时间戳，系统会自动为其加上该字段，其值为写入 HBase 的时间。</p>
+</li>
+</ol>
+<p><strong>HBase基本架构</strong></p>
+<ol>
+<li><p>RegionServer</p>
+<p>​    RegionServer为Region的管理者，其实现类为HRegionServer，主要作用如下（一些表数据的操作DML）：</p>
 <ul>
-<li><p>1、在tcp协议中，禁止所有的ip访问本机的1521端口。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 8765 -j DROP</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>2、允许192.168.1.123访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 127.0.0.1 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3、允许192.168.1.124访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.124 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>4、允许192.168.1.100访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.100 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
+<li>对于数据的操作：get，put，delete</li>
+<li>对于Region的操作：splitRegion、compactRegion</li>
 </ul>
-<p>以上是临时设置。</p>
+</li>
+<li><p>Master</p>
+<p>​    Master是所有RegionServer的管理者，其实现类HMaster，主要作用如下（一些元数据的操作DDL）：</p>
 <ul>
-<li><p>5、然后保存iptables</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables save</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>6、重启防火墙</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables restart</span><br></pre></td></tr></table></figure>
-</li>
+<li>对于表的操作：create、drop、alter</li>
+<li>对于RegionServer的操作：分配regions到每个RegionServer，监控每个RegionServer的状态，负载均衡和故障转移。</li>
 </ul>
-<h2 id="删除规则"><a href="#删除规则" class="headerlink" title="删除规则"></a>删除规则</h2><p>首先我们要知道 这条规则的编号，每条规则都有一个编号,通过 iptables -L -n –line-number 可以显示规则和相对应的编号。<br><br>删除INPUT链编号为2的规则<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 2</span><br></pre></td></tr></table></figure></p>
+</li>
+<li><p>Zookeeper</p>
+<p>​    HBase通过Zookeeper来做Master的高可用、RegionServer的监控、元数据的入口以及集群配置的维护工作。</p>
+</li>
+<li><p>HDFS</p>
+<p>​    HDFS为HBase提供最终的底层数据存储服务，同时为HBase提供高可用的支持。</p>
+</li>
+</ol>
+<p><strong><em>HBase详细架构图</em></strong></p>
+<p><img src="/2020/02/06/HBase基本知识/image-20200206155538738.png" alt="image-20200206155538738"></p>
+<ol>
+<li><p>StroreFile</p>
+<pre><code>保存实际数据的物理文件，StoreFile以HFile的形式存储在HDFS上。每个Store会有一个或多个StoreFile(HFile)，数据在每个StoreFile中都是有序的。
+</code></pre></li>
+<li><p>MemStore</p>
+<p>​    写缓存，由于HFile中的数据要求是有序的，所以数据是先存在MemStore中，排好序后，等到刷写时机时才会刷写到HFile，每次刷写都会形成一个新的HFile。</p>
+</li>
+<li><p>WALs</p>
+<p>​    由于数据要经MemStore排序后才能刷写到HFile，但把数据保存在内存中会有很高概率导致数据丢失，为了解决这个问题，数据会先写在一个叫做Write-Ahead logfile的文件中，然后再写入MemStore中。所以在系统出现故障的时候，数据可以通过这个日志文件重建。</p>
+</li>
+</ol>
 
       
       
@@ -257,13 +288,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2019/01/04/iptables禁用启用端口/">iptables禁用启用端口</a></p>
+        <p><span>本文标题:</span><a href="/2020/02/06/HBase基本知识/">HBase基本知识</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2019年01月04日 - 15时54分</p>
-        <p><span>最后更新:</span>2019年09月12日 - 10时32分</p>
+        <p><span>发布时间:</span>2020年02月06日 - 17时56分</p>
+        <p><span>最后更新:</span>2020年02月06日 - 17时56分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2019/01/04/iptables禁用启用端口/" title="iptables禁用启用端口">http://xyueji.github.io/2019/01/04/iptables禁用启用端口/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/01/04/iptables禁用启用端口/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2020/02/06/HBase基本知识/" title="HBase基本知识">http://xyueji.github.io/2020/02/06/HBase基本知识/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/02/06/HBase基本知识/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -276,18 +307,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/10/15/JanusGraph/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          JanusGraph
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/01/04/Phoenix系统表/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Phoenix系统表</div>
+    <a href="/2020/02/06/IDE破解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">IDE破解</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -298,7 +320,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#只允许指定ip访问本机的指定端口"><span class="toc-number">1.</span> <span class="toc-text">只允许指定ip访问本机的指定端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#删除规则"><span class="toc-number">2.</span> <span class="toc-text">删除规则</span></a></li></ol>
+    
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -349,7 +371,7 @@
 <script src="https://billts.site/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Fri Jan 04 2019 15:54:38 GMT+0800',
+      id: 'Thu Feb 06 2020 17:56:57 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -366,13 +388,11 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/10/15/JanusGraph/" title="上一篇: JanusGraph">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2019/01/04/Phoenix系统表/" title="下一篇: Phoenix系统表">
+            <a href="/2020/02/06/IDE破解/" title="下一篇: IDE破解">
                 <i class="fa fa-angle-right"></i>
             </a>
         
