@@ -79,13 +79,6 @@
   </url>
   
   <url>
-    <loc>http://xyueji.github.io/tags/index.html</loc>
-    
-    <lastmod>2019-09-12T02:32:40.881Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://xyueji.github.io/2019/01/02/Prometheus%E5%AE%89%E8%A3%85-HDFS%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86/</loc>
     
     <lastmod>2019-09-12T02:32:40.881Z</lastmod>
@@ -101,6 +94,13 @@
   
   <url>
     <loc>http://xyueji.github.io/categories/index.html</loc>
+    
+    <lastmod>2019-09-12T02:32:40.881Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xyueji.github.io/tags/index.html</loc>
     
     <lastmod>2019-09-12T02:32:40.881Z</lastmod>
     
