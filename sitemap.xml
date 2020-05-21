@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://xyueji.github.io/2020/05/21/IDEA%E8%BF%9E%E6%8E%A5Impala/</loc>
+    
+    <lastmod>2020-05-21T06:01:35.096Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xyueji.github.io/2020/02/06/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</loc>
     
     <lastmod>2020-02-06T09:56:57.437Z</lastmod>
@@ -72,13 +79,6 @@
   </url>
   
   <url>
-    <loc>http://xyueji.github.io/2019/01/04/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8/</loc>
-    
-    <lastmod>2019-09-12T02:32:40.881Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://xyueji.github.io/tags/index.html</loc>
     
     <lastmod>2019-09-12T02:32:40.881Z</lastmod>
@@ -87,6 +87,13 @@
   
   <url>
     <loc>http://xyueji.github.io/2019/01/02/Prometheus%E5%AE%89%E8%A3%85-HDFS%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86/</loc>
+    
+    <lastmod>2019-09-12T02:32:40.881Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://xyueji.github.io/2019/01/04/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8/</loc>
     
     <lastmod>2019-09-12T02:32:40.881Z</lastmod>
     

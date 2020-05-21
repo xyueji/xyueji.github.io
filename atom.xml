@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xyueji.github.io/"/>
-  <updated>2020-02-06T09:56:57.437Z</updated>
+  <updated>2020-05-21T06:01:35.096Z</updated>
   <id>http://xyueji.github.io/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>IDEA连接Impala</title>
+    <link href="http://xyueji.github.io/2020/05/21/IDEA%E8%BF%9E%E6%8E%A5Impala/"/>
+    <id>http://xyueji.github.io/2020/05/21/IDEA连接Impala/</id>
+    <published>2020-05-21T06:01:35.000Z</published>
+    <updated>2020-05-21T06:01:35.096Z</updated>
+    
+    <content type="html"><![CDATA[<p><strong>IDEA添加Driver and Data Source</strong></p><ol><li>打开idea右侧Database选项=》点击加号=》点击Driver and Data Source。</li></ol><p><img src="/2020/05/21/IDEA连接Impala/image-20200521132254056.png" alt="image-20200521132254056"></p><ol start="2"><li>添加Driver，点击User  Driver =》Go to Driver。</li></ol><a id="more"></a><p><img src="/2020/05/21/IDEA连接Impala/image-20200521134009611.png" alt="image-20200521134009611"></p><ol start="3"><li>配置Driver</li></ol><p><img src="/2020/05/21/IDEA连接Impala/image-20200521135321680.png" alt="image-20200521135321680"></p><ol start="4"><li>配置Data Source</li></ol><p><img src="/2020/05/21/IDEA连接Impala/image-20200521135914518.png" alt="image-20200521135914518"></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;IDEA添加Driver and Data Source&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;打开idea右侧Database选项=》点击加号=》点击Driver and Data Source。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&quot;/2020/05/21/IDEA连接Impala/image-20200521132254056.png&quot; alt=&quot;image-20200521132254056&quot;&gt;&lt;/p&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;添加Driver，点击User  Driver =》Go to Driver。&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="impala" scheme="http://xyueji.github.io/categories/impala/"/>
+    
+    
+      <category term="idea" scheme="http://xyueji.github.io/tags/idea/"/>
+    
+      <category term="impala" scheme="http://xyueji.github.io/tags/impala/"/>
+    
+      <category term="datasource" scheme="http://xyueji.github.io/tags/datasource/"/>
+    
+  </entry>
   
   <entry>
     <title>HBase基本知识</title>

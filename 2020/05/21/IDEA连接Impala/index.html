@@ -3,20 +3,25 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>iptables禁用启用端口 | 月迹的博客</title>
+  <title>IDEA连接Impala | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
-<meta name="keywords" content="iptables,端口">
+  <meta name="description" content="IDEA添加Driver and Data Source  打开idea右侧Database选项=》点击加号=》点击Driver and Data Source。    添加Driver，点击User  Driver =》Go to Driver。">
+<meta name="keywords" content="idea,impala,datasource">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iptables禁用启用端口">
-<meta property="og:url" content="http://xyueji.github.io/2019/01/04/iptables禁用启用端口/index.html">
+<meta property="og:title" content="IDEA连接Impala">
+<meta property="og:url" content="http://xyueji.github.io/2020/05/21/IDEA连接Impala/index.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
+<meta property="og:description" content="IDEA添加Driver and Data Source  打开idea右侧Database选项=》点击加号=》点击Driver and Data Source。    添加Driver，点击User  Driver =》Go to Driver。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-12T02:32:40.881Z">
+<meta property="og:image" content="http://xyueji.github.io/2020/05/21/IDEA连接Impala/image-20200521132254056.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/05/21/IDEA连接Impala/image-20200521134009611.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/05/21/IDEA连接Impala/image-20200521135321680.png">
+<meta property="og:image" content="http://xyueji.github.io/2020/05/21/IDEA连接Impala/image-20200521135914518.png">
+<meta property="og:updated_time" content="2020-05-21T06:01:35.096Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iptables禁用启用端口">
-<meta name="twitter:description" content="只允许指定ip访问本机的指定端口 目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。 ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100">
+<meta name="twitter:title" content="IDEA连接Impala">
+<meta name="twitter:description" content="IDEA添加Driver and Data Source  打开idea右侧Database选项=》点击加号=》点击Driver and Data Source。    添加Driver，点击User  Driver =》Go to Driver。">
+<meta name="twitter:image" content="http://xyueji.github.io/2020/05/21/IDEA连接Impala/image-20200521132254056.png">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -176,11 +181,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-iptables禁用启用端口" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-IDEA连接Impala" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/01/04/iptables禁用启用端口/" class="article-date">
-      <time datetime="2019-01-04T07:54:38.000Z" itemprop="datePublished">2019-01-04</time>
+      <a href="/2020/05/21/IDEA连接Impala/" class="article-date">
+      <time datetime="2020-05-21T06:01:35.000Z" itemprop="datePublished">2020-05-21</time>
 </a>
     </div>
   
@@ -193,7 +198,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      iptables禁用启用端口
+      IDEA连接Impala
     </h1>
   
 
@@ -202,13 +207,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+    <a class="article-category-link" href="/categories/impala/">impala</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iptables/">iptables</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/端口/">端口</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/datasource/">datasource</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/idea/">idea</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/impala/">impala</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -218,36 +223,24 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h2 id="只允许指定ip访问本机的指定端口"><a href="#只允许指定ip访问本机的指定端口" class="headerlink" title="只允许指定ip访问本机的指定端口"></a>只允许指定ip访问本机的指定端口</h2><ul>
-<li>目标：只允许指定的ip访问本机的指定端口8765，其他ip都禁止访问。</li>
-<li>ip白名单：127.0.0.1,192.168.1.124, 192.168.1.100</li>
-</ul>
+        <p><strong>IDEA添加Driver and Data Source</strong></p>
+<ol>
+<li>打开idea右侧Database选项=》点击加号=》点击Driver and Data Source。</li>
+</ol>
+<p><img src="/2020/05/21/IDEA连接Impala/image-20200521132254056.png" alt="image-20200521132254056"></p>
+<ol start="2">
+<li>添加Driver，点击User  Driver =》Go to Driver。</li>
+</ol>
 <a id="more"></a>
-<p>切换到root用户</p>
-<ul>
-<li><p>1、在tcp协议中，禁止所有的ip访问本机的1521端口。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 8765 -j DROP</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>2、允许192.168.1.123访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 127.0.0.1 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3、允许192.168.1.124访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.124 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>4、允许192.168.1.100访问本机的1521端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -s 192.168.1.100 -p tcp --dport 8765 -j ACCEPT</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>以上是临时设置。</p>
-<ul>
-<li><p>5、然后保存iptables</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables save</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>6、重启防火墙</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables restart</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="删除规则"><a href="#删除规则" class="headerlink" title="删除规则"></a>删除规则</h2><p>首先我们要知道 这条规则的编号，每条规则都有一个编号,通过 iptables -L -n –line-number 可以显示规则和相对应的编号。<br><br>删除INPUT链编号为2的规则<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 2</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2020/05/21/IDEA连接Impala/image-20200521134009611.png" alt="image-20200521134009611"></p>
+<ol start="3">
+<li>配置Driver</li>
+</ol>
+<p><img src="/2020/05/21/IDEA连接Impala/image-20200521135321680.png" alt="image-20200521135321680"></p>
+<ol start="4">
+<li>配置Data Source</li>
+</ol>
+<p><img src="/2020/05/21/IDEA连接Impala/image-20200521135914518.png" alt="image-20200521135914518"></p>
 
       
       
@@ -257,13 +250,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2019/01/04/iptables禁用启用端口/">iptables禁用启用端口</a></p>
+        <p><span>本文标题:</span><a href="/2020/05/21/IDEA连接Impala/">IDEA连接Impala</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2019年01月04日 - 15时54分</p>
-        <p><span>最后更新:</span>2019年09月12日 - 10时32分</p>
+        <p><span>发布时间:</span>2020年05月21日 - 14时01分</p>
+        <p><span>最后更新:</span>2020年05月21日 - 14时01分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2019/01/04/iptables禁用启用端口/" title="iptables禁用启用端口">http://xyueji.github.io/2019/01/04/iptables禁用启用端口/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2019/01/04/iptables禁用启用端口/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2020/05/21/IDEA连接Impala/" title="IDEA连接Impala">http://xyueji.github.io/2020/05/21/IDEA连接Impala/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://xyueji.github.io/2020/05/21/IDEA连接Impala/　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -276,18 +269,9 @@
 
 <nav id="article-nav">
   
-    <a href="/2019/10/15/JanusGraph/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          JanusGraph
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/01/04/Phoenix系统表/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Phoenix系统表</div>
+    <a href="/2020/02/06/HBase基本知识/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">HBase基本知识</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -298,7 +282,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#只允许指定ip访问本机的指定端口"><span class="toc-number">1.</span> <span class="toc-text">只允许指定ip访问本机的指定端口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#删除规则"><span class="toc-number">2.</span> <span class="toc-text">删除规则</span></a></li></ol>
+    
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -349,7 +333,7 @@
 <script src="https://billts.site/js/gitment.js"></script>
 <script>
     var gitment = new Gitment({
-      id: 'Fri Jan 04 2019 15:54:38 GMT+0800',
+      id: 'Thu May 21 2020 14:01:35 GMT+0800',
       owner: 'xyueji',
       repo: 'xyueji.github.io',
       oauth: {
@@ -366,13 +350,11 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2019/10/15/JanusGraph/" title="上一篇: JanusGraph">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="/2019/01/04/Phoenix系统表/" title="下一篇: Phoenix系统表">
+            <a href="/2020/02/06/HBase基本知识/" title="下一篇: HBase基本知识">
                 <i class="fa fa-angle-right"></i>
             </a>
         
