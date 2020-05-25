@@ -181,6 +181,76 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Vue+SpringBoot项目docker一键部署" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2020/05/25/Vue+SpringBoot项目docker一键部署/" class="article-date">
+      <time datetime="2020-05-25T11:25:10.000Z" itemprop="datePublished">2020-05-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/25/Vue+SpringBoot项目docker一键部署/">Vue+SpringBoot项目docker一键部署</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>项目编写完了，到了部署这一步发现过程比较繁杂，部署完后端部署前端。为了避免每次更新项目后繁琐的部署流程，选择docker可以一键部署，非常的方便，本文使用docker-compose，编写docker-compose.yml，实现一键部署与起停服务。</p>
+<h2 id="Compose-简介"><a href="#Compose-简介" class="headerlink" title="Compose 简介"></a>Compose 简介</h2><p>Compose 是用于定义和运行多容器 Docker 应用程序的工具。通过 Compose，您可以使用 YML 文件来配置应用程序需要的所有服务。然后，使用一个命令，就可以从 YML 文件配置中创建并启动所有服务。</p>
+<p><strong>本文编写server.Dockerfile和fe.Dockerfile来安装前后端环境和编译项目，其中涉及到的配置文件有settings.xml和ngnix.conf，加上docker-compose.yml共5个文件。</strong></p>
+<h2 id="server-Dockerfile"><a href="#server-Dockerfile" class="headerlink" title="server.Dockerfile"></a>server.Dockerfile</h2>
+          
+      
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/docker/">docker</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker-compose/">docker-compose</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot/">springboot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vue/">vue</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2020/05/25/Vue+SpringBoot项目docker一键部署/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-vue-simple-uploader+springboot大文件上传" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
@@ -819,73 +889,6 @@
       
         <p class="article-more-link">
           <a href="/2020/01/17/Linux-free命令详解/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-hbase的hbck工具" class="article article-type-post" itemscope="" itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2019/10/21/hbase的hbck工具/" class="article-date">
-      <time datetime="2019-10-21T08:18:24.000Z" itemprop="datePublished">2019-10-21</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/21/hbase的hbck工具/">hbase的hbck工具</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p>hbase hbck是hbase自带的一项非常实用的工具，很多hbase中出现的问题都可以尝试用hbase hbck修复。<br>新版本的hbck从 hdfs目录、META、RegionServer这三处获得region的Table和Region的相关信息，根据这些信息判断并尝试进行repair。<br>新版本的 hbck 可以修复各种错误，修复选项是：（请注意选项后面是否需要加具体表名）<br>（1）-fix<br>    向下兼容用，被-fixAssignments替代<br>（2）-fixAssignments<br>    用于修复region assignments错误<br>（3）-fixMeta<br></p>
-          
-      
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/HBase/">HBase</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbck/">hbck</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2019/10/21/hbase的hbck工具/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
