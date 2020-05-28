@@ -183,6 +183,79 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Mac-docker动态给Container添加端口映射" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2020/05/28/Mac-docker动态给Container添加端口映射/" class="article-date">
+      <time datetime="2020-05-28T03:02:45.000Z" itemprop="datePublished">2020-05-28</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/28/Mac-docker动态给Container添加端口映射/">Mac-docker动态给Container添加端口映射</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>最近用docker搭建了hadoop、hive、HBase等集群，搭建完成后想要搭建Flink集群，发现无法动态给Container添加端口映射。上网搜寻一番发现解决之法。</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ol>
+<li><p>通过docker container ls -a查看container id。<br><img src="Mac-docker动态给Container添加端口映射//84306FEB-C1C3-43C7-9FC2-D0CDF06ACE66.png" alt="fc2fc56e823aafd859aa5be3c534d253"></p>
+</li>
+<li><p>Mac 下 Docker Containers配置文件在~/Library/Containers/com.docker.docker目录，进入该目录，我们要修改的文件在Data/vms/0下，进入后发现有个tty文件，使用screen tty登录，会进入一个新的screen窗口，如下：<br><img src="Mac-docker动态给Container添加端口映射//F6808423-C8EC-4870-A0EB-D6149D1F5E79.png" alt="e3272a5114ab4a4c4cf077ca67710653"></p>
+</li>
+</ol>
+          
+      
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/docker/">docker</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/container/">container</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mac/">mac</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/端口映射/">端口映射</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2020/05/28/Mac-docker动态给Container添加端口映射/#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-Vue+SpringBoot项目docker一键部署" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
@@ -823,74 +896,6 @@
       
         <p class="article-more-link">
           <a href="/2020/01/17/Linux-top命令详解/#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Linux-free命令详解" class="article article-type-post" itemscope="" itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2020/01/17/Linux-free命令详解/" class="article-date">
-      <time datetime="2020-01-17T02:57:27.000Z" itemprop="datePublished">2020-01-17</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/01/17/Linux-free命令详解/">Linux-free命令详解</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h1 id="Linux-free命令详解"><a href="#Linux-free命令详解" class="headerlink" title="Linux free命令详解"></a>Linux free命令详解</h1><p><img src="/2020/01/17/Linux-free命令详解/image-20200116180223897.png" alt="image-20200116180223897"></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">free -h -s 3</span><br></pre></td></tr></table></figure>
-          
-      
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/free/">free</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2020/01/17/Linux-free命令详解/#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
