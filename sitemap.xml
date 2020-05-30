@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://xyueji.github.io/about/index.html</loc>
+    
+    <lastmod>2020-05-30T15:10:00.671Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://xyueji.github.io/2020/05/28/Mac-docker%E5%8A%A8%E6%80%81%E7%BB%99Container%E6%B7%BB%E5%8A%A0%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</loc>
     
     <lastmod>2020-05-28T03:11:28.166Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>http://xyueji.github.io/2020/05/25/Vue+SpringBoot%E9%A1%B9%E7%9B%AEdocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</loc>
     
     <lastmod>2020-05-25T11:32:06.315Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://xyueji.github.io/about/index.html</loc>
-    
-    <lastmod>2020-05-22T14:45:07.066Z</lastmod>
     
   </url>
   
