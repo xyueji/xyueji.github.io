@@ -423,31 +423,20 @@
 
 
     
-        <div class="comments" id="comments"></div>
-<!-- do not set the version number -->
-<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
-<!-- or set latest -->
-<script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
-<!-- or Default value -->
-<script src="//unpkg.com/valine"></script>
-
-<script type="text/javascript">
-    var GUEST = ['nick', 'mail', 'link'];
-    var guest = 'nick,mail,link'
-    guest = guest.split(',').filter(item => {
-        return GUEST.indexOf(item) > -1;
-    });
-    new Valine({
-        el: '#comments',
-        verify: 'false',
-        notify: '',
-        appId: '',
-        appKey: '',
-        placeholder: '',
-        avatar: '',
-        guest_info: guest,
-        pageSize: '' || 10,
-    });
+        <div id="gitments"></div>
+<link rel="stylesheet" href="https://billts.site/extra_css/gitment.css">
+<script src="https://billts.site/js/gitment.js"></script>
+<script>
+    var gitment = new Gitment({
+      id: 'Thu Feb 06 2020 17:56:57 GMT+0800',
+      owner: 'xyueji',
+      repo: 'xyueji.github.io',
+      oauth: {
+        client_id: '8864436c2b03c3753a80',
+        client_secret: '252abc963e694743b034294b00a36ec6c7ee2152',
+      },
+    })
+    gitment.render('gitments')
 </script>
 
     
