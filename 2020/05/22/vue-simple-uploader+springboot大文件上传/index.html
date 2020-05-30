@@ -71,6 +71,46 @@
         
         
         
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
 
         <div id="switch-area" class="switch-area">
             <div class="switch-wrap">
@@ -103,6 +143,12 @@
                     </nav>
                 </section>
                 
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="/tags/Phoenix/" style="font-size: 20px;">Phoenix</a> <a href="/tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="/tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="/tags/container/" style="font-size: 10px;">container</a> <a href="/tags/datasource/" style="font-size: 10px;">datasource</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/docker-compose/" style="font-size: 10px;">docker-compose</a> <a href="/tags/free/" style="font-size: 10px;">free</a> <a href="/tags/hbase/" style="font-size: 10px;">hbase</a> <a href="/tags/hbck/" style="font-size: 10px;">hbck</a> <a href="/tags/idea/" style="font-size: 20px;">idea</a> <a href="/tags/impala/" style="font-size: 10px;">impala</a> <a href="/tags/iptables/" style="font-size: 10px;">iptables</a> <a href="/tags/mac/" style="font-size: 10px;">mac</a> <a href="/tags/presto/" style="font-size: 10px;">presto</a> <a href="/tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="/tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="/tags/springboot/" style="font-size: 10px;">springboot</a> <a href="/tags/top/" style="font-size: 10px;">top</a> <a href="/tags/vue/" style="font-size: 10px;">vue</a> <a href="/tags/分片/" style="font-size: 10px;">分片</a> <a href="/tags/大文件/" style="font-size: 10px;">大文件</a> <a href="/tags/测试/" style="font-size: 10px;">测试</a> <a href="/tags/端口/" style="font-size: 10px;">端口</a> <a href="/tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="/tags/系统表/" style="font-size: 10px;">系统表</a> <a href="/tags/表重建/" style="font-size: 10px;">表重建</a>
+                    </div>
+                </section>
                 
                 
                 
@@ -179,7 +225,8 @@
     </div>
 </nav>
       <div class="body-wrap"><article id="post-vue-simple-uploader+springboot大文件上传" class="article article-type-post" itemscope="" itemprop="blogPost">
-  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    
     <div class="article-meta">
       <a href="/2020/05/22/vue-simple-uploader+springboot大文件上传/" class="article-date">
       <time datetime="2020-05-22T14:20:50.000Z" itemprop="datePublished">2020-05-22</time>
@@ -370,20 +417,18 @@
 
 
     
-        <div id="gitments"></div>
-<link rel="stylesheet" href="https://billts.site/extra_css/gitment.css">
-<script src="https://billts.site/js/gitment.js"></script>
-<script>
-    var gitment = new Gitment({
-      id: 'Fri May 22 2020 22:20:50 GMT+0800',
-      owner: 'xyueji',
-      repo: 'xyueji.github.io',
-      oauth: {
-        client_id: '8864436c2b03c3753a80',
-        client_secret: '252abc963e694743b034294b00a36ec6c7ee2152',
-      },
+        <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'd4b91f333999ffad68ff',
+        clientSecret: '5ffd387d0e079e2fb30e413e572211abbea52bac',
+        id: '2020/05/22/vue-simple-uploader+springboot大文件上传/',
+        owner: 'xyueji',
+        repo: 'blog-comments',
+        admin: 'xyueji'
     })
-    gitment.render('gitments')
+    gitalk.render('gitalk-container')
 </script>
 
     
@@ -522,43 +567,6 @@
     });
 </script>
 
-
-  <link rel="stylesheet" href="/galmenu/GalMenu.css">
-  <script src="/galmenu/GalMenu.js"></script>
-  <div class="GalMenu GalDropDown">
-      <div class="circle" id="gal">
-        <div class="ring">
-          
-            <a href="/" title="" class="menuItem">首页</a>
-          
-            <a href="/tags" title="" class="menuItem">标签</a>
-          
-            <a href="/categories" title="" class="menuItem">分类</a>
-          
-            <a href="/archives" title="" class="menuItem">归档</a>
-          
-            <a href="/about" title="" class="menuItem">关于</a>
-          
-        </div>
-        
-          <audio id="audio" src="#"></audio>
-        
-      </div> 
-</div>
-<div id="overlay" style="opacity: 1; cursor: pointer;"></div>
-  <script type="text/javascript">var items = document.querySelectorAll('.menuItem');
-    for (var i = 0,
-    l = items.length; i < l; i++) {
-      items[i].style.left = (50 - 35 * Math.cos( - 0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%";
-      items[i].style.top = (50 + 35 * Math.sin( - 0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%"
-    }</script>
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('body').GalMenu({
-      'menu': 'GalDropDown'
-    })
-  });
-</script>
 
 
 
