@@ -5,9 +5,9 @@
   <subtitle>用代码书写人生</subtitle>
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://xyueji.github.io/"/>
+  <link href="https://xyueji.github.io/"/>
   <updated>2020-05-28T03:11:28.166Z</updated>
-  <id>http://xyueji.github.io/</id>
+  <id>https://xyueji.github.io/</id>
   
   <author>
     <name>Yue Ji</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>Mac-docker动态给Container添加端口映射</title>
-    <link href="http://xyueji.github.io/2020/05/28/Mac-docker%E5%8A%A8%E6%80%81%E7%BB%99Container%E6%B7%BB%E5%8A%A0%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/"/>
-    <id>http://xyueji.github.io/2020/05/28/Mac-docker动态给Container添加端口映射/</id>
+    <link href="https://xyueji.github.io/2020/05/28/Mac-docker%E5%8A%A8%E6%80%81%E7%BB%99Container%E6%B7%BB%E5%8A%A0%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/"/>
+    <id>https://xyueji.github.io/2020/05/28/Mac-docker动态给Container添加端口映射/</id>
     <published>2020-05-28T03:11:28.000Z</published>
     <updated>2020-05-28T03:11:28.166Z</updated>
     
@@ -37,23 +37,23 @@
     
     </summary>
     
-      <category term="docker" scheme="http://xyueji.github.io/categories/docker/"/>
+      <category term="docker" scheme="https://xyueji.github.io/categories/docker/"/>
     
     
-      <category term="docker" scheme="http://xyueji.github.io/tags/docker/"/>
+      <category term="docker" scheme="https://xyueji.github.io/tags/docker/"/>
     
-      <category term="container" scheme="http://xyueji.github.io/tags/container/"/>
+      <category term="container" scheme="https://xyueji.github.io/tags/container/"/>
     
-      <category term="mac" scheme="http://xyueji.github.io/tags/mac/"/>
+      <category term="mac" scheme="https://xyueji.github.io/tags/mac/"/>
     
-      <category term="端口映射" scheme="http://xyueji.github.io/tags/%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/"/>
+      <category term="端口映射" scheme="https://xyueji.github.io/tags/%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/"/>
     
   </entry>
   
   <entry>
     <title>Vue+SpringBoot项目docker一键部署</title>
-    <link href="http://xyueji.github.io/2020/05/25/Vue+SpringBoot%E9%A1%B9%E7%9B%AEdocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/"/>
-    <id>http://xyueji.github.io/2020/05/25/Vue+SpringBoot项目docker一键部署/</id>
+    <link href="https://xyueji.github.io/2020/05/25/Vue+SpringBoot%E9%A1%B9%E7%9B%AEdocker%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/"/>
+    <id>https://xyueji.github.io/2020/05/25/Vue+SpringBoot项目docker一键部署/</id>
     <published>2020-05-25T11:25:10.000Z</published>
     <updated>2020-05-25T11:32:06.315Z</updated>
     
@@ -68,21 +68,21 @@
     
     </summary>
     
-      <category term="docker" scheme="http://xyueji.github.io/categories/docker/"/>
+      <category term="docker" scheme="https://xyueji.github.io/categories/docker/"/>
     
     
-      <category term="docker-compose" scheme="http://xyueji.github.io/tags/docker-compose/"/>
+      <category term="docker-compose" scheme="https://xyueji.github.io/tags/docker-compose/"/>
     
-      <category term="vue" scheme="http://xyueji.github.io/tags/vue/"/>
+      <category term="vue" scheme="https://xyueji.github.io/tags/vue/"/>
     
-      <category term="springboot" scheme="http://xyueji.github.io/tags/springboot/"/>
+      <category term="springboot" scheme="https://xyueji.github.io/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>vue-simple-uploader+springboot大文件上传</title>
-    <link href="http://xyueji.github.io/2020/05/22/vue-simple-uploader+springboot%E5%A4%A7%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"/>
-    <id>http://xyueji.github.io/2020/05/22/vue-simple-uploader+springboot大文件上传/</id>
+    <link href="https://xyueji.github.io/2020/05/22/vue-simple-uploader+springboot%E5%A4%A7%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/"/>
+    <id>https://xyueji.github.io/2020/05/22/vue-simple-uploader+springboot大文件上传/</id>
     <published>2020-05-22T14:20:50.000Z</published>
     <updated>2020-05-22T14:22:35.693Z</updated>
     
@@ -95,19 +95,19 @@
     
     </summary>
     
-      <category term="功能小计" scheme="http://xyueji.github.io/categories/%E5%8A%9F%E8%83%BD%E5%B0%8F%E8%AE%A1/"/>
+      <category term="功能小计" scheme="https://xyueji.github.io/categories/%E5%8A%9F%E8%83%BD%E5%B0%8F%E8%AE%A1/"/>
     
     
-      <category term="大文件" scheme="http://xyueji.github.io/tags/%E5%A4%A7%E6%96%87%E4%BB%B6/"/>
+      <category term="大文件" scheme="https://xyueji.github.io/tags/%E5%A4%A7%E6%96%87%E4%BB%B6/"/>
     
-      <category term="分片" scheme="http://xyueji.github.io/tags/%E5%88%86%E7%89%87/"/>
+      <category term="分片" scheme="https://xyueji.github.io/tags/%E5%88%86%E7%89%87/"/>
     
   </entry>
   
   <entry>
     <title>IDEA连接Impala</title>
-    <link href="http://xyueji.github.io/2020/05/21/IDEA%E8%BF%9E%E6%8E%A5Impala/"/>
-    <id>http://xyueji.github.io/2020/05/21/IDEA连接Impala/</id>
+    <link href="https://xyueji.github.io/2020/05/21/IDEA%E8%BF%9E%E6%8E%A5Impala/"/>
+    <id>https://xyueji.github.io/2020/05/21/IDEA连接Impala/</id>
     <published>2020-05-21T06:01:35.000Z</published>
     <updated>2020-05-21T06:01:35.096Z</updated>
     
@@ -126,21 +126,21 @@
     
     </summary>
     
-      <category term="impala" scheme="http://xyueji.github.io/categories/impala/"/>
+      <category term="impala" scheme="https://xyueji.github.io/categories/impala/"/>
     
     
-      <category term="idea" scheme="http://xyueji.github.io/tags/idea/"/>
+      <category term="idea" scheme="https://xyueji.github.io/tags/idea/"/>
     
-      <category term="impala" scheme="http://xyueji.github.io/tags/impala/"/>
+      <category term="impala" scheme="https://xyueji.github.io/tags/impala/"/>
     
-      <category term="datasource" scheme="http://xyueji.github.io/tags/datasource/"/>
+      <category term="datasource" scheme="https://xyueji.github.io/tags/datasource/"/>
     
   </entry>
   
   <entry>
     <title>HBase基本知识</title>
-    <link href="http://xyueji.github.io/2020/02/06/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"/>
-    <id>http://xyueji.github.io/2020/02/06/HBase基本知识/</id>
+    <link href="https://xyueji.github.io/2020/02/06/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"/>
+    <id>https://xyueji.github.io/2020/02/06/HBase基本知识/</id>
     <published>2020-02-06T09:56:57.000Z</published>
     <updated>2020-02-06T09:56:57.437Z</updated>
     
@@ -159,17 +159,17 @@
     
     </summary>
     
-      <category term="HBase" scheme="http://xyueji.github.io/categories/HBase/"/>
+      <category term="HBase" scheme="https://xyueji.github.io/categories/HBase/"/>
     
     
-      <category term="hbase" scheme="http://xyueji.github.io/tags/hbase/"/>
+      <category term="hbase" scheme="https://xyueji.github.io/tags/hbase/"/>
     
   </entry>
   
   <entry>
     <title>IDE破解</title>
-    <link href="http://xyueji.github.io/2020/02/06/IDE%E7%A0%B4%E8%A7%A3/"/>
-    <id>http://xyueji.github.io/2020/02/06/IDE破解/</id>
+    <link href="https://xyueji.github.io/2020/02/06/IDE%E7%A0%B4%E8%A7%A3/"/>
+    <id>https://xyueji.github.io/2020/02/06/IDE破解/</id>
     <published>2020-02-06T09:46:34.000Z</published>
     <updated>2020-02-06T09:46:34.285Z</updated>
     
@@ -183,19 +183,19 @@
     
     </summary>
     
-      <category term="工具" scheme="http://xyueji.github.io/categories/%E5%B7%A5%E5%85%B7/"/>
+      <category term="工具" scheme="https://xyueji.github.io/categories/%E5%B7%A5%E5%85%B7/"/>
     
     
-      <category term="idea" scheme="http://xyueji.github.io/tags/idea/"/>
+      <category term="idea" scheme="https://xyueji.github.io/tags/idea/"/>
     
-      <category term="pycharm" scheme="http://xyueji.github.io/tags/pycharm/"/>
+      <category term="pycharm" scheme="https://xyueji.github.io/tags/pycharm/"/>
     
   </entry>
   
   <entry>
     <title>salt-api配置</title>
-    <link href="http://xyueji.github.io/2020/01/20/salt-api%E9%85%8D%E7%BD%AE/"/>
-    <id>http://xyueji.github.io/2020/01/20/salt-api配置/</id>
+    <link href="https://xyueji.github.io/2020/01/20/salt-api%E9%85%8D%E7%BD%AE/"/>
+    <id>https://xyueji.github.io/2020/01/20/salt-api配置/</id>
     <published>2020-01-20T08:30:15.000Z</published>
     <updated>2020-01-20T08:33:17.888Z</updated>
     
@@ -207,17 +207,17 @@
     
     </summary>
     
-      <category term="SaltStack" scheme="http://xyueji.github.io/categories/SaltStack/"/>
+      <category term="SaltStack" scheme="https://xyueji.github.io/categories/SaltStack/"/>
     
     
-      <category term="salt-api" scheme="http://xyueji.github.io/tags/salt-api/"/>
+      <category term="salt-api" scheme="https://xyueji.github.io/tags/salt-api/"/>
     
   </entry>
   
   <entry>
     <title>线上HBase表重建</title>
-    <link href="http://xyueji.github.io/2020/01/20/%E7%BA%BF%E4%B8%8AHBase%E8%A1%A8%E9%87%8D%E5%BB%BA/"/>
-    <id>http://xyueji.github.io/2020/01/20/线上HBase表重建/</id>
+    <link href="https://xyueji.github.io/2020/01/20/%E7%BA%BF%E4%B8%8AHBase%E8%A1%A8%E9%87%8D%E5%BB%BA/"/>
+    <id>https://xyueji.github.io/2020/01/20/线上HBase表重建/</id>
     <published>2020-01-20T07:48:53.000Z</published>
     <updated>2020-01-20T08:00:04.041Z</updated>
     
@@ -235,17 +235,17 @@
     
     </summary>
     
-      <category term="HBase" scheme="http://xyueji.github.io/categories/HBase/"/>
+      <category term="HBase" scheme="https://xyueji.github.io/categories/HBase/"/>
     
     
-      <category term="表重建" scheme="http://xyueji.github.io/tags/%E8%A1%A8%E9%87%8D%E5%BB%BA/"/>
+      <category term="表重建" scheme="https://xyueji.github.io/tags/%E8%A1%A8%E9%87%8D%E5%BB%BA/"/>
     
   </entry>
   
   <entry>
     <title>Alluxio+Presto多版本测试</title>
-    <link href="http://xyueji.github.io/2020/01/20/Alluxio+Presto%E5%A4%9A%E7%89%88%E6%9C%AC%E6%B5%8B%E8%AF%95/"/>
-    <id>http://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/</id>
+    <link href="https://xyueji.github.io/2020/01/20/Alluxio+Presto%E5%A4%9A%E7%89%88%E6%9C%AC%E6%B5%8B%E8%AF%95/"/>
+    <id>https://xyueji.github.io/2020/01/20/Alluxio+Presto多版本测试/</id>
     <published>2020-01-20T04:03:50.000Z</published>
     <updated>2020-01-20T04:04:16.131Z</updated>
     
@@ -282,23 +282,23 @@
     
     </summary>
     
-      <category term="Alluxio" scheme="http://xyueji.github.io/categories/Alluxio/"/>
+      <category term="Alluxio" scheme="https://xyueji.github.io/categories/Alluxio/"/>
     
-      <category term="Presto" scheme="http://xyueji.github.io/categories/Alluxio/Presto/"/>
+      <category term="Presto" scheme="https://xyueji.github.io/categories/Alluxio/Presto/"/>
     
     
-      <category term="测试" scheme="http://xyueji.github.io/tags/%E6%B5%8B%E8%AF%95/"/>
+      <category term="测试" scheme="https://xyueji.github.io/tags/%E6%B5%8B%E8%AF%95/"/>
     
-      <category term="alluxio" scheme="http://xyueji.github.io/tags/alluxio/"/>
+      <category term="alluxio" scheme="https://xyueji.github.io/tags/alluxio/"/>
     
-      <category term="presto" scheme="http://xyueji.github.io/tags/presto/"/>
+      <category term="presto" scheme="https://xyueji.github.io/tags/presto/"/>
     
   </entry>
   
   <entry>
     <title>Linux-top命令详解</title>
-    <link href="http://xyueji.github.io/2020/01/17/Linux-top%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"/>
-    <id>http://xyueji.github.io/2020/01/17/Linux-top命令详解/</id>
+    <link href="https://xyueji.github.io/2020/01/17/Linux-top%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"/>
+    <id>https://xyueji.github.io/2020/01/17/Linux-top命令详解/</id>
     <published>2020-01-17T08:38:31.000Z</published>
     <updated>2020-01-19T02:52:34.552Z</updated>
     
@@ -314,17 +314,17 @@
     
     </summary>
     
-      <category term="Linux" scheme="http://xyueji.github.io/categories/Linux/"/>
+      <category term="Linux" scheme="https://xyueji.github.io/categories/Linux/"/>
     
     
-      <category term="top" scheme="http://xyueji.github.io/tags/top/"/>
+      <category term="top" scheme="https://xyueji.github.io/tags/top/"/>
     
   </entry>
   
   <entry>
     <title>Linux-free命令详解</title>
-    <link href="http://xyueji.github.io/2020/01/17/Linux-free%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"/>
-    <id>http://xyueji.github.io/2020/01/17/Linux-free命令详解/</id>
+    <link href="https://xyueji.github.io/2020/01/17/Linux-free%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"/>
+    <id>https://xyueji.github.io/2020/01/17/Linux-free命令详解/</id>
     <published>2020-01-17T02:57:27.000Z</published>
     <updated>2020-01-19T03:04:36.455Z</updated>
     
@@ -337,17 +337,17 @@
     
     </summary>
     
-      <category term="Linux" scheme="http://xyueji.github.io/categories/Linux/"/>
+      <category term="Linux" scheme="https://xyueji.github.io/categories/Linux/"/>
     
     
-      <category term="free" scheme="http://xyueji.github.io/tags/free/"/>
+      <category term="free" scheme="https://xyueji.github.io/tags/free/"/>
     
   </entry>
   
   <entry>
     <title>hbase的hbck工具</title>
-    <link href="http://xyueji.github.io/2019/10/21/hbase%E7%9A%84hbck%E5%B7%A5%E5%85%B7/"/>
-    <id>http://xyueji.github.io/2019/10/21/hbase的hbck工具/</id>
+    <link href="https://xyueji.github.io/2019/10/21/hbase%E7%9A%84hbck%E5%B7%A5%E5%85%B7/"/>
+    <id>https://xyueji.github.io/2019/10/21/hbase的hbck工具/</id>
     <published>2019-10-21T08:18:24.000Z</published>
     <updated>2020-01-17T10:58:48.633Z</updated>
     
@@ -359,17 +359,17 @@
     
     </summary>
     
-      <category term="HBase" scheme="http://xyueji.github.io/categories/HBase/"/>
+      <category term="HBase" scheme="https://xyueji.github.io/categories/HBase/"/>
     
     
-      <category term="hbck" scheme="http://xyueji.github.io/tags/hbck/"/>
+      <category term="hbck" scheme="https://xyueji.github.io/tags/hbck/"/>
     
   </entry>
   
   <entry>
     <title>JanusGraph</title>
-    <link href="http://xyueji.github.io/2019/10/15/JanusGraph/"/>
-    <id>http://xyueji.github.io/2019/10/15/JanusGraph/</id>
+    <link href="https://xyueji.github.io/2019/10/15/JanusGraph/"/>
+    <id>https://xyueji.github.io/2019/10/15/JanusGraph/</id>
     <published>2019-10-15T07:04:51.000Z</published>
     <updated>2019-10-15T07:04:51.103Z</updated>
     
@@ -382,17 +382,17 @@
     
     </summary>
     
-      <category term="JanusGraph" scheme="http://xyueji.github.io/categories/JanusGraph/"/>
+      <category term="JanusGraph" scheme="https://xyueji.github.io/categories/JanusGraph/"/>
     
     
-      <category term="JanusGraph" scheme="http://xyueji.github.io/tags/JanusGraph/"/>
+      <category term="JanusGraph" scheme="https://xyueji.github.io/tags/JanusGraph/"/>
     
   </entry>
   
   <entry>
     <title>iptables禁用启用端口</title>
-    <link href="http://xyueji.github.io/2019/01/04/iptables%E7%A6%81%E7%94%A8%E5%90%AF%E7%94%A8%E7%AB%AF%E5%8F%A3/"/>
-    <id>http://xyueji.github.io/2019/01/04/iptables禁用启用端口/</id>
+    <link href="https://xyueji.github.io/2019/01/04/iptables%E7%A6%81%E7%94%A8%E5%90%AF%E7%94%A8%E7%AB%AF%E5%8F%A3/"/>
+    <id>https://xyueji.github.io/2019/01/04/iptables禁用启用端口/</id>
     <published>2019-01-04T07:54:38.000Z</published>
     <updated>2019-09-12T02:32:40.881Z</updated>
     
@@ -407,19 +407,19 @@
     
     </summary>
     
-      <category term="Linux" scheme="http://xyueji.github.io/categories/Linux/"/>
+      <category term="Linux" scheme="https://xyueji.github.io/categories/Linux/"/>
     
     
-      <category term="iptables" scheme="http://xyueji.github.io/tags/iptables/"/>
+      <category term="iptables" scheme="https://xyueji.github.io/tags/iptables/"/>
     
-      <category term="端口" scheme="http://xyueji.github.io/tags/%E7%AB%AF%E5%8F%A3/"/>
+      <category term="端口" scheme="https://xyueji.github.io/tags/%E7%AB%AF%E5%8F%A3/"/>
     
   </entry>
   
   <entry>
     <title>Phoenix系统表</title>
-    <link href="http://xyueji.github.io/2019/01/04/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
-    <id>http://xyueji.github.io/2019/01/04/Phoenix系统表/</id>
+    <link href="https://xyueji.github.io/2019/01/04/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
+    <id>https://xyueji.github.io/2019/01/04/Phoenix系统表/</id>
     <published>2019-01-04T07:21:03.000Z</published>
     <updated>2019-09-12T02:32:40.881Z</updated>
     
@@ -431,19 +431,19 @@
     
     </summary>
     
-      <category term="Phoenix" scheme="http://xyueji.github.io/categories/Phoenix/"/>
+      <category term="Phoenix" scheme="https://xyueji.github.io/categories/Phoenix/"/>
     
     
-      <category term="Phoenix" scheme="http://xyueji.github.io/tags/Phoenix/"/>
+      <category term="Phoenix" scheme="https://xyueji.github.io/tags/Phoenix/"/>
     
-      <category term="系统表" scheme="http://xyueji.github.io/tags/%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
+      <category term="系统表" scheme="https://xyueji.github.io/tags/%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
     
   </entry>
   
   <entry>
     <title>Phoenix安装问题</title>
-    <link href="http://xyueji.github.io/2019/01/03/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98/"/>
-    <id>http://xyueji.github.io/2019/01/03/Phoenix安装问题/</id>
+    <link href="https://xyueji.github.io/2019/01/03/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98/"/>
+    <id>https://xyueji.github.io/2019/01/03/Phoenix安装问题/</id>
     <published>2019-01-03T13:14:33.000Z</published>
     <updated>2019-09-12T02:32:40.880Z</updated>
     
@@ -455,17 +455,17 @@
     
     </summary>
     
-      <category term="Phoenix" scheme="http://xyueji.github.io/categories/Phoenix/"/>
+      <category term="Phoenix" scheme="https://xyueji.github.io/categories/Phoenix/"/>
     
     
-      <category term="Phoenix" scheme="http://xyueji.github.io/tags/Phoenix/"/>
+      <category term="Phoenix" scheme="https://xyueji.github.io/tags/Phoenix/"/>
     
   </entry>
   
   <entry>
     <title>Prometheus安装+HDFS指标收集</title>
-    <link href="http://xyueji.github.io/2019/01/02/Prometheus%E5%AE%89%E8%A3%85-HDFS%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86/"/>
-    <id>http://xyueji.github.io/2019/01/02/Prometheus安装-HDFS指标收集/</id>
+    <link href="https://xyueji.github.io/2019/01/02/Prometheus%E5%AE%89%E8%A3%85-HDFS%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86/"/>
+    <id>https://xyueji.github.io/2019/01/02/Prometheus安装-HDFS指标收集/</id>
     <published>2019-01-02T10:06:19.000Z</published>
     <updated>2019-09-12T02:32:40.881Z</updated>
     
@@ -480,10 +480,10 @@
     
     </summary>
     
-      <category term="Prometheus" scheme="http://xyueji.github.io/categories/Prometheus/"/>
+      <category term="Prometheus" scheme="https://xyueji.github.io/categories/Prometheus/"/>
     
     
-      <category term="Prometheus" scheme="http://xyueji.github.io/tags/Prometheus/"/>
+      <category term="Prometheus" scheme="https://xyueji.github.io/tags/Prometheus/"/>
     
   </entry>
   
