@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="月迹的博客">
 <meta property="og:description" content="最近用docker搭建了hadoop、hive、HBase等集群，搭建完成后想要搭建Flink集群，发现无法动态给Container添加端口映射。上网搜寻一番发现解决之法。 解决方法 通过docker container ls -a查看container id。  Mac 下 Docker Containers配置文件在~/Library/Containers/com.docker.docker目">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://xyueji.github.io/images/Mac-docker动态给Container添加端口映射/84306FEB-C1C3-43C7-9FC2-D0CDF06ACE66.png">
-<meta property="og:image" content="https://xyueji.github.io/images/Mac-docker动态给Container添加端口映射/F6808423-C8EC-4870-A0EB-D6149D1F5E79.png">
-<meta property="og:image" content="https://xyueji.github.io/images/Mac-docker动态给Container添加端口映射/D57AB76E-2D4F-49F3-9FC0-FB1A306E374E.png">
-<meta property="og:image" content="https://xyueji.github.io/images/Mac-docker动态给Container添加端口映射/82FFB932-2F8F-496B-A33E-BB302C2B0435.png">
-<meta property="og:updated_time" content="2020-06-02T09:52:58.528Z">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/84306FEB-C1C3-43C7-9FC2-D0CDF06ACE66.png">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/F6808423-C8EC-4870-A0EB-D6149D1F5E79.png">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/D57AB76E-2D4F-49F3-9FC0-FB1A306E374E.png">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/82FFB932-2F8F-496B-A33E-BB302C2B0435.png">
+<meta property="og:updated_time" content="2020-06-02T11:37:57.449Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mac-docker动态给Container添加端口映射">
 <meta name="twitter:description" content="最近用docker搭建了hadoop、hive、HBase等集群，搭建完成后想要搭建Flink集群，发现无法动态给Container添加端口映射。上网搜寻一番发现解决之法。 解决方法 通过docker container ls -a查看container id。  Mac 下 Docker Containers配置文件在~/Library/Containers/com.docker.docker目">
-<meta name="twitter:image" content="https://xyueji.github.io/images/Mac-docker动态给Container添加端口映射/84306FEB-C1C3-43C7-9FC2-D0CDF06ACE66.png">
+<meta name="twitter:image" content="http://qbao377wt.bkt.clouddn.com/84306FEB-C1C3-43C7-9FC2-D0CDF06ACE66.png">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -288,14 +288,14 @@
           
         <p>最近用docker搭建了hadoop、hive、HBase等集群，搭建完成后想要搭建Flink集群，发现无法动态给Container添加端口映射。上网搜寻一番发现解决之法。</p>
 <h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ol>
-<li><p>通过docker container ls -a查看container id。<br><img src="images/Mac-docker动态给Container添加端口映射/84306FEB-C1C3-43C7-9FC2-D0CDF06ACE66.png" alt="fc2fc56e823aafd859aa5be3c534d253"></p>
+<li><p>通过docker container ls -a查看container id。<br><img src="http://qbao377wt.bkt.clouddn.com/84306FEB-C1C3-43C7-9FC2-D0CDF06ACE66.png" alt="fc2fc56e823aafd859aa5be3c534d253"></p>
 </li>
-<li><p>Mac 下 Docker Containers配置文件在~/Library/Containers/com.docker.docker目录，进入该目录，我们要修改的文件在Data/vms/0下，进入后发现有个tty文件，使用screen tty登录，会进入一个新的screen窗口，如下：<br><img src="images/Mac-docker动态给Container添加端口映射/F6808423-C8EC-4870-A0EB-D6149D1F5E79.png" alt="e3272a5114ab4a4c4cf077ca67710653"></p>
+<li><p>Mac 下 Docker Containers配置文件在~/Library/Containers/com.docker.docker目录，进入该目录，我们要修改的文件在Data/vms/0下，进入后发现有个tty文件，使用screen tty登录，会进入一个新的screen窗口，如下：<br><img src="http://qbao377wt.bkt.clouddn.com/F6808423-C8EC-4870-A0EB-D6149D1F5E79.png" alt="e3272a5114ab4a4c4cf077ca67710653"></p>
 </li>
 </ol>
 <a id="more"></a>
 <ol start="3">
-<li>进入/var/lib/docker/containers目录，发现镜像，选择步骤一所得的Container id为开头的镜像。需要修改两个文件config.v2.json和hostconfig.json<br><img src="images/Mac-docker动态给Container添加端口映射/D57AB76E-2D4F-49F3-9FC0-FB1A306E374E.png" alt="047b771c5814a263dad77d4f31fcb927"></li>
+<li>进入/var/lib/docker/containers目录，发现镜像，选择步骤一所得的Container id为开头的镜像。需要修改两个文件config.v2.json和hostconfig.json<br><img src="http://qbao377wt.bkt.clouddn.com/D57AB76E-2D4F-49F3-9FC0-FB1A306E374E.png" alt="047b771c5814a263dad77d4f31fcb927"></li>
 </ol>
 <ul>
 <li>config.v2.json文件修改添加Config.ExposedPorts部分, 如我们需要添加8080端口，则在ExposedPorts数组下添加”8080/tcp”:{}项：<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">"ExposedPorts":&#123;</span><br><span class="line">    "22/tcp":&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    "8080/tcp":&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -304,7 +304,7 @@
 <p>hostconfig.json文件修改添加PortBindings部分，还以8080端口为例：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">"PortBindings":&#123;</span><br><span class="line">     "8080/tcp":[</span><br><span class="line">         &#123;</span><br><span class="line">            <span class="attr">"HostIp"</span>:<span class="string">""</span>,</span><br><span class="line">            <span class="attr">"HostPort"</span>:<span class="string">"8080"</span></span><br><span class="line">         &#125;</span><br><span class="line">     ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <ol start="4">
 <li>修改完config.v2.json和hostconfig.json文件，按Ctrl+a，然后迅速按d退出screen。</li>
-<li>杀掉screen进程，如果不杀掉在此进入screen可能会出现乱码现象。运行screen -wipe：<br><img src="images/Mac-docker动态给Container添加端口映射/82FFB932-2F8F-496B-A33E-BB302C2B0435.png" alt="b062fec15cebf756fdee1390b0cc803c"></li>
+<li>杀掉screen进程，如果不杀掉在此进入screen可能会出现乱码现象。运行screen -wipe：<br><img src="http://qbao377wt.bkt.clouddn.com/82FFB932-2F8F-496B-A33E-BB302C2B0435.png" alt="b062fec15cebf756fdee1390b0cc803c"></li>
 <li>重启docker即可生效，若不生效注意是否config.v2.json和hostconfig.json是否修改对，我修改几次发现里面内容根本没修改，保存后最好检查一下修改内容。</li>
 </ol>
 
@@ -365,7 +365,7 @@
         <p><span>本文标题:</span><a href="">Mac-docker动态给Container添加端口映射</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
         <p><span>发布时间:</span>2020年05月28日 - 11时11分</p>
-        <p><span>最后更新:</span>2020年06月02日 - 17时52分</p>
+        <p><span>最后更新:</span>2020年06月02日 - 19时37分</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="" title="Mac-docker动态给Container添加端口映射">https://xyueji.github.io/Mac-docker动态给Container添加端口映射.html</a>
             <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/Mac-docker动态给Container添加端口映射.html　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
