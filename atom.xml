@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xyueji.github.io/"/>
-  <updated>2020-06-02T11:37:57.449Z</updated>
+  <updated>2020-06-03T03:54:31.690Z</updated>
   <id>https://xyueji.github.io/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>测试</title>
+    <link href="https://xyueji.github.io/%E6%B5%8B%E8%AF%95.html"/>
+    <id>https://xyueji.github.io/测试.html</id>
+    <published>2020-06-03T03:54:31.000Z</published>
+    <updated>2020-06-03T03:54:31.690Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="http://qbao377wt.bkt.clouddn.com/ZM5fiGBYhSw.jpg" alt="a87de4a026cd736ccfb62f1a25a647bd"></p><a id="more"></a>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;http://qbao377wt.bkt.clouddn.com/ZM5fiGBYhSw.jpg&quot; alt=&quot;a87de4a026cd736ccfb62f1a25a647bd&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="test" scheme="https://xyueji.github.io/categories/test/"/>
+    
+    
+      <category term="test" scheme="https://xyueji.github.io/tags/test/"/>
+    
+  </entry>
   
   <entry>
     <title>Mac-docker动态给Container添加端口映射</title>
