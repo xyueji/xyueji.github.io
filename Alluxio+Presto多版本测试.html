@@ -1381,10 +1381,8 @@
                 window.fetch('/content.json?t=' + (+new Date()), {
                     method: 'get',
                 }).then((res) => {
-                    console.log(res)
                     return res.json()
                 }).then((data) => {
-                    console.log(data)
                     this.data = data
                     let keywords = $('#search').val()
                     this.searchList(keywords)
