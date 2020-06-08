@@ -584,7 +584,8 @@
                 } else {
                     this.data.forEach((item, index) => {
                         let tagsK = item.tags.map(item => item.name).join('-')
-                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                        let categoriesK = item.categories.map(item => item.name).join('-')
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(categoriesK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
                             divList += `
                           <li>
                             <a href="/${item.path}" class="search-result-title">${item.title}</a>
