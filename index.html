@@ -169,7 +169,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/Phoenix/" style="font-size: 20px;">Phoenix</a> <a href="tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 20px;">docker</a> <a href="tags/docker-compose/" style="font-size: 20px;">docker-compose</a> <a href="tags/flink/" style="font-size: 10px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/hbase/" style="font-size: 10px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/idea/" style="font-size: 20px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                        <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/Phoenix/" style="font-size: 15px;">Phoenix</a> <a href="tags/Prometheus/" style="font-size: 10px;">Prometheus</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/hbase/" style="font-size: 10px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
                     </div>
                 </section>
                 
@@ -249,6 +249,81 @@
     </div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-Flink学习--如何计算实时热门商品" class="article article-type-post" itemscope="" itemprop="blogPost">
+    
+    <div class="article-meta">
+      <a href="Flink学习--如何计算实时热门商品.html" class="article-date">
+      <time datetime="2020-06-16T09:30:44.000Z" itemprop="datePublished">2020-06-16</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p>首先我们把“实时热门商品”翻译成程序员易理解的语言：“每隔5分钟输出最近一小时内点击量最多的前N个商品”。将这个需求分解一下，将做如下几件事：</p>
+<ul>
+<li>构建数据源</li>
+<li>抽取业务数据时间戳，告诉Flink基于业务时间做窗口</li>
+<li>过滤出点击行为数据</li>
+<li>按1小时的窗口，每隔5分钟，做滑动窗口聚合</li>
+<li>按每个窗口聚合，输出每个窗口中点击量前N的商品</li>
+</ul>
+          
+      
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="categories/flink/">flink</a>
+    </div>
+
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/flink/">flink</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/大数据/">大数据</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/热门商品/">热门商品</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="Flink学习--如何计算实时热门商品.html#more">阅读全文 >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+
   
     <article id="post-Flink学习--基本概念与环境搭建" class="article article-type-post" itemscope="" itemprop="blogPost">
     
@@ -877,80 +952,6 @@
       
         <p class="article-more-link">
           <a href="salt-api配置.html#more">阅读全文 >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-线上HBase表重建" class="article article-type-post" itemscope="" itemprop="blogPost">
-    
-    <div class="article-meta">
-      <a href="线上HBase表重建.html" class="article-date">
-      <time datetime="2020-01-20T07:48:53.000Z" itemprop="datePublished">2020-01-20</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="线上HBase表重建.html">线上HBase表重建</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <h3 id="一、创建临时表"><a href="#一、创建临时表" class="headerlink" title="一、创建临时表"></a>一、创建临时表</h3><ol>
-<li>预切分</li>
-</ol>
-<p>​           根据表数据特点选取合适的方式预切分表。</p>
-<ol start="2">
-<li>创建临时表</li>
-</ol>
-          
-      
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-    <div class="article-category tagcloud">
-    <a class="article-category-link" href="categories/HBase/">HBase</a>
-    </div>
-
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/表重建/">表重建</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="线上HBase表重建.html#more">阅读全文 >></a>
         </p>
       
       <div class="clearfix"></div>
