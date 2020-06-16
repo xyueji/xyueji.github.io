@@ -235,7 +235,7 @@
     <link href="https://xyueji.github.io/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html"/>
     <id>https://xyueji.github.io/HBase基本知识.html</id>
     <published>2020-02-06T09:56:57.000Z</published>
-    <updated>2020-06-16T11:34:30.191Z</updated>
+    <updated>2020-06-16T11:43:27.270Z</updated>
     
     <content type="html"><![CDATA[<p><strong>数据模型</strong></p><ol><li><p>Name Space</p><p>​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。</p></li><li><p>Region</p></li></ol><a id="more"></a><p>   ​    类似于关系型数据库的表概念。不同的是，HBase 定义表时只需要声明列族即可，不需 要声明具体的列。这意味着，往 HBase 写入数据时，字段可以动态、按需指定。因此，和关 系型数据库相比，HBase 能够轻松应对字段变更的场景。</p><ol start="3"><li><p>Row</p><p>​    HBase 表中的每行数据都由一个 RowKey 和多个 Column(列)组成，数据是按照 RowKey 的字典顺序存储的，并且查询数据时只能根据 RowKey 进行检索，所以 RowKey 的设计十分重要。</p></li><li><p>Column</p></li></ol><p>   ​    HBase 中的每个列都由 Column Family(列族)和 Column Qualifier(列限定符)进行限 定，例如 info:name，info:age。建表时，只需指明列族，而列限定符无需预先定义。</p><ol start="5"><li><p>Time Stamp</p><p>​    用于标识数据的不同版本(version)，每条数据写入时，如果不指定时间戳，系统会自动为其加上该字段，其值为写入 HBase 的时间。</p></li></ol><p><strong>HBase基本架构</strong></p><ol><li><p>RegionServer</p><p>​    RegionServer为Region的管理者，其实现类为HRegionServer，主要作用如下（一些表数据的操作DML）：</p><ul><li>对于数据的操作：get，put，delete</li><li>对于Region的操作：splitRegion、compactRegion</li></ul></li><li><p>Master</p><p>​    Master是所有RegionServer的管理者，其实现类HMaster，主要作用如下（一些元数据的操作DDL）：</p><ul><li>对于表的操作：create、drop、alter</li><li>对于RegionServer的操作：分配regions到每个RegionServer，监控每个RegionServer的状态，负载均衡和故障转移。</li></ul></li><li><p>Zookeeper</p><p>​    HBase通过Zookeeper来做Master的高可用、RegionServer的监控、元数据的入口以及集群配置的维护工作。</p></li><li><p>HDFS</p><p>​    HDFS为HBase提供最终的底层数据存储服务，同时为HBase提供高可用的支持。</p></li></ol><p><strong><em>HBase详细架构图</em></strong></p><p><img src="http://qbao377wt.bkt.clouddn.com/image-20200206155538738.png" alt="image-20200206155538738"></p><ol><li><p>StroreFile</p><pre><code>保存实际数据的物理文件，StoreFile以HFile的形式存储在HDFS上。每个Store会有一个或多个StoreFile(HFile)，数据在每个StoreFile中都是有序的。</code></pre></li><li><p>MemStore</p><p>​    写缓存，由于HFile中的数据要求是有序的，所以数据是先存在MemStore中，排好序后，等到刷写时机时才会刷写到HFile，每次刷写都会形成一个新的HFile。</p></li><li><p>WALs</p><p>​    由于数据要经MemStore排序后才能刷写到HFile，但把数据保存在内存中会有很高概率导致数据丢失，为了解决这个问题，数据会先写在一个叫做Write-Ahead logfile的文件中，然后再写入MemStore中。所以在系统出现故障的时候，数据可以通过这个日志文件重建。</p></li></ol>]]></content>
     
@@ -256,6 +256,8 @@
     
     
       <category term="hbase" scheme="https://xyueji.github.io/tags/hbase/"/>
+    
+      <category term="基础知识" scheme="https://xyueji.github.io/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
   </entry>
   
@@ -440,7 +442,7 @@
     <link href="https://xyueji.github.io/hbase%E7%9A%84hbck%E5%B7%A5%E5%85%B7.html"/>
     <id>https://xyueji.github.io/hbase的hbck工具.html</id>
     <published>2019-10-21T08:18:24.000Z</published>
-    <updated>2020-06-16T11:34:30.196Z</updated>
+    <updated>2020-06-16T11:43:27.273Z</updated>
     
     <content type="html"><![CDATA[<p>hbase hbck是hbase自带的一项非常实用的工具，很多hbase中出现的问题都可以尝试用hbase hbck修复。<br>新版本的hbck从 hdfs目录、META、RegionServer这三处获得region的Table和Region的相关信息，根据这些信息判断并尝试进行repair。<br>新版本的 hbck 可以修复各种错误，修复选项是：（请注意选项后面是否需要加具体表名）<br>（1）-fix<br>    向下兼容用，被-fixAssignments替代<br>（2）-fixAssignments<br>    用于修复region assignments错误<br>（3）-fixMeta<br><a id="more"></a>    用于修复meta表的问题，前提是HDFS上面的region info信息有并且正确。<br>（4）-fixHdfsHoles<br>    修复region holes（空洞，某个区间没有region）问题<br>（5）-fixHdfsOrphans<br>    修复Orphan region（hdfs上面没有.regioninfo的region）<br>（6）-fixHdfsOverlaps<br>    修复region overlaps（区间重叠）问题<br>（7）-fixVersionFile<br>    修复缺失hbase.version文件的问题<br>（8）-maxMerge <n> （n默认是5）<br>    当region有重叠是，需要合并region，一次合并的region数最大不超过这个值。<br>（9）-sidelineBigOverlaps<br>    当修复region overlaps问题时，允许跟其他region重叠次数最多的一些region不参与（修复后，可以把没有参与的数据通过bulk load加载到相应的region）<br>（10）-maxOverlapsToSideline <n> （n默认是2）<br>    当修复region overlaps问题时，一组里最多允许多少个region不参与。由于选项较多，所以有两个简写的选项<br>（11） -repair<br>    相当于-fixAssignments -fixMeta -fixHdfsHoles -fixHdfsOrphans -fixHdfsOverlaps -fixVersionFile<br>-sidelineBigOverlaps。如前所述，-repair 打开所有的修复选项，相当于-fixAssignments -fixMeta -fixHdfsHoles -fixHdfsOrphans -fixHdfsOverlaps -fixVersionFile -sidelineBigOverlaps<br>（12）-repairHoles<br>    相当于-fixAssignments -fixMeta -fixHdfsHoles -fixHdfsOrphans  </n></n></p><p>示例情景：  </p><p>Q：缺失hbase.version文件<br>A：加上选项 -fixVersionFile 解决 </p><p>Q：如果一个region即不在META表中，又不在hdfs上面，但是在regionserver的online region集合中<br>A：加上选项 -fixAssignments 解决  </p><p>Q：如果一个region在META表中，并且在regionserver的online region集合中，但是在hdfs上面没有<br>A：加上选项 -fixAssignments -fixMeta 解决，（ -fixAssignments告诉regionserver close region），（ -fixMeta删除META表中region的记录） </p><p>Q：如果一个region在META表中没有记录，没有被regionserver服务，但是在hdfs上面有<br>A：加上选项 -fixMeta -fixAssignments 解决，（ -fixAssignments 用于assign region），（ -fixMeta用于在META表中添加region的记录）   </p><p>Q：如果一个region在META表中没有记录，在hdfs上面有，被regionserver服务了<br>A：加上选项 -fixMeta 解决，在META表中添加这个region的记录，先undeploy region，后assign。-fixMeta，如果hdfs上面没有，那么从META表中删除相应的记录，如果hdfs上面有，在META表中添加上相应的记录信息 </p><p>Q：如果一个region在META表中有记录，但是在hdfs上面没有，并且没有被regionserver服务<br>A：加上选项 -fixMeta 解决，删除META表中的记录   </p><p>Q：如果一个region在META表中有记录，在hdfs上面也有，table不是disabled的，但是这个region没有被服务<br>A：加上选项 -fixAssignments 解决，assign这个region。-fixAssignments，用于修复region没有assign、不应该assign、assign了多次的问题   </p><p>Q：如果一个region在META表中有记录，在hdfs上面也有，table是disabled的，但是这个region被某个regionserver服务了<br>A：加上选项 -fixAssignments 解决，undeploy这个region  </p><p>Q：如果一个region在META表中有记录，在hdfs上面也有，table不是disabled的，但是这个region被多个regionserver服务了<br>A：加上选项 -fixAssignments 解决，通知所有regionserver close region，然后assign region </p><p>Q：如果一个region在META表中，在hdfs上面也有，也应该被服务，但是META表中记录的regionserver和实际所在的regionserver不相符<br>A：加上选项 -fixAssignments 解决   </p><p>Q：region holes<br>A：加上 -fixHdfsHoles ，创建一个新的空region，填补空洞，但是不assign 这个 region，也不在META表中添加这个region的相关信息。修复region holes时，-fixHdfsHoles 选项只是创建了一个新的空region，填补上了这个区间，还需要加上-fixAssignments -fixMeta 来解决问题，（ -fixAssignments 用于assign region），（ -fixMeta用于在META表中添加region的记录），所以有了组合拳 -repairHoles 修复region holes，相当于-fixAssignments -fixMeta -fixHdfsHoles -fixHdfsOrphans </p><p>Q：region在hdfs上面没有.regioninfo文件<br>A：加上选项 -fixHdfsOrphans 解决   </p><p>Q：region overlaps<br>A：需要加上 -fixHdfsOverlaps   </p>]]></content>
     
@@ -454,6 +456,8 @@
     
     
       <category term="hbck" scheme="https://xyueji.github.io/tags/hbck/"/>
+    
+      <category term="修复工具" scheme="https://xyueji.github.io/tags/%E4%BF%AE%E5%A4%8D%E5%B7%A5%E5%85%B7/"/>
     
   </entry>
   
@@ -536,7 +540,7 @@
     <link href="https://xyueji.github.io/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98.html"/>
     <id>https://xyueji.github.io/Phoenix安装问题.html</id>
     <published>2019-01-03T13:14:33.000Z</published>
-    <updated>2020-06-16T11:34:30.184Z</updated>
+    <updated>2020-06-16T11:43:27.266Z</updated>
     
     <content type="html"><![CDATA[<h2 id="下载Phoenix"><a href="#下载Phoenix" class="headerlink" title="下载Phoenix"></a>下载Phoenix</h2><p>下载地址:<a href="http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)" target="_blank" rel="noopener">http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)</a></p><a id="more"></a><h2 id="配置Phoenix"><a href="#配置Phoenix" class="headerlink" title="配置Phoenix"></a>配置Phoenix</h2><ul><li>解压缩文件</li><li>配置Phoenix环境变量</li><li>将 Phoenix 目录下的phoenix-core-4.14.1-HBase-1.2.jar、phoenix-4.14.1-HBase-1.2-client.jar 拷贝到 hbase 集群各个节点 hbase 安装目录 lib 中。</li><li>将 hbase 集群中的配置文件 hbase-site.xml 拷贝到 Phoenix 的 bin 目录下，覆盖原有的配置文件。</li><li>将 hdfs 集群中的配置文件 core-site.xml、 hdfs-site.xml 拷贝到 Phoenix 的 bin 目录下。</li><li>重启hbase<h2 id="启动Phoenix"><a href="#启动Phoenix" class="headerlink" title="启动Phoenix"></a>启动Phoenix</h2>sqlline.py &lt;hbase.zookeeper.quorum&gt;</li></ul>]]></content>
     
@@ -550,6 +554,8 @@
     
     
       <category term="phoenix" scheme="https://xyueji.github.io/tags/phoenix/"/>
+    
+      <category term="安装" scheme="https://xyueji.github.io/tags/%E5%AE%89%E8%A3%85/"/>
     
   </entry>
   

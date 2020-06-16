@@ -6,7 +6,7 @@
   <title>HBase基本知识 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="数据模型  Name Space ​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。  Region">
-<meta name="keywords" content="hbase">
+<meta name="keywords" content="hbase,基础知识">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HBase基本知识">
 <meta property="og:url" content="https://xyueji.github.io/HBase基本知识.html">
@@ -14,7 +14,7 @@
 <meta property="og:description" content="数据模型  Name Space ​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。  Region">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/image-20200206155538738.png">
-<meta property="og:updated_time" content="2020-06-16T11:34:30.191Z">
+<meta property="og:updated_time" content="2020-06-16T11:43:27.270Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HBase基本知识">
 <meta name="twitter:description" content="数据模型  Name Space ​    命名空间，类似于关系型数据库的 DatabBase 概念，每个命名空间下有多个表。HBase 有两个自带的命名空间，分别是 hbase 和 default，hbase中存放的是 HBase 内置的表， default 表是用户默认使用的命名空间。  Region">
@@ -167,7 +167,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/hbase/" style="font-size: 10px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                        <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/hbase/" style="font-size: 10px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/修复工具/" style="font-size: 10px;">修复工具</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/基础知识/" style="font-size: 10px;">基础知识</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/安装/" style="font-size: 10px;">安装</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
                     </div>
                 </section>
                 
@@ -278,7 +278,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/hbase/">hbase</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/基础知识/">基础知识</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -405,7 +405,7 @@
         <p><span>本文标题:</span><a href="">HBase基本知识</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
         <p><span>发布时间:</span>2020年02月06日 - 17时56分</p>
-        <p><span>最后更新:</span>2020年06月16日 - 19时34分</p>
+        <p><span>最后更新:</span>2020年06月16日 - 19时43分</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="" title="HBase基本知识">https://xyueji.github.io/HBase基本知识.html</a>
             <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/HBase基本知识.html　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
