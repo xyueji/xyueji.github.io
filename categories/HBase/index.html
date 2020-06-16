@@ -3,13 +3,13 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Category: HBase | 月迹的博客</title>
+  <title>Category: hbase | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="月迹的博客，记录工作或生活中的学习历程，欢迎大家共同讨论！">
 <meta name="keywords" content="yueji,月迹,博客,月迹的博客,大数据,Hadoop,HBase,学习,笔记">
 <meta property="og:type" content="website">
 <meta property="og:title" content="月迹的博客">
-<meta property="og:url" content="https://xyueji.github.io/categories/HBase/index.html">
+<meta property="og:url" content="https://xyueji.github.io/categories/hbase/index.html">
 <meta property="og:site_name" content="月迹的博客">
 <meta property="og:description" content="月迹的博客，记录工作或生活中的学习历程，欢迎大家共同讨论！">
 <meta property="og:locale" content="zh-CN">
@@ -260,6 +260,41 @@
   <div class="archive-article-inner">
     <header class="archive-article-header">
           <div class="article-meta">
+              <a href="../../HBase基本知识.html" class="archive-article-date">
+      <time datetime="2020-02-06T09:56:57.000Z" itemprop="datePublished">02-06</time>
+</a>
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="../../HBase基本知识.html">HBase基本知识</a>
+    </h1>
+  
+
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="">hbase</a>
+    </div>
+
+
+          
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/hbase/">hbase</a></li></ul>
+    </div>
+
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
               <a href="../../线上HBase表重建.html" class="archive-article-date">
       <time datetime="2020-01-20T07:48:53.000Z" itemprop="datePublished">01-20</time>
 </a>
@@ -274,13 +309,58 @@
         <div class="article-info info-on-archive">
           
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="">HBase</a>
+    <a class="article-category-link" href="">hbase</a>
     </div>
 
 
           
     <div class="article-tag tagcloud">
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/表重建/">表重建</a></li></ul>
+    </div>
+
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+      
+        </div></section>
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="../../archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+          <div class="article-meta">
+              <a href="../../hbase的hbck工具.html" class="archive-article-date">
+      <time datetime="2019-10-21T08:18:24.000Z" itemprop="datePublished">10-21</time>
+</a>
+        </div>
+         
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="../../hbase的hbck工具.html">hbase的hbck工具</a>
+    </h1>
+  
+
+        <div class="article-info info-on-archive">
+          
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="">hbase</a>
+    </div>
+
+
+          
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="../../tags/hbck/">hbck</a></li></ul>
     </div>
 
         </div>
@@ -568,34 +648,6 @@
                     if (delta <= 60 * 1000) {
                         return '1分钟内';
                     } else if (delta < 60 * 60 * 1000) {
-                        return Math.floor(delta / (60 * 1000)) + '分钟前';
-                    } else if (delta < 24 * 60 * 60 * 1000) {
-                        return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
-                    } else if (delta < 24 * 60 * 60 * 1000 * 30) {
-                        return Math.floor(delta / (24 * 60 * 60 * 1000)) + '天前';
-                    } else if (delta < 24 * 60 * 60 * 1000 * 30 * 12) {
-                        return Math.floor(delta / (24 * 60 * 60 * 1000 * 30)) + '月前';
-                    } else if (currentTime.getFullYear() != oldTime.getFullYear()) {
-                        return [getWidthString(oldTime.getFullYear()), getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-')
-                    } else {
-                        return [getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-');
-                    }
-                }
-                return '';
-            }
-        }
-        searchTool.init()
-    }
-    function searchToggle() {
-        $('.search-cover').fadeToggle();
-        $('.search-result-list').fadeToggle();
-    }
-</script>
-
-
-  </div>
-</body>
-</html>60 * 60 * 1000) {
                         return Math.floor(delta / (60 * 1000)) + '分钟前';
                     } else if (delta < 24 * 60 * 60 * 1000) {
                         return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
