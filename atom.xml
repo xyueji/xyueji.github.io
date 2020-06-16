@@ -103,9 +103,9 @@
     
       <category term="大数据" scheme="https://xyueji.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
-      <category term="docker" scheme="https://xyueji.github.io/tags/docker/"/>
-    
       <category term="docker-compose" scheme="https://xyueji.github.io/tags/docker-compose/"/>
+    
+      <category term="docker" scheme="https://xyueji.github.io/tags/docker/"/>
     
   </entry>
   
