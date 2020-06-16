@@ -3,20 +3,26 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>salt-api配置 | 月迹的博客</title>
+  <title>Flink学习--基本概念与环境搭建 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="salt-api配置一、安装salt-api相关软件12345678910yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -yyum install salt-api.noarch -yyum install pyOpenSSL.x86_64 -y #设">
-<meta name="keywords" content="salt-api">
+  <meta name="description" content="基本概念 Programming Model–数据流编程模型  Distributed Runtime–数据流编程模型   数据流编程模型">
+<meta name="keywords" content="flink,wordcount,大数据">
 <meta property="og:type" content="article">
-<meta property="og:title" content="salt-api配置">
-<meta property="og:url" content="https://xyueji.github.io/salt-api配置.html">
+<meta property="og:title" content="Flink学习--基本概念与环境搭建">
+<meta property="og:url" content="https://xyueji.github.io/Flink学习--基本概念与环境搭建.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="salt-api配置一、安装salt-api相关软件12345678910yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -yyum install salt-api.noarch -yyum install pyOpenSSL.x86_64 -y #设">
+<meta property="og:description" content="基本概念 Programming Model–数据流编程模型  Distributed Runtime–数据流编程模型   数据流编程模型">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-01-20T08:33:17.888Z">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/F9B5407B-5584-432D-960B-E95AE9EA6307.png">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/7D27BFC3-422F-4D68-8F25-30E30611FABF.png">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/08E41E51-8178-4C6F-BBBF-AF84CA97C2AC.png">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/D3B4DB9B-A83D-4526-BEE5-B6210A7B3784.png">
+<meta property="og:image" content="http://qbao377wt.bkt.clouddn.com/4847CDC9-D471-46BA-A84C-5C53E2CA6E24.png">
+<meta property="og:updated_time" content="2020-06-16T08:21:18.178Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="salt-api配置">
-<meta name="twitter:description" content="salt-api配置一、安装salt-api相关软件12345678910yum install salt-minion.noarch -yyum install salt-master.noarch -yyum install salt-syndic.noarch -yyum install salt-api.noarch -yyum install pyOpenSSL.x86_64 -y #设">
+<meta name="twitter:title" content="Flink学习--基本概念与环境搭建">
+<meta name="twitter:description" content="基本概念 Programming Model–数据流编程模型  Distributed Runtime–数据流编程模型   数据流编程模型">
+<meta name="twitter:image" content="http://qbao377wt.bkt.clouddn.com/F9B5407B-5584-432D-960B-E95AE9EA6307.png">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -244,11 +250,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-salt-api配置" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Flink学习--基本概念与环境搭建" class="article article-type-post" itemscope="" itemprop="blogPost">
     
     <div class="article-meta">
       <a href="" class="article-date">
-      <time datetime="2020-01-20T08:30:15.000Z" itemprop="datePublished">2020-01-20</time>
+      <time datetime="2020-06-16T08:21:18.000Z" itemprop="datePublished">2020-06-16</time>
 </a>
     </div>
   
@@ -261,7 +267,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      salt-api配置
+      Flink学习--基本概念与环境搭建
     </h1>
   
 
@@ -270,13 +276,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="categories/SaltStack/">SaltStack</a>
+    <a class="article-category-link" href="categories/flink/">flink</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/salt-api/">salt-api</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/flink/">flink</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/wordcount/">wordcount</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/大数据/">大数据</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -286,20 +292,61 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h1 id="salt-api配置"><a href="#salt-api配置" class="headerlink" title="salt-api配置"></a>salt-api配置</h1><h3 id="一、安装salt-api相关软件"><a href="#一、安装salt-api相关软件" class="headerlink" title="一、安装salt-api相关软件"></a>一、安装salt-api相关软件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">yum install salt-minion.noarch -y</span><br><span class="line">yum install salt-master.noarch -y</span><br><span class="line">yum install salt-syndic.noarch -y</span><br><span class="line">yum install salt-api.noarch -y</span><br><span class="line">yum install pyOpenSSL.x86_64 -y </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">设置开机自启动</span></span><br><span class="line">chkconfig salt-api on</span><br><span class="line">chkconfig salt-master on</span><br><span class="line">chkconfig salt-minion on</span><br></pre></td></tr></table></figure>
-<a id="more"></a>
-<h3 id="二、配置salt-api"><a href="#二、配置salt-api" class="headerlink" title="二、配置salt-api"></a>二、配置salt-api</h3><ol>
-<li>在salt-master的/etc/salt/下创建master.d文件夹创建api.conf和eauth.conf文件，具体内容如下：</li>
+        <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ul>
+<li><p><a href="#数据流编程模型">Programming Model–数据流编程模型</a></p>
+</li>
+<li><p><a href="#分布式运行环境">Distributed Runtime–数据流编程模型</a></p>
+</li>
+</ul>
+<h3 id="数据流编程模型"><a href="#数据流编程模型" class="headerlink" title="数据流编程模型"></a>数据流编程模型</h3><a id="more"></a>
+<ul>
+<li><a href="#抽象级别">Levels of Abstraction–抽象级别</a></li>
+<li><a href="#程序&amp;数据流">Programs and Dataflows–程序&amp;数据流</a></li>
+<li><a href="#并行数据流">Parallel Dataflows–并行数据流</a></li>
+<li><a href="#窗口">Windows–窗口</a></li>
+<li><a href="#时间">Time–时间</a></li>
+<li><a href="#有状态算子">Stateful Operations–有状态算子</a></li>
+<li><a href="#容错检查点">Checkpoints for Fault Tolerance–容错检查点</a></li>
+<li><a href="#批处理流">Batch on Streaming–批处理流</a></li>
+</ul>
+<h4 id="抽象级别"><a href="#抽象级别" class="headerlink" title="抽象级别"></a>抽象级别</h4><p>Flink给流/批处理应用提供了不同级别的抽象，主要分为以下4种：<br><img src="http://qbao377wt.bkt.clouddn.com/F9B5407B-5584-432D-960B-E95AE9EA6307.png" alt="67b15a33539c6c55e414fc99120a5037"></p>
+<ol>
+<li>Stateful Stream Processing：最底层的抽象是有状态的数据流。它经Process Function嵌入DataStream API。允许用户非常灵活地处理来自一个或多个流的数据。并且用户能够注册event time和processing time（稍后详解），允许项目能够实现复杂的计算。</li>
+<li>DataStream/DataSet API：在实际过程中，很多应用并不需要上述提到的最底层抽象。于是提供了DataStream API(有界/无界数据流)和DataSet API（有界数据流）。这些API提供了共有的构建模块去处理数据，像各种各样用户指定的转换、连接、聚合、窗口和状态等等。</li>
+<li>Table API：是围绕着表定义的模拟语言，可以动态改变表。</li>
+<li>SQL：可以让程序完全用SQL来描述。</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> api.conf</span></span><br><span class="line">rest_cherrypy:</span><br><span class="line">  port: 8000                          #  salt-api 监听端口</span><br><span class="line">  ssl_crt: /etc/pki/tls/certs/localhost.crt          # ssl认证的证书</span><br><span class="line">  ssl_key: /etc/pki/tls/private/localhost_nopass.key</span><br><span class="line"> </span><br><span class="line"><span class="meta">#</span><span class="bash"> eauth.conf</span></span><br><span class="line">external_auth:</span><br><span class="line">  pam:</span><br><span class="line">    hbaseapi:</span><br><span class="line">      - .*</span><br><span class="line">      - '@wheel' # to allow access to all wheel modules</span><br><span class="line">      - '@runner' # to allow access to all runner modules</span><br><span class="line">      - '@jobs' # to allow access to the jobs runner and/or wheel module</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>创建localhost.crt和localhost_nopass.key</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/pki/tls/certs/</span><br><span class="line">make testcert</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line">hbaseapi</span><br><span class="line"> </span><br><span class="line">cd ../private/</span><br><span class="line">openssl rsa -in localhost.key -out localhost_nopass.key</span><br><span class="line">hbaseapi</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li>重启salt-master和salt-api</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service salt-master restart</span><br><span class="line">service salt-api restart</span><br></pre></td></tr></table></figure>
+<h4 id="程序-amp-数据流"><a href="#程序-amp-数据流" class="headerlink" title="程序&amp;数据流"></a>程序&amp;数据流</h4><p>构建Flink程序的基本模块是流和转换，概念上来说一个stream是数据记录的流，一个转换是以一个或多个作为输入流而产生一个或多个输出流的一个操作。<br>当Flink程序运行的时候，Flink程序映射成数据流，包含流和转换操作。每个流开始于一个或多个sources结束于一个或多个sinks，这些数据流就像非循环指向图（DAGs）。<br><img src="http://qbao377wt.bkt.clouddn.com/7D27BFC3-422F-4D68-8F25-30E30611FABF.png" alt="115b53d69ec17c0cdd668563b51deba9"></p>
+<h4 id="并行数据流"><a href="#并行数据流" class="headerlink" title="并行数据流"></a>并行数据流</h4><p>在Flink程序运行期间，一个流有一个或多个流分区，每个操作有一个或多个操作子任务。这些操作子任务彼此依赖，且运行在不同的线程、可能原型在不同的机器或container。<br>一个流在数据转换中间有两种操作形式，一个是一对一（one to one），另一个是重新分配（redistributing）。</p>
+<h4 id="窗口"><a href="#窗口" class="headerlink" title="窗口"></a>窗口</h4><p>窗口可以是时间驱动（如：每30秒），也可以是数据驱动（如：每100个元素）。</p>
+<h4 id="时间"><a href="#时间" class="headerlink" title="时间"></a>时间</h4><p>在流处理程序中，定义了以下三种时间概念：</p>
+<ul>
+<li>Event Time：是事件被创建的时间，它通常在事件中被描述为时间戳，比较常见的是数据自带的时间属性。</li>
+<li>Ingestion time：是时间进入Flink数据流的时间。</li>
+<li>Processing Time：是每个操作所在的物理机上的时间。</li>
+</ul>
+<h4 id="有状态算子"><a href="#有状态算子" class="headerlink" title="有状态算子"></a>有状态算子</h4><p>许多在数据流中的算子在某时刻看作一个独立的事件，一些算子通过多种事件记录信息。这些算子被称作有状态的。</p>
+<h4 id="容错检查点"><a href="#容错检查点" class="headerlink" title="容错检查点"></a>容错检查点</h4><p>Flink通过流的重放和检查点结合实现容错机制。一个检查点联系着一个特殊的指向，这个指向每个与每个算子状态相关联的输入流。</p>
+<h4 id="批处理流"><a href="#批处理流" class="headerlink" title="批处理流"></a>批处理流</h4><p>当流是有边界的情况下，Flink运行的流处理程序就是一个特殊的批处理程序。这种情况下有些注意的情况：</p>
+<ul>
+<li>容错在批处理程序中不用检查点，发生异常时流全部回放。</li>
+<li>在DataSet API中的有状态算子，将不用key/value索引，而采用简单的in-memory/out-of-core数据结构。</li>
+<li>DataSet API用特殊的同步迭代。</li>
+</ul>
+<h3 id="分布式运行环境"><a href="#分布式运行环境" class="headerlink" title="分布式运行环境"></a>分布式运行环境</h3><ul>
+<li><a href="#Tasks\ and\ Operator\ Chains">Tasks and Operator Chains</a></li>
+<li><a href="#Job\ Managers,\ Task\ Managers,\ Clients">Job Managers, Task Managers, Clients</a></li>
+<li><a href="#Task\ Slots\ and\ Resources">Task Slots and Resources</a></li>
+<li><a href="#Task\ Slots\ and\ Resources">State Backends</a></li>
+<li><a href="#Savepoints">Savepoints</a></li>
+</ul>
+<p>详细解释见：<a href="https://ci.apache.org/projects/flink/flink-docs-release-1.10/zh/concepts/runtime.html" target="_blank" rel="noopener">https://ci.apache.org/projects/flink/flink-docs-release-1.10/zh/concepts/runtime.html</a></p>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>作者采用docker-compose搭建Flink环境，详细可参考这篇文章<a href="https://xyueji.github.io/docker-compose%E6%90%AD%E5%BB%BA%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%8E%AF%E5%A2%83.html">docker-compose搭建大数据环境</a>。</p>
+<h2 id="WordCount程序"><a href="#WordCount程序" class="headerlink" title="WordCount程序"></a>WordCount程序</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.flink.examples;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.FlatMapFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSource;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2020-05-28 14:50</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SocketTextStreamWordCount</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (args.length != <span class="number">2</span>) &#123;</span><br><span class="line">            System.out.println(<span class="string">"SocketTextStreamWordCount USAGE: &lt;hostname&gt; &lt;port&gt;"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String hostname = args[<span class="number">0</span>];</span><br><span class="line">        Integer port = Integer.parseInt(args[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置stream execution environment</span></span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取数据</span></span><br><span class="line">        DataStreamSource&lt;String&gt; stream = env.socketTextStream(hostname, port);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 计数</span></span><br><span class="line">        SingleOutputStreamOperator&lt;Tuple2&lt;String, Integer&gt;&gt; sum = stream.flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">                .keyBy(<span class="number">0</span>)</span><br><span class="line">                .sum(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        sum.print();</span><br><span class="line"></span><br><span class="line">        env.execute(<span class="string">"SocketTextStreamWordCount"</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 分词，构建元组</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">LineSplitter</span> <span class="keyword">implements</span> <span class="title">FlatMapFunction</span>&lt;<span class="title">String</span>, <span class="title">Tuple2</span>&lt;<span class="title">String</span>, <span class="title">Integer</span>&gt;&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flatMap</span><span class="params">(String line, Collector&lt;Tuple2&lt;String, Integer&gt;&gt; collector)</span> </span>&#123;</span><br><span class="line">            String[] words = line.toLowerCase().split(<span class="string">"\\W+"</span>);</span><br><span class="line">            <span class="keyword">for</span> (String word : words) &#123;</span><br><span class="line">                <span class="keyword">if</span> (word.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    collector.collect(<span class="keyword">new</span> Tuple2&lt;&gt;(word, <span class="number">1</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在本地使用nc开启9090端口：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -l 9090</span><br></pre></td></tr></table></figure></p>
+<p>打包程序上传到docker容器中，运行如下命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c com.xyueji.flink.examples.SocketTextStreamWordCount flink-learning-examples-1.0-SNAPSHOT.jar &lt;本机ip&gt; 9090</span><br></pre></td></tr></table></figure></p>
+<p>本机输入字符串：<br><img src="http://qbao377wt.bkt.clouddn.com/08E41E51-8178-4C6F-BBBF-AF84CA97C2AC.png" alt="4537004427b6a880c577e8fd912ebf18"><br>查看flink运行结果，使用docker logs查看：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs taskmanager</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://qbao377wt.bkt.clouddn.com/D3B4DB9B-A83D-4526-BEE5-B6210A7B3784.png" alt="f023cf1473a7315c68ed72d4a170560f"><br><img src="http://qbao377wt.bkt.clouddn.com/4847CDC9-D471-46BA-A84C-5C53E2CA6E24.png" alt="5f7c36004bfd2a991e5c5aa2309fbc8a"></p>
 
       
       
@@ -355,13 +402,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="">salt-api配置</a></p>
+        <p><span>本文标题:</span><a href="">Flink学习--基本概念与环境搭建</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 Yue Ji 的个人博客">Yue Ji</a></p>
-        <p><span>发布时间:</span>2020年01月20日 - 16时30分</p>
-        <p><span>最后更新:</span>2020年01月20日 - 16时33分</p>
+        <p><span>发布时间:</span>2020年06月16日 - 16时21分</p>
+        <p><span>最后更新:</span>2020年06月16日 - 16时21分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="" title="salt-api配置">https://xyueji.github.io/salt-api配置.html</a>
-            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/salt-api配置.html　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="" title="Flink学习--基本概念与环境搭建">https://xyueji.github.io/Flink学习--基本概念与环境搭建.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/Flink学习--基本概念与环境搭建.html　　作者: Yue Ji" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -374,18 +421,9 @@
 
 <nav id="article-nav">
   
-    <a href="IDE破解.html" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          IDE破解
-        
-      </div>
-    </a>
   
-  
-    <a href="线上HBase表重建.html" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">线上HBase表重建</div>
+    <a href="docker-compose搭建大数据环境.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">docker-compose搭建大数据环境</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -396,7 +434,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#salt-api配置"><span class="toc-number">1.</span> <span class="toc-text">salt-api配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、安装salt-api相关软件"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、安装salt-api相关软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、配置salt-api"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、配置salt-api</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数据流编程模型"><span class="toc-number">1.1.</span> <span class="toc-text">数据流编程模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#抽象级别"><span class="toc-number">1.1.1.</span> <span class="toc-text">抽象级别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#程序-amp-数据流"><span class="toc-number">1.1.2.</span> <span class="toc-text">程序&amp;数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#并行数据流"><span class="toc-number">1.1.3.</span> <span class="toc-text">并行数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#窗口"><span class="toc-number">1.1.4.</span> <span class="toc-text">窗口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#时间"><span class="toc-number">1.1.5.</span> <span class="toc-text">时间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#有状态算子"><span class="toc-number">1.1.6.</span> <span class="toc-text">有状态算子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#容错检查点"><span class="toc-number">1.1.7.</span> <span class="toc-text">容错检查点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#批处理流"><span class="toc-number">1.1.8.</span> <span class="toc-text">批处理流</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分布式运行环境"><span class="toc-number">1.2.</span> <span class="toc-text">分布式运行环境</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境搭建"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WordCount程序"><span class="toc-number">3.</span> <span class="toc-text">WordCount程序</span></a></li></ol>
 </div>
 <input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
 
@@ -448,7 +486,7 @@
     var gitalk = new Gitalk({
         clientID: '8864436c2b03c3753a80',
         clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
-        id: 'salt-api配置.html',
+        id: 'Flink学习--基本概念与环境搭建.html',
         owner: 'xyueji',
         repo: 'xyueji.github.io',
         admin: 'xyueji'
@@ -462,18 +500,16 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="IDE破解.html" title="上一篇: IDE破解">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="线上HBase表重建.html" title="下一篇: 线上HBase表重建">
+            <a href="docker-compose搭建大数据环境.html" title="下一篇: docker-compose搭建大数据环境">
                 <i class="fa fa-angle-right"></i>
             </a>
         
     </div>
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
     <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
     <script>
         $(".post-list").addClass("toc-article");
