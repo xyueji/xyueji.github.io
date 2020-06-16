@@ -103,9 +103,9 @@
     
       <category term="大数据" scheme="https://xyueji.github.io/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
     
-      <category term="docker" scheme="https://xyueji.github.io/tags/docker/"/>
-    
       <category term="docker-compose" scheme="https://xyueji.github.io/tags/docker-compose/"/>
+    
+      <category term="docker" scheme="https://xyueji.github.io/tags/docker/"/>
     
   </entry>
   
@@ -529,9 +529,9 @@
       <category term="phoenix" scheme="https://xyueji.github.io/categories/phoenix/"/>
     
     
-      <category term="phoenix" scheme="https://xyueji.github.io/tags/phoenix/"/>
-    
       <category term="系统表" scheme="https://xyueji.github.io/tags/%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
+    
+      <category term="phoenix" scheme="https://xyueji.github.io/tags/phoenix/"/>
     
   </entry>
   
