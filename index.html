@@ -282,10 +282,12 @@
       
           
               <h2 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h2><h3 id="分支命名"><a href="#分支命名" class="headerlink" title="分支命名"></a>分支命名</h3><p><strong>master 分支</strong></p>
+<blockquote>
 <ul>
 <li>master 为主分支，也是用于部署生产环境的分支，确保master分支稳定性</li>
 <li>master 分支一般由develop以及hotfix分支合并，任何时间都不能直接修改代码</li>
 </ul>
+</blockquote>
           
       
       
@@ -992,7 +994,7 @@
                 &copy; 2020 月 迹
             </div>
             <div class="footer-right">
-                <a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank">spfk</a> by luuman
+                <a href="http://hexo.io/" target="_blank" style="color: #000">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank" style="color: #000">spfk</a> by luuman
             </div>
         </div>
         
@@ -1025,7 +1027,7 @@
 
     <script>
         $(document).ready(function() {
-            var backgroundnum = 1;
+            var backgroundnum = 0;
             var backgroundimg = "url(/background/bg-" + backgroundnum +".jpg)";
             $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
             $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
