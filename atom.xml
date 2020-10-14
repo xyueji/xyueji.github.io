@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xyueji.github.io/"/>
-  <updated>2020-10-14T03:58:00.999Z</updated>
+  <updated>2020-10-14T04:02:56.260Z</updated>
   <id>https://xyueji.github.io/</id>
   
   <author>
@@ -20,10 +20,10 @@
     <title>MapReduce-Shuffle过程</title>
     <link href="https://xyueji.github.io/MapReduce-Shuffle%E8%BF%87%E7%A8%8B.html"/>
     <id>https://xyueji.github.io/MapReduce-Shuffle过程.html</id>
-    <published>2020-10-14T03:58:00.000Z</published>
-    <updated>2020-10-14T03:58:00.999Z</updated>
+    <published>2020-10-14T04:02:56.000Z</published>
+    <updated>2020-10-14T04:02:56.260Z</updated>
     
-    <content type="html"><![CDATA[<blockquote><p>从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。</p></blockquote><h2 id="map-side"><a href="#map-side" class="headerlink" title="map side"></a>map side</h2><ol><li><p>在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到<br>80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spill file文件。</p></li><li><p>分区：在写入磁盘之前，会先进分区(partition)，而partition的数量是由reducer的数量决定的。</p><blockquote><p>job.setNumReduceTasks(2);</p></blockquote></li></ol><a id="more"></a><pre><code>默认是用map输出的&lt;key,value&gt;中key的hashcode对NumReduceTasks的个数取余，相同的分到一个区。</code></pre><ol start="3"><li><p>排序：在每一个partition中，都会有一个sort by key。</p></li><li><p>combiner：如果有combiner function，在sort之后会执行combiner，相当于map阶段的rudece 【满足数学运算的交换律和结合律】。</p></li><li><p>merge：数个spill files会合并（merge成一个分过区的排过序的文件）。</p></li><li><p>compress：压缩the map output。</p><blockquote><p>mapreduce.task.io.sort.factor 一次性合并小文件的数量 默认10个</p></blockquote><blockquote><p>mapreduce.map.output.compress 启用压缩，默认是false</p></blockquote><blockquote><p>org.apache.hadoop.io.compress.DefaultCodec 默认使用的压缩算法</p></blockquote></li></ol><h2 id="reduce-side"><a href="#reduce-side" class="headerlink" title="reduce side"></a>reduce side</h2><ol><li>解压缩: 如果在map side 已经压缩过，在合并排序之前要先进行解压缩。</li><li>sort phase(merge)。</li><li>group phase: 将相同key的value分到一组，形成一个集合。<br><img src="MapReduce-Shuffle过程.resources/C9E1B76E-5804-4B6F-86F7-1B4C079A8C31.png" alt="08fd21ca91442cce894dc6b0f847b640"></li></ol>]]></content>
+    <content type="html"><![CDATA[<blockquote><p>从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。</p></blockquote><h2 id="map-side"><a href="#map-side" class="headerlink" title="map side"></a>map side</h2><ol><li><p>在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到<br>80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spill file文件。</p></li><li><p>分区：在写入磁盘之前，会先进分区(partition)，而partition的数量是由reducer的数量决定的。</p><blockquote><p>job.setNumReduceTasks(2);</p></blockquote></li></ol><a id="more"></a><pre><code>默认是用map输出的&lt;key,value&gt;中key的hashcode对NumReduceTasks的个数取余，相同的分到一个区。</code></pre><ol start="3"><li><p>排序：在每一个partition中，都会有一个sort by key。</p></li><li><p>combiner：如果有combiner function，在sort之后会执行combiner，相当于map阶段的rudece 【满足数学运算的交换律和结合律】。</p></li><li><p>merge：数个spill files会合并（merge成一个分过区的排过序的文件）。</p></li><li><p>compress：压缩the map output。</p><blockquote><p>mapreduce.task.io.sort.factor 一次性合并小文件的数量 默认10个</p></blockquote><blockquote><p>mapreduce.map.output.compress 启用压缩，默认是false</p></blockquote><blockquote><p>org.apache.hadoop.io.compress.DefaultCodec 默认使用的压缩算法</p></blockquote></li></ol><h2 id="reduce-side"><a href="#reduce-side" class="headerlink" title="reduce side"></a>reduce side</h2><ol><li>解压缩: 如果在map side 已经压缩过，在合并排序之前要先进行解压缩。</li><li>sort phase(merge)。</li><li>group phase: 将相同key的value分到一组，形成一个集合。<br><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/C9E1B76E-5804-4B6F-86F7-1B4C079A8C31.png" alt="08fd21ca91442cce894dc6b0f847b640"></li></ol>]]></content>
     
     <summary type="html">
     
