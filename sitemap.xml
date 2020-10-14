@@ -93,13 +93,6 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98.html</loc>
-    
-    <lastmod>2020-07-04T18:19:19.361Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://xyueji.github.io/Prometheus%E5%AE%89%E8%A3%85-HDFS%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86.html</loc>
     
     <lastmod>2020-07-04T18:19:19.361Z</lastmod>
@@ -108,6 +101,13 @@
   
   <url>
     <loc>https://xyueji.github.io/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8.html</loc>
+    
+    <lastmod>2020-07-04T18:19:19.361Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://xyueji.github.io/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98.html</loc>
     
     <lastmod>2020-07-04T18:19:19.361Z</lastmod>
     
@@ -135,7 +135,7 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html</loc>
+    <loc>https://xyueji.github.io/Git%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83.html</loc>
     
     <lastmod>2020-07-04T18:19:19.360Z</lastmod>
     
@@ -163,7 +163,7 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/Git%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83.html</loc>
+    <loc>https://xyueji.github.io/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html</loc>
     
     <lastmod>2020-07-04T18:19:19.360Z</lastmod>
     
