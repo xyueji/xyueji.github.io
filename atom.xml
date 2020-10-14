@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://xyueji.github.io/"/>
-  <updated>2020-07-04T18:19:19.360Z</updated>
+  <updated>2020-10-14T03:52:21.412Z</updated>
   <id>https://xyueji.github.io/</id>
   
   <author>
@@ -15,6 +15,41 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MapReduce-Shuffle过程</title>
+    <link href="https://xyueji.github.io/MapReduce-Shuffle%E8%BF%87%E7%A8%8B.html"/>
+    <id>https://xyueji.github.io/MapReduce-Shuffle过程.html</id>
+    <published>2020-10-14T03:52:21.000Z</published>
+    <updated>2020-10-14T03:52:21.412Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。</p></blockquote><h2 id="map-side"><a href="#map-side" class="headerlink" title="map side"></a>map side</h2><ol><li><p>在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到<br>80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spill file文件。</p></li><li><p>分区：在写入磁盘之前，会先进分区(partition)，而partition的数量是由reducer的数量决定的。</p><blockquote><p>job.setNumReduceTasks(2);</p></blockquote></li></ol><a id="more"></a><pre><code>默认是用map输出的&lt;key,value&gt;中key的hashcode对NumReduceTasks的个数取余，相同的分到一个区。</code></pre><ol start="3"><li><p>排序：在每一个partition中，都会有一个sort by key。</p></li><li><p>combiner：如果有combiner function，在sort之后会执行combiner，相当于map阶段的rudece 【满足数学运算的交换律和结合律】。</p></li><li><p>merge：数个spill files会合并（merge成一个分过区的排过序的文件）。</p></li><li><p>compress：压缩the map output。</p><blockquote><p>mapreduce.task.io.sort.factor 一次性合并小文件的数量 默认10个</p></blockquote><blockquote><p>mapreduce.map.output.compress 启用压缩，默认是false</p></blockquote><blockquote><p>org.apache.hadoop.io.compress.DefaultCodec 默认使用的压缩算法</p></blockquote></li></ol><h2 id="reduce-side"><a href="#reduce-side" class="headerlink" title="reduce side"></a>reduce side</h2><ol><li>解压缩: 如果在map side 已经压缩过，在合并排序之前要先进行解压缩。</li><li>sort phase(merge)。</li><li>group phase: 将相同key的value分到一组，形成一个集合。<br><img src="MapReduce-Shuffle过程.resources/C9E1B76E-5804-4B6F-86F7-1B4C079A8C31.png" alt="08fd21ca91442cce894dc6b0f847b640"></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;map-side&quot;&gt;&lt;a href=&quot;#map-side&quot; class=&quot;headerlink&quot; title=&quot;map side&quot;&gt;&lt;/a&gt;map side&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到&lt;br&gt;80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spill file文件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;分区：在写入磁盘之前，会先进分区(partition)，而partition的数量是由reducer的数量决定的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;job.setNumReduceTasks(2);&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="hadoop" scheme="https://xyueji.github.io/categories/hadoop/"/>
+    
+    
+      <category term="mapreduce" scheme="https://xyueji.github.io/tags/mapreduce/"/>
+    
+      <category term="shuffle" scheme="https://xyueji.github.io/tags/shuffle/"/>
+    
+  </entry>
   
   <entry>
     <title>Git开发规范</title>
@@ -559,33 +594,9 @@
       <category term="phoenix" scheme="https://xyueji.github.io/categories/phoenix/"/>
     
     
-      <category term="phoenix" scheme="https://xyueji.github.io/tags/phoenix/"/>
-    
       <category term="系统表" scheme="https://xyueji.github.io/tags/%E7%B3%BB%E7%BB%9F%E8%A1%A8/"/>
     
-  </entry>
-  
-  <entry>
-    <title>Phoenix安装问题</title>
-    <link href="https://xyueji.github.io/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98.html"/>
-    <id>https://xyueji.github.io/Phoenix安装问题.html</id>
-    <published>2019-01-03T13:14:33.000Z</published>
-    <updated>2020-07-04T18:19:19.361Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="下载Phoenix"><a href="#下载Phoenix" class="headerlink" title="下载Phoenix"></a>下载Phoenix</h2><p>下载地址:<a href="http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)" target="_blank" rel="noopener">http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)</a></p><a id="more"></a><h2 id="配置Phoenix"><a href="#配置Phoenix" class="headerlink" title="配置Phoenix"></a>配置Phoenix</h2><ul><li>解压缩文件</li><li>配置Phoenix环境变量</li><li>将 Phoenix 目录下的phoenix-core-4.14.1-HBase-1.2.jar、phoenix-4.14.1-HBase-1.2-client.jar 拷贝到 hbase 集群各个节点 hbase 安装目录 lib 中。</li><li>将 hbase 集群中的配置文件 hbase-site.xml 拷贝到 Phoenix 的 bin 目录下，覆盖原有的配置文件。</li><li>将 hdfs 集群中的配置文件 core-site.xml、 hdfs-site.xml 拷贝到 Phoenix 的 bin 目录下。</li><li>重启hbase<h2 id="启动Phoenix"><a href="#启动Phoenix" class="headerlink" title="启动Phoenix"></a>启动Phoenix</h2>sqlline.py &lt;hbase.zookeeper.quorum&gt;</li></ul>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;下载Phoenix&quot;&gt;&lt;a href=&quot;#下载Phoenix&quot; class=&quot;headerlink&quot; title=&quot;下载Phoenix&quot;&gt;&lt;/a&gt;下载Phoenix&lt;/h2&gt;&lt;p&gt;下载地址:&lt;a href=&quot;http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://phoenix.apache.org/download.html(hbase的版本一定要与phoenix的版本保持一致)&lt;/a&gt;&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="phoenix" scheme="https://xyueji.github.io/categories/phoenix/"/>
-    
-    
       <category term="phoenix" scheme="https://xyueji.github.io/tags/phoenix/"/>
-    
-      <category term="安装" scheme="https://xyueji.github.io/tags/%E5%AE%89%E8%A3%85/"/>
     
   </entry>
   

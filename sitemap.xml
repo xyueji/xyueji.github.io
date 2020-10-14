@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://xyueji.github.io/MapReduce-Shuffle%E8%BF%87%E7%A8%8B.html</loc>
+    
+    <lastmod>2020-10-14T03:52:21.412Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://xyueji.github.io/tags/index.html</loc>
     
     <lastmod>2020-07-04T18:19:19.453Z</lastmod>
@@ -58,14 +65,14 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/docker-compose%E6%90%AD%E5%BB%BA%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%8E%AF%E5%A2%83.html</loc>
+    <loc>https://xyueji.github.io/hbase%E7%9A%84hbck%E5%B7%A5%E5%85%B7.html</loc>
     
     <lastmod>2020-07-04T18:19:19.362Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/hbase%E7%9A%84hbck%E5%B7%A5%E5%85%B7.html</loc>
+    <loc>https://xyueji.github.io/docker-compose%E6%90%AD%E5%BB%BA%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%8E%AF%E5%A2%83.html</loc>
     
     <lastmod>2020-07-04T18:19:19.362Z</lastmod>
     
@@ -79,7 +86,7 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/Linux-free%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3.html</loc>
+    <loc>https://xyueji.github.io/Linux-top%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3.html</loc>
     
     <lastmod>2020-07-04T18:19:19.361Z</lastmod>
     
@@ -93,14 +100,14 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8.html</loc>
+    <loc>https://xyueji.github.io/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98.html</loc>
     
     <lastmod>2020-07-04T18:19:19.361Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/Phoenix%E5%AE%89%E8%A3%85%E9%97%AE%E9%A2%98.html</loc>
+    <loc>https://xyueji.github.io/Phoenix%E7%B3%BB%E7%BB%9F%E8%A1%A8.html</loc>
     
     <lastmod>2020-07-04T18:19:19.361Z</lastmod>
     
@@ -121,14 +128,14 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/Linux-top%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3.html</loc>
+    <loc>https://xyueji.github.io/Linux-free%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3.html</loc>
     
     <lastmod>2020-07-04T18:19:19.361Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html</loc>
+    <loc>https://xyueji.github.io/Git%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83.html</loc>
     
     <lastmod>2020-07-04T18:19:19.360Z</lastmod>
     
@@ -149,14 +156,14 @@
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/IDEA%E8%BF%9E%E6%8E%A5Impala.html</loc>
+    <loc>https://xyueji.github.io/HBase%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86.html</loc>
     
     <lastmod>2020-07-04T18:19:19.360Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://xyueji.github.io/Git%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83.html</loc>
+    <loc>https://xyueji.github.io/IDEA%E8%BF%9E%E6%8E%A5Impala.html</loc>
     
     <lastmod>2020-07-04T18:19:19.360Z</lastmod>
     

@@ -3,27 +3,22 @@
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   
-  <title>IDE破解 | 月迹的博客</title>
+  <title>MapReduce-Shuffle过程 | 月迹的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="IDE破解目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~ 相关破解补丁如下： 链接:https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ  密码:3ga4">
-<meta name="keywords" content="idea,pycharm">
+  <meta name="description" content="从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。  map side 在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spi">
+<meta name="keywords" content="mapreduce,shuffle">
 <meta property="og:type" content="article">
-<meta property="og:title" content="IDE破解">
-<meta property="og:url" content="https://xyueji.github.io/IDE破解.html">
+<meta property="og:title" content="MapReduce-Shuffle过程">
+<meta property="og:url" content="https://xyueji.github.io/MapReduce-Shuffle过程.html">
 <meta property="og:site_name" content="月迹的博客">
-<meta property="og:description" content="IDE破解目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~ 相关破解补丁如下： 链接:https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ  密码:3ga4">
+<meta property="og:description" content="从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。  map side 在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spi">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120123216303.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200206174018672.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200206174257732.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120124221374.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120124510846.png">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120124549013.png">
-<meta property="og:updated_time" content="2020-07-04T18:19:19.360Z">
+<meta property="og:image" content="https://xyueji.github.io/MapReduce-Shuffle过程.resources/C9E1B76E-5804-4B6F-86F7-1B4C079A8C31.png">
+<meta property="og:updated_time" content="2020-10-14T03:52:21.412Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IDE破解">
-<meta name="twitter:description" content="IDE破解目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~ 相关破解补丁如下： 链接:https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ  密码:3ga4">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120123216303.png">
+<meta name="twitter:title" content="MapReduce-Shuffle过程">
+<meta name="twitter:description" content="从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。  map side 在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spi">
+<meta name="twitter:image" content="https://xyueji.github.io/MapReduce-Shuffle过程.resources/C9E1B76E-5804-4B6F-86F7-1B4C079A8C31.png">
   
     <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
   
@@ -255,11 +250,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-IDE破解" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-MapReduce-Shuffle过程" class="article article-type-post" itemscope itemprop="blogPost">
     
     <div class="article-meta">
       <a href="" class="article-date">
-      <time datetime="2020-02-06T09:46:34.000Z" itemprop="datePublished">2020-02-06</time>
+      <time datetime="2020-10-14T03:52:21.000Z" itemprop="datePublished">2020-10-14</time>
 </a>
     </div>
   
@@ -272,7 +267,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      IDE破解
+      MapReduce-Shuffle过程
     </h1>
   
 
@@ -281,13 +276,13 @@
       <div class="article-info article-info-post">
         
     <div class="article-category tagcloud">
-    <a class="article-category-link" href="categories/工具/">工具</a>
+    <a class="article-category-link" href="categories/hadoop/">hadoop</a>
     </div>
 
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/idea/">idea</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/pycharm/">pycharm</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/mapreduce/">mapreduce</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/shuffle/">shuffle</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -297,30 +292,44 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h1 id="IDE破解"><a href="#IDE破解" class="headerlink" title="IDE破解"></a>IDE破解</h1><p>目前提供Idea2019和Pycharm2019.3.1破解方法，持续收集中~~~</p>
-<p>相关破解补丁如下：</p>
-<p>链接:<a href="https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ" target="_blank" rel="noopener">https://pan.baidu.com/s/16_vBzCo_UKqkXSjHJ0J-MQ</a>  密码:3ga4</p>
+        <blockquote>
+<p>从map()的输出到reduce()的输入，中间的过程被称为shuffle过程。</p>
+</blockquote>
+<h2 id="map-side"><a href="#map-side" class="headerlink" title="map side"></a>map side</h2><ol>
+<li><p>在写入磁盘之前，会先写入环形缓冲区(circular memory buffer)，默认100M(mapreduce.task.io.sort.mb可修改)，当缓冲区内容达到<br>80M(mapreduce.map.sort.spill.percent可修改)，缓冲区内容会被溢写到磁盘，形成一个spill file文件。</p>
+</li>
+<li><p>分区：在写入磁盘之前，会先进分区(partition)，而partition的数量是由reducer的数量决定的。</p>
+<blockquote>
+<p>job.setNumReduceTasks(2);</p>
+</blockquote>
+</li>
+</ol>
 <a id="more"></a>
-<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120123216303.png" alt="image-20200120123216303"></p>
-<h2 id="Idea2019破解"><a href="#Idea2019破解" class="headerlink" title="Idea2019破解"></a>Idea2019破解</h2><p><strong>1. 下载破解补丁和激活码</strong></p>
-<p>把破解补丁jetbrains-agent.jar放在安装目录的bin目录下（位置随意，放这是为了防止误删）。</p>
-<p><strong>2. 修改配置文件</strong></p>
-<p>在被修改文件末行添加：<code>-javaagent:你Idea的安装目录jetbrains-agent.jar</code></p>
-<p>mac修改idea.properties文件，右击IDEA应用程序=》显示包内容=》Contents=》bin</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200206174018672.png" alt="image-20200206174018672"></p>
-<p>windows修改idea-exe.vmoptions和idea-exe64.vmoptions，两者内容与上述一致，如图所示：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200206174257732.png" alt="image-20200206174257732"></p>
-<p>修改完配置文件之后重启Idea</p>
-<p><strong>4. 输入激活码</strong></p>
-<p>重启Idea之后，点击菜单栏中的 “Help” -&gt; “Register …”</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120124221374.png" alt="image-20200120124221374"></p>
-<p>##Pycharm2019.3.1破解</p>
-<p>Pycharm激活过程跟idea类似，只是在修改配置文件时修改的是Edit Custom VM Options。</p>
-<p><strong>修改配置文件</strong></p>
-<p>点击Pycharm最上面的菜单栏中的 “Help” -&gt; “Edit Custom VM Options …”，如果提示是否要创建文件，请点”Yes”。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120124510846.png" alt="image-20200120124510846"></p>
-<p> 在打开的vmoptions编辑窗口末行添加：-javaagent:你pycharm的安装目录\jetbrains-agent.jar</p>
-<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200120124549013.png" alt="image-20200120124549013"></p>
+<pre><code>默认是用map输出的&lt;key,value&gt;中key的hashcode对NumReduceTasks的个数取余，相同的分到一个区。
+</code></pre><ol start="3">
+<li><p>排序：在每一个partition中，都会有一个sort by key。</p>
+</li>
+<li><p>combiner：如果有combiner function，在sort之后会执行combiner，相当于map阶段的rudece 【满足数学运算的交换律和结合律】。</p>
+</li>
+<li><p>merge：数个spill files会合并（merge成一个分过区的排过序的文件）。</p>
+</li>
+<li><p>compress：压缩the map output。</p>
+<blockquote>
+<p>mapreduce.task.io.sort.factor 一次性合并小文件的数量 默认10个</p>
+</blockquote>
+<blockquote>
+<p>mapreduce.map.output.compress 启用压缩，默认是false</p>
+</blockquote>
+<blockquote>
+<p>org.apache.hadoop.io.compress.DefaultCodec 默认使用的压缩算法</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="reduce-side"><a href="#reduce-side" class="headerlink" title="reduce side"></a>reduce side</h2><ol>
+<li>解压缩: 如果在map side 已经压缩过，在合并排序之前要先进行解压缩。</li>
+<li>sort phase(merge)。</li>
+<li>group phase: 将相同key的value分到一组，形成一个集合。<br><img src="MapReduce-Shuffle过程.resources/C9E1B76E-5804-4B6F-86F7-1B4C079A8C31.png" alt="08fd21ca91442cce894dc6b0f847b640"></li>
+</ol>
 
       
       
@@ -376,13 +385,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="">IDE破解</a></p>
+        <p><span>本文标题:</span><a href="">MapReduce-Shuffle过程</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 月 迹 的个人博客">月 迹</a></p>
-        <p><span>发布时间:</span>2020年02月06日 - 17时46分</p>
-        <p><span>最后更新:</span>2020年07月05日 - 02时19分</p>
+        <p><span>发布时间:</span>2020年10月14日 - 11时52分</p>
+        <p><span>最后更新:</span>2020年10月14日 - 11时52分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="" title="IDE破解">https://xyueji.github.io/IDE破解.html</a>
-            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/IDE破解.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="" title="MapReduce-Shuffle过程">https://xyueji.github.io/MapReduce-Shuffle过程.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/MapReduce-Shuffle过程.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -395,18 +404,9 @@
 
 <nav id="article-nav">
   
-    <a href="HBase基本知识.html" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          HBase基本知识
-        
-      </div>
-    </a>
   
-  
-    <a href="salt-api配置.html" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">salt-api配置</div>
+    <a href="Git开发规范.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Git开发规范</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -417,7 +417,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#IDE破解"><span class="toc-number">1.</span> <span class="toc-text">IDE破解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Idea2019破解"><span class="toc-number">1.1.</span> <span class="toc-text">Idea2019破解</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#map-side"><span class="toc-number">1.</span> <span class="toc-text">map side</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reduce-side"><span class="toc-number">2.</span> <span class="toc-text">reduce side</span></a></li></ol>
 </div>
 <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
 
@@ -469,7 +469,7 @@
     var gitalk = new Gitalk({
         clientID: '8864436c2b03c3753a80',
         clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
-        id: 'IDE破解.html',
+        id: 'MapReduce-Shuffle过程.html',
         owner: 'xyueji',
         repo: 'xyueji.github.io',
         admin: 'xyueji'
@@ -483,18 +483,16 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="HBase基本知识.html" title="上一篇: HBase基本知识">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
         
-            <a href="salt-api配置.html" title="下一篇: salt-api配置">
+            <a href="Git开发规范.html" title="下一篇: Git开发规范">
                 <i class="fa fa-angle-right"></i>
             </a>
         
     </div>
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="MapReduce-Shuffle过程.html">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
     <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
     <script>
         $(".post-list").addClass("toc-article");
