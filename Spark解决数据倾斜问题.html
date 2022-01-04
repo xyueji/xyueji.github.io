@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Spark解决数据倾斜问题 | 月迹的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1、使用Hive ETL预处理数据方案适用场景：如果导致数据倾斜的是Hive表。如果该Hive表中的数据本身很不均匀（比如某个key对应了100万数据，其他key才对应了10条数据），而且业务场景需要频繁使用Spark对Hive表执行某个分析操作，那么比较适合使用这种技术方案。  方案实现思路：  此时可以评估一下，是否可以通过Hive来进行数据预处理（即通过Hive ETL预先对数据按照key进">
+<meta name="keywords" content="spark,数据倾斜">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark解决数据倾斜问题">
+<meta property="og:url" content="https://xyueji.github.io/Spark解决数据倾斜问题.html">
+<meta property="og:site_name" content="月迹的博客">
+<meta property="og:description" content="1、使用Hive ETL预处理数据方案适用场景：如果导致数据倾斜的是Hive表。如果该Hive表中的数据本身很不均匀（比如某个key对应了100万数据，其他key才对应了10条数据），而且业务场景需要频繁使用Spark对Hive表执行某个分析操作，那么比较适合使用这种技术方案。  方案实现思路：  此时可以评估一下，是否可以通过Hive来进行数据预处理（即通过Hive ETL预先对数据按照key进">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/2E4F2295-5DC4-41A6-9DD5-22918328B8D8.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/A2866F89-F918-403F-A038-E2952B43150D.png">
+<meta property="og:updated_time" content="2020-10-14T11:51:03.690Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spark解决数据倾斜问题">
+<meta name="twitter:description" content="1、使用Hive ETL预处理数据方案适用场景：如果导致数据倾斜的是Hive表。如果该Hive表中的数据本身很不均匀（比如某个key对应了100万数据，其他key才对应了10条数据），而且业务场景需要频繁使用Spark对Hive表执行某个分析操作，那么比较适合使用这种技术方案。  方案实现思路：  此时可以评估一下，是否可以通过Hive来进行数据预处理（即通过Hive ETL预先对数据按照key进">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/2E4F2295-5DC4-41A6-9DD5-22918328B8D8.png">
+  
+    <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+    
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.js"></script>
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">月 迹</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">用代码书写人生</p>
+        
+        
+            <input type="text" class="search" id="search" style="text-align: center" placeholder="搜点什么...">
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="index.html">博客首页</a></li>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="/tags">文章统计</a></li>
+                        
+                            <li><a href="/message">交友留言</a></li>
+                        
+                            <li><a href="/navigation">资源导航</a></li>
+                        
+                            <li><a href="/about">关于作者</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="tags/AppendTrie树/" style="font-size: 10px;">AppendTrie树</a> <a href="tags/HDFS/" style="font-size: 10px;">HDFS</a> <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/SQL解析/" style="font-size: 10px;">SQL解析</a> <a href="tags/SQL采集/" style="font-size: 10px;">SQL采集</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/bitmap/" style="font-size: 10px;">bitmap</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/git/" style="font-size: 10px;">git</a> <a href="tags/grafana/" style="font-size: 10px;">grafana</a> <a href="tags/hadoop/" style="font-size: 10px;">hadoop</a> <a href="tags/hbase/" style="font-size: 15px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/hive/" style="font-size: 15px;">hive</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/mapreduce/" style="font-size: 10px;">mapreduce</a> <a href="tags/metrics2/" style="font-size: 10px;">metrics2</a> <a href="tags/opentsdb/" style="font-size: 10px;">opentsdb</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/shuffle/" style="font-size: 15px;">shuffle</a> <a href="tags/spark/" style="font-size: 15px;">spark</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/修复工具/" style="font-size: 10px;">修复工具</a> <a href="tags/元数据/" style="font-size: 10px;">元数据</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/基础知识/" style="font-size: 10px;">基础知识</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/大查询/" style="font-size: 10px;">大查询</a> <a href="tags/安装/" style="font-size: 10px;">安装</a> <a href="tags/小文件/" style="font-size: 10px;">小文件</a> <a href="tags/开发规范/" style="font-size: 10px;">开发规范</a> <a href="tags/数据倾斜/" style="font-size: 10px;">数据倾斜</a> <a href="tags/数据血缘/" style="font-size: 10px;">数据血缘</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/精准去重/" style="font-size: 10px;">精准去重</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                    </div>
+                </section>
+                
+
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://dayesahh.github.io/">DaYesahh</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.54tianzhisheng.cn/">zhisjeng</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫、追小说、喜影视、迷于严谨和逻辑的编码之中！！！</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">月 迹</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">月 迹</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">用代码书写人生</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="index.html">博客首页</a></li>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="/tags">文章统计</a></li>
+                
+                    <li><a href="/message">交友留言</a></li>
+                
+                    <li><a href="/navigation">资源导航</a></li>
+                
+                    <li><a href="/about">关于作者</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Spark解决数据倾斜问题" class="article article-type-post" itemscope itemprop="blogPost">
+    
+    <div class="article-meta">
+      <a href="" class="article-date">
+      <time datetime="2020-10-14T11:51:03.000Z" itemprop="datePublished">2020-10-14</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spark解决数据倾斜问题
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="categories/spark/">spark</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/spark/">spark</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/数据倾斜/">数据倾斜</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>1、使用Hive ETL预处理数据方案适用场景：</strong><br>如果导致数据倾斜的是Hive表。如果该Hive表中的数据本身很不均匀（比如某个key对应了100万数据，其他key才对应了10条数据），而且业务场景需要频繁使用Spark对Hive表执行某个分析操作，那么比较适合使用这种技术方案。</p>
+<blockquote>
+<p>方案实现思路：</p>
+</blockquote>
+<p>此时可以评估一下，是否可以通过Hive来进行数据预处理（即通过Hive ETL预先对数据按照key进行聚合，或者是预先和其他表进行join），然后在Spark作业中针对的数据源就不是原来的Hive表了，而是预处理后的Hive表。此时由于数据已经预先进行过聚合或join操作了，那么在Spark作业中也就不需要使用原先的shuffle类算子执行这类操作了。</p>
+<blockquote>
+<p>方案实现原理：</p>
+</blockquote>
+<p>这种方案从根源上解决了数据倾斜，因为彻底避免了在Spark中执行shuffle类算子，那么肯定就不会有数据倾斜的问题了。但是这里也要提醒一下大家，这种方式属于治标不治本。因为毕竟数据本身就存在分布不均匀的问题，所以Hive ETL中进行group by或者join等shuffle操作时，还是会出现数据倾斜，导致Hive ETL的速度很慢。我们只是把数据倾斜的发生提前到了Hive ETL中，避免Spark程序发生数据倾斜而已。</p>
+<a id="more"></a>
+<p><strong>2、过滤少数导致倾斜的key方案适用场景：</strong><br>如果发现导致倾斜的key就少数几个，而且对计算本身的影响并不大的话，那么很适合使用这种方案。比如99%的key就对应10条数据，但是只有一个key对应了100万数据，从而导致了数据倾斜。</p>
+<blockquote>
+<p>方案实现思路：</p>
+</blockquote>
+<p>如果我们判断那少数几个数据量特别多的key，对作业的执行和计算结果不是特别重要的话，那么干脆就直接过滤掉那少数几个key。比如，在Spark SQL中可以使用where子句过滤掉这些key或者在Spark Core中对RDD执行filter算子过滤掉这些key。如果需要每次作业执行时，动态判定哪些key的数据量最多然后再进行过滤，那么可以使用sample算子对RDD进行采样，然后计算出每个key的数量，取数据量最多的key过滤掉即可。</p>
+<blockquote>
+<p>方案实现原理：</p>
+</blockquote>
+<p>将导致数据倾斜的key给过滤掉之后，这些key就不会参与计算了，自然不可能产生数据倾斜。</p>
+<p><strong>3、提高shuffle操作的并行度方案实现思路：</strong><br>在对RDD执行shuffle算子时，给shuffle算子传入一个参数，比如reduceByKey(1000)，该参数就设置了这个shuffle算子执行时shuffle read task的数量。对于Spark SQL中的shuffle类语句，比如group by、join等，需要设置一个参数，即spark.sql.shuffle.partitions，该参数代表了shuffle read task的并行度，该值默认是200，对于很多场景来说都有点过小。</p>
+<blockquote>
+<p>方案实现原理：</p>
+</blockquote>
+<p>增加shuffle read task的数量，可以让原本分配给一个task的多个key分配给多个task，从而让每个task处理比原来更少的数据。举例来说，如果原本有5个不同的key，每个key对应10条数据，这5个key都是分配给一个task的，那么这个task就要处理50条数据。而增加了shuffle read task以后，每个task就分配到一个key，即每个task就处理10条数据，那么自然每个task的执行时间都会变短了。</p>
+<p><strong>4、双重聚合方案适用场景：</strong><br>对RDD执行reduceByKey等聚合类shuffle算子或者在Spark SQL中使用group by语句进行分组聚合时，比较适用这种方案。</p>
+<blockquote>
+<p>方案实现思路：</p>
+</blockquote>
+<p>这个方案的核心实现思路就是进行两阶段聚合。第一次是局部聚合，先给每个key都打上一个随机数，比如10以内的随机数，此时原先一样的key就变成不一样的了，比如(hello, 1) (hello, 1) (hello, 1) (hello, 1)，就会变成(1_hello, 1) (1_hello, 1) (2_hello, 1) (2_hello, 1)。接着对打上随机数后的数据，执行reduceByKey等聚合操作，进行局部聚合，那么局部聚合结果，就会变成了(1_hello, 2) (2_hello, 2)。然后将各个key的前缀给去掉，就会变成(hello,2)(hello,2)，再次进行全局聚合操作，就可以得到最终结果了，比如(hello, 4)。</p>
+<blockquote>
+<p>方案实现原理：</p>
+</blockquote>
+<p>将原本相同的key通过附加随机前缀的方式，变成多个不同的key，就可以让原本被一个task处理的数据分散到多个task上去做局部聚合，进而解决单个task处理数据量过多的问题。接着去除掉随机前缀，再次进行全局聚合，就可以得到最终的结果。如果一个RDD中有一个key导致数据倾斜，同时还有其他的key，那么一般先对数据集进行抽样，然后找出倾斜的key,再使用filter对原始的RDD进行分离为两个RDD，一个是由倾斜的key组成的RDD1，一个是由其他的key组成的RDD2，那么对于RDD1可以使用加随机前缀进行多分区多task计算，对于另一个RDD2正常聚合计算，最后将结果再合并起来。<br><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/2E4F2295-5DC4-41A6-9DD5-22918328B8D8.png" alt="8e20684ab58d088180c23399f0df3fe2"><br>随机前缀加几，ReduceByKey分几个区。<br><strong>5、将reduce join转为map join（彻底避免数据倾斜）BroadCast+filter(或者map)</strong><br>方案适用场景：<br>在对RDD使用join类操作，或者是在Spark SQL中使用join语句时，而且join操作中的一个RDD或表的数据量比较小（比如几百M或者一两G），比较适用此方案。方案实现思路：<br>不使用join算子进行连接操作，而使用Broadcast变量与map类算子实现join操作，进而完全规避掉shuffle类的操作，彻底避免数据倾斜的发生和出现。将较小RDD中的数据直接通过collect算子拉取到Driver端的内存中来，然后对其创建一个Broadcast变量；接着对另外一个RDD执行map类算子，在算子函数内，从Broadcast变量中获取较小RDD的全量数据，与当前RDD的每一条数据按照连接key进行比对，如果连接key相同的话，那么就将两个RDD的数据用你需要的方式连接起来。</p>
+<blockquote>
+<p>方案实现原理：</p>
+</blockquote>
+<p>普通的join是会走shuffle过程的，而一旦shuffle，就相当于会将相同key的数据拉取到一个shuffle read task中再进行join，此时就是reduce join。但是如果一个RDD是比较小的，则可以采用广播小RDD全量数据+map算子来实现与join同样的效果，也就是map join，此时就不会发生shuffle操作，也就不会发生数据倾斜。</p>
+<p><strong>6、采样倾斜key并分拆join操作</strong></p>
+<blockquote>
+<p>方案适用场景：</p>
+</blockquote>
+<p>两个RDD/Hive表进行join的时候，如果数据量都比较大，无法采用“解决方案五”，那么此时可以看一下两个RDD/Hive表中的key分布情况。如果出现数据倾斜，是因为其中某一个RDD/Hive表中的少数几个key的数据量过大，而另一个RDD/Hive表中的所有key都分布比较均匀，那么采用这个解决方案是比较合适的。</p>
+<blockquote>
+<p>方案实现思路：</p>
+</blockquote>
+<p>对包含少数几个数据量过大的key的那个RDD，通过sample算子采样出一份样本来，然后统计一下每个key的数量，计算出来数据量最大的是哪几个key。然后将这几个key对应的数据从原来的RDD中拆分出来，形成一个单独的RDD，并给每个key都打上n以内的随机数作为前缀，而不会导致倾斜的大部分key形成另外一个RDD。接着将需要join的另一个RDD，也过滤出来那几个倾斜key对应的数据并形成一个单独的RDD，将每条数据膨胀成n条数据，这n条数据都按顺序附加一个0~n的前缀，不会导致倾斜的大部分key也形成另外一个RDD。再将附加了随机前缀的独立RDD与另一个膨胀n倍的独立RDD进行join，此时就可以将原先相同的key打散成n份，分散到多个task中去进行join了。而另外两个普通的RDD就照常join即可。最后将两次join的结果使用union算子合并起来即可，就是最终的join结果 。<br><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/A2866F89-F918-403F-A038-E2952B43150D.png" alt="d6a24f5d0ca6d7803ef1d0259b0f03ae"></p>
+<p><strong>7、使用随机前缀和扩容RDD进行join</strong></p>
+<blockquote>
+<p>方案适用场景：</p>
+</blockquote>
+<p>如果在进行join操作时，RDD中有大量的key导致数据倾斜，那么进行分拆key也没什么意义，此时就只能使用最后一种方案来解决问题了。</p>
+<blockquote>
+<p>方案实现思路：</p>
+</blockquote>
+<p>该方案的实现思路基本和“解决方案六”类似，首先查看RDD/Hive表中的数据分布情况，找到那个造成数据倾斜的RDD/Hive表，比如有多个key都对应了超过1万条数据。然后将该RDD的每条数据都打上一个n以内的随机前缀。同时对另外一个正常的RDD进行扩容，将每条数据都扩容成n条数据，扩容出来的每条数据都依次打上一个0~n的前缀。最后将两个处理后的RDD进行join即可。</p>
+<h3 id="附：sample算子找出导致数据倾斜的key"><a href="#附：sample算子找出导致数据倾斜的key" class="headerlink" title="附：sample算子找出导致数据倾斜的key"></a>附：sample算子找出导致数据倾斜的key</h3><blockquote>
+<p>思路：通过抽样取出一部分样本，在对样本做wordCount并排序最后取出出现次数最多的key，这个key就是导致数据倾斜的key</p>
+</blockquote>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.saprk.example</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.spark.&#123;<span class="type">SparkConf</span>, <span class="type">SparkContext</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * @author xiongzhigang</span></span><br><span class="line"><span class="comment">  * @date 2020-10-14 18:05</span></span><br><span class="line"><span class="comment">  * @description</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">FindTopKBySample</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> conf = <span class="keyword">new</span> <span class="type">SparkConf</span>().setAppName(<span class="string">"FindTopKBySample"</span>).setMaster(<span class="string">"local[2]"</span>)</span><br><span class="line">    <span class="keyword">val</span> spark = <span class="keyword">new</span> <span class="type">SparkContext</span>(conf)</span><br><span class="line">    <span class="keyword">val</span> tuples = getKeyBySample(spark)</span><br><span class="line">    <span class="keyword">for</span> (elem &lt;- tuples) &#123;</span><br><span class="line">      println(elem)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">getKeyBySample</span></span>(sc: <span class="type">SparkContext</span>): <span class="type">Array</span>[(<span class="type">String</span>, <span class="type">Int</span>)] = &#123;</span><br><span class="line">    <span class="keyword">val</span> data = <span class="type">Array</span>(<span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>,</span><br><span class="line">      <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>,</span><br><span class="line">      <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>, <span class="string">"A"</span>,</span><br><span class="line">      <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>, <span class="string">"E"</span>, <span class="string">"F"</span>, <span class="string">"G"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> rdd = sc.parallelize(data)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> tupleRdd: <span class="type">Array</span>[(<span class="type">String</span>, <span class="type">Int</span>)] = rdd.map(x =&gt; (x, <span class="number">1</span>))</span><br><span class="line">      .sample(<span class="literal">true</span>, <span class="number">0.4</span>)</span><br><span class="line">      .reduceByKey((x, y) =&gt; x + y)</span><br><span class="line">      .sortBy(x =&gt; x._2, <span class="literal">false</span>, <span class="number">2</span>)</span><br><span class="line">      .take(<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> tupleRdd</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()">×</a>
+            <div class="shang_tit">
+              <p>纯属好玩</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="">Spark解决数据倾斜问题</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 月 迹 的个人博客">月 迹</a></p>
+        <p><span>发布时间:</span>2020年10月14日 - 19时51分</p>
+        <p><span>最后更新:</span>2020年10月14日 - 19时51分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="" title="Spark解决数据倾斜问题">https://xyueji.github.io/Spark解决数据倾斜问题.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/Spark解决数据倾斜问题.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="大数据监控-Metrics2录入指标到OpenTSDB.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          大数据监控-Metrics2录入指标到OpenTSDB
+        
+      </div>
+    </a>
+  
+  
+    <a href="Spark-Shuffle原理.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Spark-Shuffle原理</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#附：sample算子找出导致数据倾斜的key"><span class="toc-number">1.</span> <span class="toc-text">附：sample算子找出导致数据倾斜的key</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.css">
+<div id="gitalk-container" class="gitment-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '8864436c2b03c3753a80',
+        clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
+        id: 'Spark解决数据倾斜问题.html',
+        owner: 'xyueji',
+        repo: 'xyueji.github.io',
+        admin: 'xyueji',
+        proxy: 'https://still-shadow-c49f.xyueji.workers.dev/?https://github.com/login/oauth/access_token'
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="大数据监控-Metrics2录入指标到OpenTSDB.html" title="上一篇: 大数据监控-Metrics2录入指标到OpenTSDB">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="Spark-Shuffle原理.html" title="下一篇: Spark-Shuffle原理">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="统计HDFS元数据.html">统计HDFS元数据</a></li><li class="post-list-item"><a class="post-list-link" href="元数据平台-数据血缘.html">元数据平台-数据血缘</a></li><li class="post-list-item"><a class="post-list-link" href="精准去重-字典编码+Bitmap.html">精准去重-字典编码+Bitmap</a></li><li class="post-list-item"><a class="post-list-link" href="大数据监控-Metrics2录入指标到OpenTSDB.html">大数据监控-Metrics2录入指标到OpenTSDB</a></li><li class="post-list-item"><a class="post-list-link" href="">Spark解决数据倾斜问题</a></li><li class="post-list-item"><a class="post-list-link" href="Spark-Shuffle原理.html">Spark-Shuffle原理</a></li><li class="post-list-item"><a class="post-list-link" href="MapReduce-Shuffle过程.html">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+   <!-- 代码块复制功能-->
+   <script src="/js/clipboard-use.js"></script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2022 月 迹
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" style="color: #000">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank" style="color: #000">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数:
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量:
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="js/main.js"></script>
+
+    <!--<script>-->
+        <!--$(document).ready(function() {-->
+            <!--var backgroundnum = 0;-->
+            <!--var backgroundimg = "url(/background/bg-" + backgroundnum +".jpg)";-->
+            <!--$("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+            <!--$(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+        <!--})-->
+    <!--</script>-->
+
+
+
+<!-- Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-168200248-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-168200248-1');
+</script>
+
+<!-- End Google Analytics -->
+
+
+
+<script>
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "https://hm.baidu.com/hm.js?1c0d5d76b7455fc584663ce315f75837";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
+</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+    
+    
+    
+        <div class="search-result-list" ></div>
+        <div class="search-cover"></div>
+    <script type = "text/javascript" >
+        $('#search').bind('keypress',function(event){
+            if(event.keyCode == "13"){
+                search()
+            }
+        });
+
+    function search() {
+        var searchTool = {
+            data: [],
+            arrList: [],
+            oldList: [],
+            init() {
+                this.fetchJson()
+            },
+            fetchJson() {
+                window.fetch('/content.json?t=' + (+new Date()), {
+                    method: 'get',
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    this.data = data
+                    let keywords = $('#search').val()
+                    this.searchList(keywords)
+                }).catch((err) => {
+                    console.log(err)
+                });
+            },
+            // 搜索字符串里面是否存在关键字
+            isSreachIndexOF(oldstr, kw) {
+                // console.log(oldstr, kw)
+                var istrue = false
+                // console.log('isSreachIndexOF', oldstr && toString.call(oldstr) === '[object Array]')
+                if (oldstr && toString.call(oldstr) === '[object Array]') {
+                    for (var i = 0; i < oldstr.length; i++) {
+                        oldstr[i].toLowerCase() === kw.toLowerCase() ? istrue = true : null
+                    }
+                    return istrue
+                }
+                if (!oldstr || !kw) return false
+                istrue = oldstr.toLowerCase().indexOf(kw.toLowerCase()) > -1
+                return istrue
+            },
+            searchList(keywolds) {
+                let divList = ''
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        let tagsK = item.tags.map(item => item.name).join('-')
+                        let categoriesK = item.categories.map(item => item.name).join('-')
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(categoriesK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            divList += `
+                          <li>
+                            <a href="/${item.path}" class="search-result-title">${item.title}</a>
+                            <div class="main">
+                              <div class="left">
+                                <span>${item.author ? item.author : 'xyueji'}</span>
+                                ${item.tags.map(tags => `<a href="/tags/${tags.slug}" class="search-result-tags">${tags.name}</a>`)}
+                              </div>
+                              <div class="right">${this.getFriendlyTime(item.date.replace('T', ' '), new Date())}</div>
+                            </div>
+                          </li>`
+                        }
+                    })
+                    if (this.oldList.length) {
+                        this.clear()
+                    }
+                    if (this.arrList.length) this.add()
+                }
+                if (!divList) {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <div style="text-align: center;font-size: 30px; margin-top: 50px;" ">抱歉，未搜索到相关结果</div>`
+                } else {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <ul>` + divList + `</ul>`
+                }
+                $('.search-result-list').html(divList)
+                $('.search-result-list').fadeToggle();
+                $('.search-cover').fadeToggle();
+            },
+            clear() {
+                this.oldList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'none'
+                })
+                this.oldList = []
+            },
+            add() {
+                this.arrList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'block'
+                })
+                this.oldList = this.arrList
+            },
+            searchGo(keywolds) {
+                this.arrList = []
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(item.tags.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.categories.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            this.arrList.push(index)
+                        }
+                    })
+                    if (this.oldList.length) this.clear()
+                    if (this.arrList.length) this.add()
+                }
+            },
+            /**
+             * 获取指定时间的友好时间字符串。
+             * @param str 指定的时间字符串，如yyyy-MM-dd HH:mm:ss
+             * @param now 当前时间，允许时间戳，GMT时间，如果该参数为undefined，则使用浏览器时间。
+             */
+            getFriendlyTime(str, now) {
+                var currentTime = new Date(now);
+                var arr = str.split(/\s+/gi);
+                var temp = 0, arr1, arr2, oldTime, delta;
+                var getIntValue = function (ss, defaultValue) {
+                    try {
+                        return parseInt(ss, 10);
+                    } catch (e) {
+                        return defaultValue;
+                    }
+                };
+                var getWidthString = function (num) {
+                    return num < 10 ? ('0' + num) : num;
+                };
+                if (arr.length >= 2) {
+                    arr1 = arr[0].split(/[\/\-]/gi);
+                    arr2 = arr[1].split(':');
+                    oldTime = new Date();
+                    oldTime.setYear(getIntValue(arr1[0], currentTime.getFullYear()));
+                    oldTime.setMonth(getIntValue(arr1[1], currentTime.getMonth() + 1) - 1);
+                    oldTime.setDate(getIntValue(arr1[2], currentTime.getDate()));
+
+                    oldTime.setHours(getIntValue(arr2[0], currentTime.getHours()));
+                    oldTime.setMinutes(getIntValue(arr2[1], currentTime.getMinutes()));
+                    oldTime.setSeconds(getIntValue(arr2[2], currentTime.getSeconds()));
+
+                    delta = currentTime.getTime() - oldTime.getTime();
+
+                    if (delta <= 60 * 1000) {
+                        return '1分钟内';
+                    } else if (delta < 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 1000)) + '分钟前';
+                    } else if (delta < 24 * 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000)) + '天前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30 * 12) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000 * 30)) + '月前';
+                    } else if (currentTime.getFullYear() != oldTime.getFullYear()) {
+                        return [getWidthString(oldTime.getFullYear()), getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-')
+                    } else {
+                        return [getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-');
+                    }
+                }
+                return '';
+            }
+        }
+        searchTool.init()
+    }
+    function searchToggle() {
+        $('.search-cover').fadeToggle();
+        $('.search-result-list').fadeToggle();
+    }
+</script>
+
+
+  </div>
+</body>
+</html>

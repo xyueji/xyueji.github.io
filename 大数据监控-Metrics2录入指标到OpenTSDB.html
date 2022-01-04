@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>大数据监控-Metrics2录入指标到OpenTSDB | 月迹的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Hadoop Metrics2是一个收集各种指标的监控工具，可应用于Hadoop、HBase、Kylin等大数据组件监控指标收集。主要分为3个主要部分：MetricsSystemImpl、Source和Sink，其中Source和Sink都可以自定义。本文讲述如何自定义Sink，来收集指标入OpenTSDB。首先来看看这3个部分的代码结构： MetricsSystemImpl">
+<meta name="keywords" content="hbase,hadoop,metrics2,opentsdb,grafana">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据监控-Metrics2录入指标到OpenTSDB">
+<meta property="og:url" content="https://xyueji.github.io/大数据监控-Metrics2录入指标到OpenTSDB.html">
+<meta property="og:site_name" content="月迹的博客">
+<meta property="og:description" content="Hadoop Metrics2是一个收集各种指标的监控工具，可应用于Hadoop、HBase、Kylin等大数据组件监控指标收集。主要分为3个主要部分：MetricsSystemImpl、Source和Sink，其中Source和Sink都可以自定义。本文讲述如何自定义Sink，来收集指标入OpenTSDB。首先来看看这3个部分的代码结构： MetricsSystemImpl">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-08-09T06:16:02.441Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大数据监控-Metrics2录入指标到OpenTSDB">
+<meta name="twitter:description" content="Hadoop Metrics2是一个收集各种指标的监控工具，可应用于Hadoop、HBase、Kylin等大数据组件监控指标收集。主要分为3个主要部分：MetricsSystemImpl、Source和Sink，其中Source和Sink都可以自定义。本文讲述如何自定义Sink，来收集指标入OpenTSDB。首先来看看这3个部分的代码结构： MetricsSystemImpl">
+  
+    <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+    
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.js"></script>
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">月 迹</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">用代码书写人生</p>
+        
+        
+            <input type="text" class="search" id="search" style="text-align: center" placeholder="搜点什么...">
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="index.html">博客首页</a></li>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="/tags">文章统计</a></li>
+                        
+                            <li><a href="/message">交友留言</a></li>
+                        
+                            <li><a href="/navigation">资源导航</a></li>
+                        
+                            <li><a href="/about">关于作者</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="tags/AppendTrie树/" style="font-size: 10px;">AppendTrie树</a> <a href="tags/HDFS/" style="font-size: 10px;">HDFS</a> <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/SQL解析/" style="font-size: 10px;">SQL解析</a> <a href="tags/SQL采集/" style="font-size: 10px;">SQL采集</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/bitmap/" style="font-size: 10px;">bitmap</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/git/" style="font-size: 10px;">git</a> <a href="tags/grafana/" style="font-size: 10px;">grafana</a> <a href="tags/hadoop/" style="font-size: 10px;">hadoop</a> <a href="tags/hbase/" style="font-size: 15px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/hive/" style="font-size: 15px;">hive</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/mapreduce/" style="font-size: 10px;">mapreduce</a> <a href="tags/metrics2/" style="font-size: 10px;">metrics2</a> <a href="tags/opentsdb/" style="font-size: 10px;">opentsdb</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/shuffle/" style="font-size: 15px;">shuffle</a> <a href="tags/spark/" style="font-size: 15px;">spark</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/修复工具/" style="font-size: 10px;">修复工具</a> <a href="tags/元数据/" style="font-size: 10px;">元数据</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/基础知识/" style="font-size: 10px;">基础知识</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/大查询/" style="font-size: 10px;">大查询</a> <a href="tags/安装/" style="font-size: 10px;">安装</a> <a href="tags/小文件/" style="font-size: 10px;">小文件</a> <a href="tags/开发规范/" style="font-size: 10px;">开发规范</a> <a href="tags/数据倾斜/" style="font-size: 10px;">数据倾斜</a> <a href="tags/数据血缘/" style="font-size: 10px;">数据血缘</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/精准去重/" style="font-size: 10px;">精准去重</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                    </div>
+                </section>
+                
+
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://dayesahh.github.io/">DaYesahh</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.54tianzhisheng.cn/">zhisjeng</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫、追小说、喜影视、迷于严谨和逻辑的编码之中！！！</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">月 迹</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">月 迹</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">用代码书写人生</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="index.html">博客首页</a></li>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="/tags">文章统计</a></li>
+                
+                    <li><a href="/message">交友留言</a></li>
+                
+                    <li><a href="/navigation">资源导航</a></li>
+                
+                    <li><a href="/about">关于作者</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-大数据监控-Metrics2录入指标到OpenTSDB" class="article article-type-post" itemscope itemprop="blogPost">
+    
+    <div class="article-meta">
+      <a href="" class="article-date">
+      <time datetime="2021-08-09T06:10:59.000Z" itemprop="datePublished">2021-08-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      大数据监控-Metrics2录入指标到OpenTSDB
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="categories/集群监控/">集群监控</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/grafana/">grafana</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/hadoop/">hadoop</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/hbase/">hbase</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/metrics2/">metrics2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/opentsdb/">opentsdb</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>Hadoop Metrics2是一个收集各种指标的监控工具，可应用于Hadoop、HBase、Kylin等大数据组件监控指标收集。主要分为3个主要部分：MetricsSystemImpl、Source和Sink，其中Source和Sink都可以自定义。本文讲述如何自定义Sink，来收集指标入OpenTSDB。<br>首先来看看这3个部分的代码结构：</p>
+<h4 id="MetricsSystemImpl"><a href="#MetricsSystemImpl" class="headerlink" title="MetricsSystemImpl"></a>MetricsSystemImpl</h4><a id="more"></a>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 注册source和sink</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(String prefix)</span> </span>&#123;</span><br><span class="line">    config = MetricsConfig.create(prefix);</span><br><span class="line">    configureSinks();</span><br><span class="line">    configureSources();</span><br><span class="line">    configureSystem();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    checkNotNull(prefix, <span class="string">"prefix"</span>);</span><br><span class="line">    <span class="keyword">if</span> (monitoring) &#123;</span><br><span class="line">      LOG.warn(prefix +<span class="string">" metrics system already started!"</span>,</span><br><span class="line">               <span class="keyword">new</span> MetricsException(<span class="string">"Illegal start"</span>));</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (Callback cb : callbacks) cb.preStart();</span><br><span class="line">    <span class="keyword">for</span> (Callback cb : namedCallbacks.values()) cb.preStart();</span><br><span class="line">    configure(prefix);</span><br><span class="line">    <span class="comment">// 2. 启动一个定时器</span></span><br><span class="line">    startTimer();</span><br><span class="line">    monitoring = <span class="keyword">true</span>;</span><br><span class="line">    LOG.info(prefix +<span class="string">" metrics system started"</span>);</span><br><span class="line">    <span class="keyword">for</span> (Callback cb : callbacks) cb.postStart();</span><br><span class="line">    <span class="keyword">for</span> (Callback cb : namedCallbacks.values()) cb.postStart();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">startTimer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (timer != <span class="keyword">null</span>) &#123;</span><br><span class="line">      LOG.warn(prefix +<span class="string">" metrics system timer already started!"</span>);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    logicalTime = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">long</span> millis = period;</span><br><span class="line">    timer = <span class="keyword">new</span> Timer(<span class="string">"Timer for '"</span>+ prefix +<span class="string">"' metrics system"</span>, <span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// 3. 根据period定时执行metrics任务</span></span><br><span class="line">    timer.scheduleAtFixedRate(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">          <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">              onTimerEvent();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">              LOG.warn(<span class="string">"Error invoking metrics timer"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;, millis, millis);</span><br><span class="line">    LOG.info(<span class="string">"Scheduled Metric snapshot period at "</span> + (period / <span class="number">1000</span>)</span><br><span class="line">        + <span class="string">" second(s)."</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 从所有的sources中收集metrics</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> MetricsBuffer <span class="title">sampleMetrics</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    collector.clear();</span><br><span class="line">    MetricsBufferBuilder bufferBuilder = <span class="keyword">new</span> MetricsBufferBuilder();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;String, MetricsSourceAdapter&gt; entry : sources.entrySet()) &#123;</span><br><span class="line">      <span class="keyword">if</span> (sourceFilter == <span class="keyword">null</span> || sourceFilter.accepts(entry.getKey())) &#123;</span><br><span class="line">        snapshotMetrics(entry.getValue(), bufferBuilder);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (publishSelfMetrics) &#123;</span><br><span class="line">      snapshotMetrics(sysSource, bufferBuilder);</span><br><span class="line">    &#125;</span><br><span class="line">    MetricsBuffer buffer = bufferBuilder.get();</span><br><span class="line">    <span class="keyword">return</span> buffer;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 5. 发送metrics到所有的sinks</span></span><br><span class="line"> <span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">onTimerEvent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    logicalTime += period;</span><br><span class="line">    <span class="keyword">if</span> (sinks.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      publishMetrics(sampleMetrics(), <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h4><p>实现MetricsSource接口以自定义Source<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MetricsSource</span> </span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Get metrics from the source</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> collector to contain the resulting metrics snapshot</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> all if true, return all metrics even if unchanged.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">getMetrics</span><span class="params">(MetricsCollector collector, <span class="keyword">boolean</span> all)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以<strong>JvmMetrics</strong>为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getMetrics</span><span class="params">(MetricsCollector collector, <span class="keyword">boolean</span> all)</span> </span>&#123;</span><br><span class="line">    MetricsRecordBuilder rb = collector.addRecord(JvmMetrics)</span><br><span class="line">        .setContext(<span class="string">"jvm"</span>).tag(ProcessName, processName)</span><br><span class="line">        .tag(SessionId, sessionId);</span><br><span class="line">    <span class="comment">// 内存指标</span></span><br><span class="line">    getMemoryUsage(rb);</span><br><span class="line">    <span class="comment">// GC指标</span></span><br><span class="line">    getGcUsage(rb);</span><br><span class="line">    <span class="comment">// 线程指标</span></span><br><span class="line">    getThreadUsage(rb);</span><br><span class="line">    <span class="comment">// 事件（LogFatal、LogError、LogWarn、LogInfo）计数指标</span></span><br><span class="line">    getEventCounters(rb);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="Sink"><a href="#Sink" class="headerlink" title="Sink"></a>Sink</h4><p>实现MetricsSink以自定义Sink<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MetricsSink</span> <span class="keyword">extends</span> <span class="title">MetricsPlugin</span> </span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Put a metrics record in the sink</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> record  the record to put</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">putMetrics</span><span class="params">(MetricsRecord record)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Flush any buffered metrics</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>以FileSink为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileSink</span> <span class="keyword">implements</span> <span class="title">MetricsSink</span>, <span class="title">Closeable</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILENAME_KEY = <span class="string">"filename"</span>;</span><br><span class="line">  <span class="keyword">private</span> PrintStream writer;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(SubsetConfiguration conf)</span> </span>&#123;</span><br><span class="line">    String filename = conf.getString(FILENAME_KEY);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 1. 初始化打印流</span></span><br><span class="line">      writer = filename == <span class="keyword">null</span> ? System.out</span><br><span class="line">          : <span class="keyword">new</span> PrintStream(<span class="keyword">new</span> FileOutputStream(<span class="keyword">new</span> File(filename)),</span><br><span class="line">                            <span class="keyword">true</span>, <span class="string">"UTF-8"</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> MetricsException(<span class="string">"Error creating "</span>+ filename, e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. 写入指标</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">putMetrics</span><span class="params">(MetricsRecord record)</span> </span>&#123;</span><br><span class="line">    writer.print(record.timestamp());</span><br><span class="line">    writer.print(<span class="string">" "</span>);</span><br><span class="line">    writer.print(record.context());</span><br><span class="line">    writer.print(<span class="string">"."</span>);</span><br><span class="line">    writer.print(record.name());</span><br><span class="line">    String separator = <span class="string">": "</span>;</span><br><span class="line">    <span class="keyword">for</span> (MetricsTag tag : record.tags()) &#123;</span><br><span class="line">      writer.print(separator);</span><br><span class="line">      separator = <span class="string">", "</span>;</span><br><span class="line">      writer.print(tag.name());</span><br><span class="line">      writer.print(<span class="string">"="</span>);</span><br><span class="line">      writer.print(tag.value());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (AbstractMetric metric : record.metrics()) &#123;</span><br><span class="line">      writer.print(separator);</span><br><span class="line">      separator = <span class="string">", "</span>;</span><br><span class="line">      writer.print(metric.name());</span><br><span class="line">      writer.print(<span class="string">"="</span>);</span><br><span class="line">      writer.print(metric.value());</span><br><span class="line">    &#125;</span><br><span class="line">    writer.println();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    writer.flush();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    writer.close();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="自定义OpenTSDBHttpSink"><a href="#自定义OpenTSDBHttpSink" class="headerlink" title="自定义OpenTSDBHttpSink"></a>自定义OpenTSDBHttpSink</h3><p>自定义sink把指标收集到OpenTSDB以实现集群监控，我们以http的方式录入指标到OpenTSDB，因此首先写一个HttpUtils类：</p>
+<h4 id="HttpUtils"><a href="#HttpUtils" class="headerlink" title="HttpUtils"></a>HttpUtils</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.apache.hadoop.metrics2.sink.opentsdb;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.gson.JsonElement;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.HttpEntity;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.config.AuthSchemes;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.config.CookieSpecs;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.config.RequestConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.methods.CloseableHttpResponse;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.methods.HttpGet;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.client.methods.HttpPost;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.config.Registry;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.config.RegistryBuilder;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.conn.socket.ConnectionSocketFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.conn.socket.PlainConnectionSocketFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.conn.ssl.NoopHostnameVerifier;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.conn.ssl.SSLConnectionSocketFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.entity.StringEntity;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.impl.client.CloseableHttpClient;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.impl.client.HttpClients;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.impl.conn.PoolingHttpClientConnectionManager;</span><br><span class="line"><span class="keyword">import</span> org.apache.http.util.EntityUtils;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.net.ssl.SSLContext;</span><br><span class="line"><span class="keyword">import</span> javax.net.ssl.TrustManager;</span><br><span class="line"><span class="keyword">import</span> javax.net.ssl.X509TrustManager;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.security.KeyManagementException;</span><br><span class="line"><span class="keyword">import</span> java.security.NoSuchAlgorithmException;</span><br><span class="line"><span class="keyword">import</span> java.security.cert.X509Certificate;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * http utils</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpUtils</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(HttpUtils.class);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">HttpUtils</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"Construct HttpUtils"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> CloseableHttpClient <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> HttpClientInstance.httpClient;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpClientInstance</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(requestConfig).build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String paramJson;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> PoolingHttpClientConnectionManager cm;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SSLContext ctx = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SSLConnectionSocketFactory socketFactory;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> RequestConfig requestConfig;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Registry&lt;ConnectionSocketFactory&gt; socketFactoryRegistry;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> X509TrustManager xtm = <span class="keyword">new</span> X509TrustManager() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">checkClientTrusted</span><span class="params">(X509Certificate[] chain, String authType)</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">checkServerTrusted</span><span class="params">(X509Certificate[] chain, String authType)</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> X509Certificate[] getAcceptedIssuers() &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ctx = SSLContext.getInstance(SSLConnectionSocketFactory.TLS);</span><br><span class="line">            ctx.init(<span class="keyword">null</span>, <span class="keyword">new</span> TrustManager[]&#123;xtm&#125;, <span class="keyword">null</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            logger.error(<span class="string">"SSLContext init with NoSuchAlgorithmException"</span>, e);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeyManagementException e) &#123;</span><br><span class="line">            logger.error(<span class="string">"SSLContext init with KeyManagementException"</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">        socketFactory = <span class="keyword">new</span> SSLConnectionSocketFactory(ctx, NoopHostnameVerifier.INSTANCE);</span><br><span class="line">        <span class="comment">/** set timeout、request time、socket timeout */</span></span><br><span class="line">        requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES)</span><br><span class="line">                .setExpectContinueEnabled(Boolean.TRUE)</span><br><span class="line">                .setTargetPreferredAuthSchemes(Arrays.asList(AuthSchemes.NTLM, AuthSchemes.DIGEST))</span><br><span class="line">                .setProxyPreferredAuthSchemes(Arrays.asList(AuthSchemes.BASIC))</span><br><span class="line">                .setConnectTimeout(<span class="number">60</span> * <span class="number">1000</span>).setSocketTimeout(<span class="number">60</span> * <span class="number">1000</span>)</span><br><span class="line">                .setConnectionRequestTimeout(<span class="number">60</span> * <span class="number">1000</span>).setRedirectsEnabled(<span class="keyword">true</span>)</span><br><span class="line">                .build();</span><br><span class="line">        socketFactoryRegistry = RegistryBuilder.&lt;ConnectionSocketFactory&gt;create()</span><br><span class="line">                .register(<span class="string">"http"</span>, PlainConnectionSocketFactory.INSTANCE).register(<span class="string">"https"</span>, socketFactory).build();</span><br><span class="line">        cm = <span class="keyword">new</span> PoolingHttpClientConnectionManager(socketFactoryRegistry);</span><br><span class="line">        cm.setDefaultMaxPerRoute(<span class="number">60</span>);</span><br><span class="line">        cm.setMaxTotal(<span class="number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * get http request content</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> url url</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> http get request response content</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">get</span><span class="params">(String url)</span> </span>&#123;</span><br><span class="line">        CloseableHttpClient httpclient = HttpUtils.getInstance();</span><br><span class="line">        HttpGet httpget = <span class="keyword">new</span> HttpGet(url);</span><br><span class="line">        <span class="keyword">return</span> getResponseContentString(httpget, httpclient);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * get http response content</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> httpget    httpget</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> httpClient httpClient</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> http get request response content</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getResponseContentString</span><span class="params">(HttpGet httpget, CloseableHttpClient httpClient)</span> </span>&#123;</span><br><span class="line">        String responseContent = <span class="keyword">null</span>;</span><br><span class="line">        CloseableHttpResponse response = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            response = httpClient.execute(httpget);</span><br><span class="line">            <span class="comment">// check response status is 200</span></span><br><span class="line">            <span class="keyword">if</span> (response.getStatusLine().getStatusCode() == <span class="number">200</span>) &#123;</span><br><span class="line">                HttpEntity entity = response.getEntity();</span><br><span class="line">                <span class="keyword">if</span> (entity != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    responseContent = EntityUtils.toString(entity, <span class="string">"UTF-8"</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    logger.warn(<span class="string">"http entity is null"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                logger.error(<span class="string">"http get:&#123;&#125; response status code is not 200!"</span>, response.getStatusLine().getStatusCode());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException ioe) &#123;</span><br><span class="line">            logger.error(ioe.getMessage(), ioe);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (response != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    EntityUtils.consume(response.getEntity());</span><br><span class="line">                    response.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                logger.error(e.getMessage(), e);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!httpget.isAborted()) &#123;</span><br><span class="line">                httpget.releaseConnection();</span><br><span class="line">                httpget.abort();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> responseContent;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * post http</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> url</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> http post request response content</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">post</span><span class="params">(String url, JsonElement json)</span> </span>&#123;</span><br><span class="line">        CloseableHttpClient httpclient = HttpUtils.getInstance();</span><br><span class="line">        HttpPost httpPost = <span class="keyword">new</span> HttpPost(url);</span><br><span class="line">        httpPost.addHeader(<span class="string">"Content-Type"</span>, <span class="string">"application/json;charset=UTF-8"</span>);</span><br><span class="line">        <span class="comment">// 解决中文乱码问题</span></span><br><span class="line">        StringEntity stringEntity = <span class="keyword">new</span> StringEntity(json.toString(), <span class="string">"UTF-8"</span>);</span><br><span class="line">        stringEntity.setContentEncoding(<span class="string">"UTF-8"</span>);</span><br><span class="line">        paramJson = json.toString();</span><br><span class="line"></span><br><span class="line">        httpPost.setEntity(stringEntity);</span><br><span class="line">        <span class="keyword">return</span> post(httpPost, httpclient);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * post http</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> httpPost   httpget</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> httpClient httpClient</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> http post request response content</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">post</span><span class="params">(HttpPost httpPost, CloseableHttpClient httpClient)</span> </span>&#123;</span><br><span class="line">        String responseContent = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ResponseHandler&lt;String&gt; responseHandler = <span class="keyword">new</span> BasicResponseHandler();</span><br><span class="line"></span><br><span class="line">            httpClient = HttpClients.createDefault();</span><br><span class="line">            responseContent = httpClient.execute(httpPost, responseHandler);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException ioe) &#123;</span><br><span class="line">            logger.error(<span class="string">"put opentsdb failed, body is &#123;&#125;"</span>, paramJson);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (!httpPost.isAborted()) &#123;</span><br><span class="line">                httpPost.releaseConnection();</span><br><span class="line">                httpPost.abort();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> responseContent;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="OpenTSDBHttpSink"><a href="#OpenTSDBHttpSink" class="headerlink" title="OpenTSDBHttpSink"></a>OpenTSDBHttpSink</h4><p>在hadoop-common-project/hadoop-common下新建一个org.apache.hadoop.metrics2.sink.opentsdb.OpenTSDBHttpSink类，内容如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.apache.hadoop.metrics2.sink.opentsdb;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.gson.JsonObject;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.configuration.SubsetConfiguration;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang.StringUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.metrics2.AbstractMetric;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.metrics2.MetricsRecord;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.metrics2.MetricsSink;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.metrics2.MetricsTag;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.metrics2.util.MetricsCache;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-08-02 16:44</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OpenTSDBHttpSink</span> <span class="keyword">implements</span> <span class="title">MetricsSink</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Logger LOG = LoggerFactory.getLogger(<span class="keyword">this</span>.getClass());</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">boolean</span> SUPPORT_SPARSE_METRICS_DEFAULT = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String SUPPORT_SPARSE_METRICS_PROPERTY = <span class="string">"supportsparse"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> supportSparseMetrics = SUPPORT_SPARSE_METRICS_DEFAULT;</span><br><span class="line">    <span class="keyword">private</span> MetricsCache metricsCache = <span class="keyword">new</span> MetricsCache();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String METRIC = <span class="string">"metric"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TIMESTAMP = <span class="string">"timestamp"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String VALUE = <span class="string">"value"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAGS = <span class="string">"tags"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SERVERS_PROPERTY = <span class="string">"servers"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CONTEXT = <span class="string">"Context"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String HOSTANME = <span class="string">"Hostname"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CLUSTERID = <span class="string">"clusterId"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String HTTP_PREFIX = <span class="string">"http"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SLASH = <span class="string">"/"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PUT = <span class="string">"/api/put"</span>;</span><br><span class="line">    <span class="keyword">private</span> String metricsServers;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(SubsetConfiguration conf)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// see if sparseMetrics is supported. Default is false</span></span><br><span class="line">        supportSparseMetrics = conf.getBoolean(SUPPORT_SPARSE_METRICS_PROPERTY,</span><br><span class="line">                SUPPORT_SPARSE_METRICS_DEFAULT);</span><br><span class="line">        metricsServers = parseServer(conf.getString(SERVERS_PROPERTY));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">parseServer</span><span class="params">(String servers)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isNotEmpty(servers)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!servers.startsWith(HTTP_PREFIX)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (servers.startsWith(SLASH)) &#123;</span><br><span class="line">                    servers = servers.substring(<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                servers = HTTP_PREFIX + <span class="string">":"</span> + SLASH + SLASH + servers;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> servers + PUT;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 打入指标</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> record the record to put</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">putMetrics</span><span class="params">(MetricsRecord record)</span> </span>&#123;</span><br><span class="line"><span class="comment">// The method handles both cases whether Ganglia support dense publish</span></span><br><span class="line">        <span class="comment">// of metrics of sparse (only on change) publish of metrics</span></span><br><span class="line">        String recordName = record.name();</span><br><span class="line">        String contextName = record.context();</span><br><span class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        sb.append(contextName);</span><br><span class="line">        sb.append(<span class="string">'.'</span>);</span><br><span class="line">        sb.append(recordName);</span><br><span class="line">        sb.append(<span class="string">'.'</span>);</span><br><span class="line">        <span class="keyword">int</span> sbBaseLen = sb.length();</span><br><span class="line">        MetricsCache.Record cachedMetrics;</span><br><span class="line">        <span class="keyword">if</span> (!isSupportSparseMetrics()) &#123;</span><br><span class="line">            <span class="comment">// for sending dense metrics, update metrics cache</span></span><br><span class="line">            <span class="comment">// and get the updated data</span></span><br><span class="line">            cachedMetrics = metricsCache.update(record);</span><br><span class="line">            <span class="keyword">if</span> (cachedMetrics != <span class="keyword">null</span> &amp;&amp; cachedMetrics.metricsEntrySet() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (Map.Entry&lt;String, AbstractMetric&gt; entry : cachedMetrics</span><br><span class="line">                        .metricsEntrySet()) &#123;</span><br><span class="line">                    AbstractMetric metric = entry.getValue();</span><br><span class="line">                    sb.append(metric.name());</span><br><span class="line">                    String name = sb.toString();</span><br><span class="line">                    <span class="comment">// send metric to opentsdb</span></span><br><span class="line">                    emitMetric(name, metric.value(), record.timestamp(), record.tags());</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// reset the length of the buffer for next iteration</span></span><br><span class="line">                    sb.setLength(sbBaseLen);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// we support sparse updates</span></span><br><span class="line">            Collection&lt;AbstractMetric&gt; metrics = (Collection&lt;AbstractMetric&gt;) record</span><br><span class="line">                    .metrics();</span><br><span class="line">            <span class="keyword">if</span> (metrics.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// we got metrics. so send the latest</span></span><br><span class="line">                <span class="keyword">for</span> (AbstractMetric metric : record.metrics()) &#123;</span><br><span class="line">                    sb.append(metric.name());</span><br><span class="line">                    String name = sb.toString();</span><br><span class="line">                    <span class="comment">// send metric to opentsdb</span></span><br><span class="line">                    emitMetric(name, metric.value(), record.timestamp(), record.tags());</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// reset the length of the buffer for next iteration</span></span><br><span class="line">                    sb.setLength(sbBaseLen);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">emitMetric</span><span class="params">(String name, Number value, <span class="keyword">long</span> timestamp, Collection&lt;MetricsTag&gt; tags)</span> </span>&#123;</span><br><span class="line">        JsonObject params = <span class="keyword">new</span> JsonObject();</span><br><span class="line">        params.addProperty(METRIC, name);</span><br><span class="line">        params.addProperty(VALUE, value);</span><br><span class="line">        params.addProperty(TIMESTAMP, timestamp);</span><br><span class="line"></span><br><span class="line">        JsonObject tagsJson = getTags(tags);</span><br><span class="line">        <span class="keyword">if</span> (tagsJson.entrySet().size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            params.add(TAGS, tagsJson);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//        LOG.info("put metric to openTSDB, data is: &#123;&#125;", params.toString());</span></span><br><span class="line">        HttpUtils.post(metricsServers, params);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> JsonObject <span class="title">getTags</span><span class="params">(Collection&lt;MetricsTag&gt; tags)</span> </span>&#123;</span><br><span class="line">        JsonObject tagsJson = <span class="keyword">new</span> JsonObject();</span><br><span class="line">        <span class="keyword">if</span> (tags != <span class="keyword">null</span> &amp;&amp; tags.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// opentsdb tags应该尽量少，因此值存储必要的tag</span></span><br><span class="line">            <span class="keyword">for</span> (MetricsTag next : tags) &#123;</span><br><span class="line">                String name = next.name();</span><br><span class="line">                String value = next.value();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (StringUtils.isNotEmpty(name) &amp;&amp; StringUtils.isNotEmpty(value)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (HOSTANME.equals(name) || CONTEXT.equals(name) || CLUSTERID.equals(name)) &#123;</span><br><span class="line">                        tagsJson.addProperty(name, value);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> tagsJson;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> whether sparse metrics are supported</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">isSupportSparseMetrics</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> supportSparseMetrics;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flush</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="hadoop-metrics2-properties"><a href="#hadoop-metrics2-properties" class="headerlink" title="hadoop-metrics2.properties"></a>hadoop-metrics2.properties</h4><p>修改hadoop-metrics2.properties内容：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># syntax: [prefix].[source|sink].[instance].[options]</span></span><br><span class="line"><span class="comment"># See javadoc of package-info.java for org.apache.hadoop.metrics2 for details</span></span><br><span class="line"></span><br><span class="line"><span class="string">*.sink.file.class=org.apache.hadoop.metrics2.sink.FileSink</span></span><br><span class="line"><span class="comment"># default sampling period, in seconds</span></span><br><span class="line"><span class="string">*.period=10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The namenode-metrics.out will contain metrics from all context</span></span><br><span class="line"><span class="comment">#namenode.sink.file.filename=namenode-metrics.out</span></span><br><span class="line"><span class="comment"># Specifying a special sampling period for namenode:</span></span><br><span class="line"><span class="comment">#namenode.sink.*.period=8</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#datanode.sink.file.filename=datanode-metrics.out</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#resourcemanager.sink.file.filename=resourcemanager-metrics.out</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#nodemanager.sink.file.filename=nodemanager-metrics.out</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#mrappmaster.sink.file.filename=mrappmaster-metrics.out</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#jobhistoryserver.sink.file.filename=jobhistoryserver-metrics.out</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># the following example split metrics of different</span></span><br><span class="line"><span class="comment"># context to different sinks (in this case files)</span></span><br><span class="line"><span class="comment">#nodemanager.sink.file_jvm.class=org.apache.hadoop.metrics2.sink.FileSink</span></span><br><span class="line"><span class="comment">#nodemanager.sink.file_jvm.context=jvm</span></span><br><span class="line"><span class="comment">#nodemanager.sink.file_jvm.filename=nodemanager-jvm-metrics.out</span></span><br><span class="line"><span class="comment">#nodemanager.sink.file_mapred.class=org.apache.hadoop.metrics2.sink.FileSink</span></span><br><span class="line"><span class="comment">#nodemanager.sink.file_mapred.context=mapred</span></span><br><span class="line"><span class="comment">#nodemanager.sink.file_mapred.filename=nodemanager-mapred-metrics.out</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Below are for sending metrics to Ganglia</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># for Ganglia 3.0 support</span></span><br><span class="line"><span class="comment"># *.sink.ganglia.class=org.apache.hadoop.metrics2.sink.ganglia.GangliaSink30</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># for Ganglia 3.1 support</span></span><br><span class="line"><span class="comment"># *.sink.ganglia.class=org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># *.sink.ganglia.period=10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># default for supportsparse is false</span></span><br><span class="line"><span class="comment"># *.sink.ganglia.supportsparse=true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#*.sink.ganglia.slope=jvm.metrics.gcCount=zero,jvm.metrics.memHeapUsedM=both</span></span><br><span class="line"><span class="comment">#*.sink.ganglia.dmax=jvm.metrics.threadsBlocked=70,jvm.metrics.memHeapUsedM=40</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Tag values to use for the ganglia prefix. If not defined no tags are used.</span></span><br><span class="line"><span class="comment"># If '*' all tags are used. If specifiying multiple tags separate them with</span></span><br><span class="line"><span class="comment"># commas. Note that the last segment of the property name is the context name.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#*.sink.ganglia.tagsForPrefix.jvm=ProcesName</span></span><br><span class="line"><span class="comment">#*.sink.ganglia.tagsForPrefix.dfs=</span></span><br><span class="line"><span class="comment">#*.sink.ganglia.tagsForPrefix.rpc=</span></span><br><span class="line"><span class="comment">#*.sink.ganglia.tagsForPrefix.mapred=</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#namenode.sink.ganglia.servers=yourgangliahost_1:8649,yourgangliahost_2:8649</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#datanode.sink.ganglia.servers=yourgangliahost_1:8649,yourgangliahost_2:8649</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#resourcemanager.sink.ganglia.servers=yourgangliahost_1:8649,yourgangliahost_2:8649</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#nodemanager.sink.ganglia.servers=yourgangliahost_1:8649,yourgangliahost_2:8649</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#mrappmaster.sink.ganglia.servers=yourgangliahost_1:8649,yourgangliahost_2:8649</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#jobhistoryserver.sink.ganglia.servers=yourgangliahost_1:8649,yourgangliahost_2:8649</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######## OpenTSDB Collect Metrics #########</span></span><br><span class="line"><span class="string">*.sink.opentsdb.class=org.apache.hadoop.metrics2.sink.opentsdb.OpenTSDBHttpSink</span></span><br><span class="line"><span class="string">namenode.sink.opentsdb.servers=opentsdb地址</span></span><br><span class="line"><span class="string">datanode.sink.opentsdb.servers=opentsdb地址</span></span><br><span class="line"><span class="string">*.period=60</span></span><br><span class="line"><span class="string">*.source.filter.class=org.apache.hadoop.metrics2.filter.RegexFilter</span></span><br><span class="line"><span class="string">*.record.filter.class=$&#123;*.source.filter.class&#125;</span></span><br><span class="line"><span class="string">*.metric.filter.class=$&#123;*.source.filter.class&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="string">hbase.sink.opentsdb.source.filter.include=^(.*IPC.*)$</span></span><br><span class="line"><span class="string">hbase.sink.opentsdb.source.filter.exclude=^(.*ClassPath.*)|(MetaHlog\\w+)|(.*\\.jar.*)|(.*SystemProperties.*)|(.*Balancer.*)|(.*AssignmentManager.*)|(.*Control.*)|(.*Stats.*)|(.*FileSystem.*)|(.*Procedure.*)|(.*Coprocessor.*)|(.*Memory.*)$</span></span><br><span class="line"><span class="comment">#hbase.sink.opentsdb.metric.filter.include=^(.*Master.*)|(.*Server.*)|(.*JvmMetrics.*)|(.*WAL.*)|(.*RegionServer.*)|(.*Regions.*)$</span></span><br><span class="line"><span class="string">hbase.sink.opentsdb.servers=opentsdb地址</span></span><br><span class="line"><span class="string">hbase.sink.opentsdb.period=60</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="部署服务"><a href="#部署服务" class="headerlink" title="部署服务"></a>部署服务</h4><ol>
+<li>打包编译hadoop，编译教程见<a href="https://segmentfault.com/a/1190000019146236" target="_blank" rel="noopener">https://segmentfault.com/a/1190000019146236</a>。</li>
+<li>编译完成后，进入hadoop-dist/target/hadoop-2.9.2拷贝.//share/hadoop/common/hadoop-common-2.9.2.jar到hadoop集群的各个节点。</li>
+<li>拷贝hadoop-metrics2.properties文件到各个hadoop节点。</li>
+<li><p>重启hadoop集群，就可看见监控指标每分钟打入OpenTSDB。</p>
+<h3 id="安装OpenTSDB"><a href="#安装OpenTSDB" class="headerlink" title="安装OpenTSDB"></a>安装OpenTSDB</h3></li>
+<li><p>编译，在build目录会生成tsdb和tsdb-2.4.0.jar文件，注意：若直接./build.sh报错，则需要把third_party目录下的文件拷到build。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/OpenTSDB/opentsdb/releases/download/v2.4.0/opentsdb-2.4.0.tar.gz</span><br><span class="line">tar -zxf opentsdb-2.4.0.tar.gz</span><br><span class="line">cd opentsdb-2.4.0</span><br><span class="line">mkdir build</span><br><span class="line">cp -r third_party build/</span><br><span class="line">./build.sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改src/opentsdb.conf，主要内容如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">tsd.network.port</span> <span class="string">=</span> <span class="number">4399</span></span><br><span class="line"><span class="string">tsd.network.bind</span> <span class="string">=</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="string">tsd.http.staticroot</span> <span class="string">=</span> <span class="string">/home/bigdata/tsdb/staticroot</span></span><br><span class="line"><span class="string">tsd.http.cachedir</span> <span class="string">=</span> <span class="string">/home/bigdata/tsdb/cachedir</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># tsdb数据表，rowkey: &lt;加盐（一个字节）&gt;&lt;metric&gt;&lt;timestamp&gt;&lt;tagN&gt;&lt;tagV&gt;，其中timestamp取得是整小时时间戳，此处metric、tagN和tagV都是uid形式。</span></span><br><span class="line"><span class="string">tsd.storage.hbase.data_table</span> <span class="string">=</span> <span class="attr">opentsdb:tsdb</span></span><br><span class="line"><span class="comment"># uid映射表，分为两种：uid-&gt;字符串和字符串-&gt;uid</span></span><br><span class="line"><span class="string">tsd.storage.hbase.uid_table</span> <span class="string">=</span> <span class="attr">opentsdb:tsdb-uid</span></span><br><span class="line"><span class="comment"># 树形表，以树状层次关系来表示metric的结构</span></span><br><span class="line"><span class="string">tsd.storage.hbase.tree_table</span> <span class="string">=</span> <span class="attr">opentsdb:tsdb-tree</span></span><br><span class="line"><span class="comment"># 元数据表，用来存储时间序列索引和元数据的表</span></span><br><span class="line"><span class="string">tsd.storage.hbase.meta_table</span> <span class="string">=</span> <span class="attr">opentsdb:tsdb-meta</span></span><br><span class="line"></span><br><span class="line"><span class="string">tsd.storage.hbase.zk_quorum</span> <span class="string">=</span> <span class="string">hadoop1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动服务</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">./build/tsdb tsd --config=src/opentsdb.conf</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 后台启动</span></span><br><span class="line">nohup ./build/tsdb tsd --config=src/opentsdb.conf  &gt;&gt; logs/opentsdb-out.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="安装Grafana"><a href="#安装Grafana" class="headerlink" title="安装Grafana"></a>安装Grafana</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget https://dl.grafana.com/oss/release/grafana-8.0.6.linux-amd64.tar.gz</span><br><span class="line">tar -zxf grafana-8.0.6.linux-amd64.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 配置grafana，启动</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="配置监控指标"><a href="#配置监控指标" class="headerlink" title="配置监控指标"></a>配置监控指标</h3><p>指标可参考：<a href="https://intl.cloud.tencent.com/zh/document/product/1026/36879" target="_blank" rel="noopener">https://intl.cloud.tencent.com/zh/document/product/1026/36879</a>进行配置</p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()">×</a>
+            <div class="shang_tit">
+              <p>纯属好玩</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="">大数据监控-Metrics2录入指标到OpenTSDB</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 月 迹 的个人博客">月 迹</a></p>
+        <p><span>发布时间:</span>2021年08月09日 - 14时10分</p>
+        <p><span>最后更新:</span>2021年08月09日 - 14时16分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="" title="大数据监控-Metrics2录入指标到OpenTSDB">https://xyueji.github.io/大数据监控-Metrics2录入指标到OpenTSDB.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/大数据监控-Metrics2录入指标到OpenTSDB.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="精准去重-字典编码+Bitmap.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          精准去重-字典编码+Bitmap
+        
+      </div>
+    </a>
+  
+  
+    <a href="Spark解决数据倾斜问题.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Spark解决数据倾斜问题</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#MetricsSystemImpl"><span class="toc-number">1.</span> <span class="toc-text">MetricsSystemImpl</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Source"><span class="toc-number">2.</span> <span class="toc-text">Source</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sink"><span class="toc-number">3.</span> <span class="toc-text">Sink</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义OpenTSDBHttpSink"><span class="toc-number"></span> <span class="toc-text">自定义OpenTSDBHttpSink</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HttpUtils"><span class="toc-number">1.</span> <span class="toc-text">HttpUtils</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#OpenTSDBHttpSink"><span class="toc-number">2.</span> <span class="toc-text">OpenTSDBHttpSink</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#hadoop-metrics2-properties"><span class="toc-number">3.</span> <span class="toc-text">hadoop-metrics2.properties</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#部署服务"><span class="toc-number">4.</span> <span class="toc-text">部署服务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装OpenTSDB"><span class="toc-number"></span> <span class="toc-text">安装OpenTSDB</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装Grafana"><span class="toc-number"></span> <span class="toc-text">安装Grafana</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置监控指标"><span class="toc-number"></span> <span class="toc-text">配置监控指标</span></a>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.css">
+<div id="gitalk-container" class="gitment-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '8864436c2b03c3753a80',
+        clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
+        id: '大数据监控-Metrics2录入指标到OpenTSDB.html',
+        owner: 'xyueji',
+        repo: 'xyueji.github.io',
+        admin: 'xyueji',
+        proxy: 'https://still-shadow-c49f.xyueji.workers.dev/?https://github.com/login/oauth/access_token'
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="精准去重-字典编码+Bitmap.html" title="上一篇: 精准去重-字典编码+Bitmap">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="Spark解决数据倾斜问题.html" title="下一篇: Spark解决数据倾斜问题">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="统计HDFS元数据.html">统计HDFS元数据</a></li><li class="post-list-item"><a class="post-list-link" href="元数据平台-数据血缘.html">元数据平台-数据血缘</a></li><li class="post-list-item"><a class="post-list-link" href="精准去重-字典编码+Bitmap.html">精准去重-字典编码+Bitmap</a></li><li class="post-list-item"><a class="post-list-link" href="">大数据监控-Metrics2录入指标到OpenTSDB</a></li><li class="post-list-item"><a class="post-list-link" href="Spark解决数据倾斜问题.html">Spark解决数据倾斜问题</a></li><li class="post-list-item"><a class="post-list-link" href="Spark-Shuffle原理.html">Spark-Shuffle原理</a></li><li class="post-list-item"><a class="post-list-link" href="MapReduce-Shuffle过程.html">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+   <!-- 代码块复制功能-->
+   <script src="/js/clipboard-use.js"></script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2022 月 迹
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" style="color: #000">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank" style="color: #000">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数:
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量:
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="js/main.js"></script>
+
+    <!--<script>-->
+        <!--$(document).ready(function() {-->
+            <!--var backgroundnum = 0;-->
+            <!--var backgroundimg = "url(/background/bg-" + backgroundnum +".jpg)";-->
+            <!--$("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+            <!--$(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+        <!--})-->
+    <!--</script>-->
+
+
+
+<!-- Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-168200248-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-168200248-1');
+</script>
+
+<!-- End Google Analytics -->
+
+
+
+<script>
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "https://hm.baidu.com/hm.js?1c0d5d76b7455fc584663ce315f75837";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
+</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+    
+    
+    
+        <div class="search-result-list" ></div>
+        <div class="search-cover"></div>
+    <script type = "text/javascript" >
+        $('#search').bind('keypress',function(event){
+            if(event.keyCode == "13"){
+                search()
+            }
+        });
+
+    function search() {
+        var searchTool = {
+            data: [],
+            arrList: [],
+            oldList: [],
+            init() {
+                this.fetchJson()
+            },
+            fetchJson() {
+                window.fetch('/content.json?t=' + (+new Date()), {
+                    method: 'get',
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    this.data = data
+                    let keywords = $('#search').val()
+                    this.searchList(keywords)
+                }).catch((err) => {
+                    console.log(err)
+                });
+            },
+            // 搜索字符串里面是否存在关键字
+            isSreachIndexOF(oldstr, kw) {
+                // console.log(oldstr, kw)
+                var istrue = false
+                // console.log('isSreachIndexOF', oldstr && toString.call(oldstr) === '[object Array]')
+                if (oldstr && toString.call(oldstr) === '[object Array]') {
+                    for (var i = 0; i < oldstr.length; i++) {
+                        oldstr[i].toLowerCase() === kw.toLowerCase() ? istrue = true : null
+                    }
+                    return istrue
+                }
+                if (!oldstr || !kw) return false
+                istrue = oldstr.toLowerCase().indexOf(kw.toLowerCase()) > -1
+                return istrue
+            },
+            searchList(keywolds) {
+                let divList = ''
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        let tagsK = item.tags.map(item => item.name).join('-')
+                        let categoriesK = item.categories.map(item => item.name).join('-')
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(categoriesK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            divList += `
+                          <li>
+                            <a href="/${item.path}" class="search-result-title">${item.title}</a>
+                            <div class="main">
+                              <div class="left">
+                                <span>${item.author ? item.author : 'xyueji'}</span>
+                                ${item.tags.map(tags => `<a href="/tags/${tags.slug}" class="search-result-tags">${tags.name}</a>`)}
+                              </div>
+                              <div class="right">${this.getFriendlyTime(item.date.replace('T', ' '), new Date())}</div>
+                            </div>
+                          </li>`
+                        }
+                    })
+                    if (this.oldList.length) {
+                        this.clear()
+                    }
+                    if (this.arrList.length) this.add()
+                }
+                if (!divList) {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <div style="text-align: center;font-size: 30px; margin-top: 50px;" ">抱歉，未搜索到相关结果</div>`
+                } else {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <ul>` + divList + `</ul>`
+                }
+                $('.search-result-list').html(divList)
+                $('.search-result-list').fadeToggle();
+                $('.search-cover').fadeToggle();
+            },
+            clear() {
+                this.oldList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'none'
+                })
+                this.oldList = []
+            },
+            add() {
+                this.arrList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'block'
+                })
+                this.oldList = this.arrList
+            },
+            searchGo(keywolds) {
+                this.arrList = []
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(item.tags.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.categories.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            this.arrList.push(index)
+                        }
+                    })
+                    if (this.oldList.length) this.clear()
+                    if (this.arrList.length) this.add()
+                }
+            },
+            /**
+             * 获取指定时间的友好时间字符串。
+             * @param str 指定的时间字符串，如yyyy-MM-dd HH:mm:ss
+             * @param now 当前时间，允许时间戳，GMT时间，如果该参数为undefined，则使用浏览器时间。
+             */
+            getFriendlyTime(str, now) {
+                var currentTime = new Date(now);
+                var arr = str.split(/\s+/gi);
+                var temp = 0, arr1, arr2, oldTime, delta;
+                var getIntValue = function (ss, defaultValue) {
+                    try {
+                        return parseInt(ss, 10);
+                    } catch (e) {
+                        return defaultValue;
+                    }
+                };
+                var getWidthString = function (num) {
+                    return num < 10 ? ('0' + num) : num;
+                };
+                if (arr.length >= 2) {
+                    arr1 = arr[0].split(/[\/\-]/gi);
+                    arr2 = arr[1].split(':');
+                    oldTime = new Date();
+                    oldTime.setYear(getIntValue(arr1[0], currentTime.getFullYear()));
+                    oldTime.setMonth(getIntValue(arr1[1], currentTime.getMonth() + 1) - 1);
+                    oldTime.setDate(getIntValue(arr1[2], currentTime.getDate()));
+
+                    oldTime.setHours(getIntValue(arr2[0], currentTime.getHours()));
+                    oldTime.setMinutes(getIntValue(arr2[1], currentTime.getMinutes()));
+                    oldTime.setSeconds(getIntValue(arr2[2], currentTime.getSeconds()));
+
+                    delta = currentTime.getTime() - oldTime.getTime();
+
+                    if (delta <= 60 * 1000) {
+                        return '1分钟内';
+                    } else if (delta < 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 1000)) + '分钟前';
+                    } else if (delta < 24 * 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000)) + '天前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30 * 12) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000 * 30)) + '月前';
+                    } else if (currentTime.getFullYear() != oldTime.getFullYear()) {
+                        return [getWidthString(oldTime.getFullYear()), getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-')
+                    } else {
+                        return [getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-');
+                    }
+                }
+                return '';
+            }
+        }
+        searchTool.init()
+    }
+    function searchToggle() {
+        $('.search-cover').fadeToggle();
+        $('.search-result-list').fadeToggle();
+    }
+</script>
+
+
+  </div>
+</body>
+</html>

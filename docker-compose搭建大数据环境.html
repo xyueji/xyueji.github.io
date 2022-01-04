@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>docker-compose搭建大数据环境 | 月迹的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="之前写过一篇docker-compose一键启停Vue+SpringBoot的前后端项目。最近需要用到hadoop、es、kafka、flink等大数据组件，由于公司测试环境并不满足起这么多服务，加上正好公司分配的电脑主机处于空闲状态，于是想着在主机上用docker搭建大数据环境，供测试与学习使用。 windows docker桌面版安装电脑主机系统是windows10，安装对应版本的docker">
+<meta name="keywords" content="大数据,docker,docker-compose">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker-compose搭建大数据环境">
+<meta property="og:url" content="https://xyueji.github.io/docker-compose搭建大数据环境.html">
+<meta property="og:site_name" content="月迹的博客">
+<meta property="og:description" content="之前写过一篇docker-compose一键启停Vue+SpringBoot的前后端项目。最近需要用到hadoop、es、kafka、flink等大数据组件，由于公司测试环境并不满足起这么多服务，加上正好公司分配的电脑主机处于空闲状态，于是想着在主机上用docker搭建大数据环境，供测试与学习使用。 windows docker桌面版安装电脑主机系统是windows10，安装对应版本的docker">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-12-09T06:34:16.233Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="docker-compose搭建大数据环境">
+<meta name="twitter:description" content="之前写过一篇docker-compose一键启停Vue+SpringBoot的前后端项目。最近需要用到hadoop、es、kafka、flink等大数据组件，由于公司测试环境并不满足起这么多服务，加上正好公司分配的电脑主机处于空闲状态，于是想着在主机上用docker搭建大数据环境，供测试与学习使用。 windows docker桌面版安装电脑主机系统是windows10，安装对应版本的docker">
+  
+    <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+    
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.js"></script>
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">月 迹</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">用代码书写人生</p>
+        
+        
+            <input type="text" class="search" id="search" style="text-align: center" placeholder="搜点什么...">
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="index.html">博客首页</a></li>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="/tags">文章统计</a></li>
+                        
+                            <li><a href="/message">交友留言</a></li>
+                        
+                            <li><a href="/navigation">资源导航</a></li>
+                        
+                            <li><a href="/about">关于作者</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="tags/AppendTrie树/" style="font-size: 10px;">AppendTrie树</a> <a href="tags/HDFS/" style="font-size: 10px;">HDFS</a> <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/SQL解析/" style="font-size: 10px;">SQL解析</a> <a href="tags/SQL采集/" style="font-size: 10px;">SQL采集</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/bitmap/" style="font-size: 10px;">bitmap</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/git/" style="font-size: 10px;">git</a> <a href="tags/grafana/" style="font-size: 10px;">grafana</a> <a href="tags/hadoop/" style="font-size: 10px;">hadoop</a> <a href="tags/hbase/" style="font-size: 15px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/hive/" style="font-size: 15px;">hive</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/mapreduce/" style="font-size: 10px;">mapreduce</a> <a href="tags/metrics2/" style="font-size: 10px;">metrics2</a> <a href="tags/opentsdb/" style="font-size: 10px;">opentsdb</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/shuffle/" style="font-size: 15px;">shuffle</a> <a href="tags/spark/" style="font-size: 15px;">spark</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/修复工具/" style="font-size: 10px;">修复工具</a> <a href="tags/元数据/" style="font-size: 10px;">元数据</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/基础知识/" style="font-size: 10px;">基础知识</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/大查询/" style="font-size: 10px;">大查询</a> <a href="tags/安装/" style="font-size: 10px;">安装</a> <a href="tags/小文件/" style="font-size: 10px;">小文件</a> <a href="tags/开发规范/" style="font-size: 10px;">开发规范</a> <a href="tags/数据倾斜/" style="font-size: 10px;">数据倾斜</a> <a href="tags/数据血缘/" style="font-size: 10px;">数据血缘</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/精准去重/" style="font-size: 10px;">精准去重</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                    </div>
+                </section>
+                
+
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://dayesahh.github.io/">DaYesahh</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.54tianzhisheng.cn/">zhisjeng</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫、追小说、喜影视、迷于严谨和逻辑的编码之中！！！</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">月 迹</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">月 迹</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">用代码书写人生</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="index.html">博客首页</a></li>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="/tags">文章统计</a></li>
+                
+                    <li><a href="/message">交友留言</a></li>
+                
+                    <li><a href="/navigation">资源导航</a></li>
+                
+                    <li><a href="/about">关于作者</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-docker-compose搭建大数据环境" class="article article-type-post" itemscope itemprop="blogPost">
+    
+    <div class="article-meta">
+      <a href="" class="article-date">
+      <time datetime="2020-06-05T09:28:27.000Z" itemprop="datePublished">2020-06-05</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      docker-compose搭建大数据环境
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="categories/docker/">docker</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/docker-compose/">docker-compose</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/大数据/">大数据</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>之前写过一篇docker-compose一键启停Vue+SpringBoot的前后端项目。最近需要用到hadoop、es、kafka、flink等大数据组件，由于公司测试环境并不满足起这么多服务，加上正好公司分配的电脑主机处于空闲状态，于是想着在主机上用docker搭建大数据环境，供测试与学习使用。</p>
+<h2 id="windows-docker桌面版安装"><a href="#windows-docker桌面版安装" class="headerlink" title="windows docker桌面版安装"></a>windows docker桌面版安装</h2><p>电脑主机系统是windows10，安装对应版本的docker，具体安装教程可参考<a href="https://www.runoob.com/docker/windows-docker-install.html" target="_blank" rel="noopener">https://runoob.com/docker/windows-docker-install.html</a>。</p>
+<h2 id="docker-compose-yml"><a href="#docker-compose-yml" class="headerlink" title="docker-compose.yml"></a>docker-compose.yml</h2><p>首先编写docker-compose.yml文件，具体配置解释可以参考<a href="https://www.runoob.com/docker/docker-compose.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-compose.html</a>，本次编写的大数据环境包括hadoop、hive、spark、es、kafka、flink和hbase。具体内容如下：<br><a id="more"></a><br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'2'</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line"><span class="attr">  namenode:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hadoop-namenode:1.1.0-hadoop2.8-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">namenode</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/namenode:/hadoop/dfs/name</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">CLUSTER_NAME=hadoop</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">50070</span><span class="string">:50070</span></span><br><span class="line"><span class="attr">  resourcemanager:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hadoop-resourcemanager:1.1.0-hadoop2.8-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">resourcemanager</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">namenode</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">datanode1</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">datanode2</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">datanode3</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"8088:8088"</span></span><br><span class="line"><span class="attr">  historyserver:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hadoop-historyserver:1.1.0-hadoop2.8-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">historyserver</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">namenode</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">datanode1</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">datanode2</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/historyserver:/hadoop/yarn/timeline</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"8188:8188"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  nodemanager1:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hadoop-nodemanager:1.1.0-hadoop2.8-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">nodemanager1</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">namenode</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">datanode1</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">datanode2</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"8042:8042"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  datanode1:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hadoop-datanode:1.1.0-hadoop2.8-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">datanode1</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">namenode</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/datanode1:/hadoop/dfs/data</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  datanode2:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hadoop-datanode:1.1.0-hadoop2.8-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">datanode2</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">namenode</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/datanode2:/hadoop/dfs/data</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  datanode3:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hadoop-datanode:1.1.0-hadoop2.8-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">datanode3</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">namenode</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/datanode3:/hadoop/dfs/data</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  hive-server:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hive:2.1.0-postgresql-metastore</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">hive-server</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore"</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"10000:10000"</span></span><br><span class="line"><span class="attr">  hive-metastore:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hive:2.1.0-postgresql-metastore</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">hive-metastore</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">/opt/hive/bin/hive</span> <span class="bullet">--service</span> <span class="string">metastore</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">9083</span><span class="string">:9083</span></span><br><span class="line"><span class="attr">  hive-metastore-postgresql:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hive-metastore-postgresql:2.1.0</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">5432</span><span class="string">:5432</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/postgresql/:/var/lib/postgresql/data</span></span><br><span class="line"><span class="attr">  spark-master:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/spark-master:2.1.0-hadoop2.8-hive-java8</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">spark-master</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">8080</span><span class="string">:8080</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">7077</span><span class="string">:7077</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">  spark-worker:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/spark-worker:2.1.0-hadoop2.8-hive-java8</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">spark-master</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">SPARK_MASTER=spark://spark-master:7077</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"8081:8081"</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hadoop-hive.env</span></span><br><span class="line"><span class="attr">  mysql-server:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">mysql:5.7</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">mysql-server</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"3306:3306"</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">MYSQL_ROOT_PASSWORD=123456</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/mysql:/var/lib/mysql</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  elasticsearch:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">elasticsearch:6.5.3</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">discovery.type=single-node</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"9200:9200"</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"9300:9300"</span></span><br><span class="line"><span class="attr">    networks:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">es_network</span></span><br><span class="line"><span class="attr">  kibana:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">kibana:6.5.3</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"5601:5601"</span></span><br><span class="line"><span class="attr">    networks:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">es_network</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">  jobmanager:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">flink</span></span><br><span class="line"><span class="attr">    expose:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"6123"</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"8081:8081"</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">jobmanager</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">JOB_MANAGER_RPC_ADDRESS=jobmanager</span></span><br><span class="line"><span class="attr">  taskmanager:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">flink</span></span><br><span class="line"><span class="attr">    expose:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"6121"</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"6122"</span></span><br><span class="line"><span class="attr">    depends_on:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">jobmanager</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">taskmanager</span></span><br><span class="line"><span class="attr">    links:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">"jobmanager:jobmanager"</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">JOB_MANAGER_RPC_ADDRESS=jobmanager</span></span><br><span class="line">      </span><br><span class="line"><span class="attr">  zoo:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="attr">zookeeper:3.4.10</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">zoo</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="attr">      ZOO_MY_ID:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">      ZOO_SERVERS:</span> <span class="string">server.1=0.0.0.0:2888:3888</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">2181</span><span class="string">:2181</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">  kafka:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">wurstmeister/kafka</span></span><br><span class="line"><span class="attr">    volumes:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./data/kafka/etc/localtime:/etc/localtime</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">9092</span><span class="string">:9092</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="attr">      KAFKA_ADVERTISED_HOST_NAME:</span> <span class="string">&lt;主机ip&gt;</span></span><br><span class="line"><span class="attr">      KAFKA_ZOOKEEPER_CONNECT:</span> <span class="string">&lt;主机ip&gt;:2181</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  hbase-master:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hbase-master:1.0.0-hbase1.2.6</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">hbase-master</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">hbase-master</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hbase-distributed-local.env</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="attr">      SERVICE_PRECONDITION:</span> <span class="string">"namenode:50070 datanode:50075 zoo:2181"</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">16010</span><span class="string">:16010</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  hbase-region:</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">bde2020/hbase-regionserver:1.0.0-hbase1.2.6</span></span><br><span class="line"><span class="attr">    container_name:</span> <span class="string">hbase-regionserver</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">hbase-regionserver</span></span><br><span class="line"><span class="attr">    env_file:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="string">./hbase-distributed-local.env</span></span><br><span class="line"><span class="attr">    environment:</span></span><br><span class="line"><span class="attr">      HBASE_CONF_hbase_regionserver_hostname:</span> <span class="string">hbase-region</span></span><br><span class="line"><span class="attr">      SERVICE_PRECONDITION:</span> <span class="string">"namenode:50070 datanode:50075 zoo:2181 hbase-master:16010"</span></span><br><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="bullet">      -</span> <span class="number">16030</span><span class="string">:16030</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line"><span class="attr">  es_network:</span></span><br><span class="line"><span class="attr">    external:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure></p>
+<p>hadoop-hive.env<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">CORE_CONF_fs_defaultFS=hdfs://namenode:9000</span></span><br><span class="line"><span class="string">CORE_CONF_hadoop_http_staticuser_user=root</span></span><br><span class="line"><span class="string">CORE_CONF_hadoop_proxyuser_hue_hosts=*</span></span><br><span class="line"><span class="string">CORE_CONF_hadoop_proxyuser_hue_groups=*</span></span><br><span class="line"><span class="string">CORE_CONF_io_compression_codecs=org.apache.hadoop.io.compress.SnappyCodec</span></span><br><span class="line"></span><br><span class="line"><span class="string">HDFS_CONF_dfs_webhdfs_enabled=true</span></span><br><span class="line"><span class="string">HDFS_CONF_dfs_permissions_enabled=false</span></span><br><span class="line"><span class="string">HDFS_CONF_dfs_namenode_datanode_registration_ip___hostname___check=false</span></span><br><span class="line"></span><br><span class="line"><span class="string">YARN_CONF_yarn_log___aggregation___enable=true</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_log_server_url=http://historyserver:8188/applicationhistory/logs/</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_recovery_enabled=true</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_store_class=org.apache.hadoop.yarn.server.resourcemanager.recovery.FileSystemRMStateStore</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_scheduler_class=org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___mb=8192</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_scheduler_capacity_root_default_maximum___allocation___vcores=4</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_fs_state___store_uri=/rmstate</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_system___metrics___publisher_enabled=true</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_hostname=resourcemanager</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_address=resourcemanager:8032</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_scheduler_address=resourcemanager:8030</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_resourcemanager_resource__tracker_address=resourcemanager:8031</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_timeline___service_enabled=true</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_timeline___service_generic___application___history_enabled=true</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_timeline___service_hostname=historyserver</span></span><br><span class="line"><span class="string">YARN_CONF_mapreduce_map_output_compress=true</span></span><br><span class="line"><span class="string">YARN_CONF_mapred_map_output_compress_codec=org.apache.hadoop.io.compress.SnappyCodec</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_nodemanager_resource_memory___mb=16384</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_nodemanager_resource_cpu___vcores=8</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_nodemanager_disk___health___checker_max___disk___utilization___per___disk___percentage=98.5</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_nodemanager_remote___app___log___dir=/app-logs</span></span><br><span class="line"><span class="string">YARN_CONF_yarn_nodemanager_aux___services=mapreduce_shuffle</span></span><br><span class="line"></span><br><span class="line"><span class="string">MAPRED_CONF_mapreduce_framework_name=yarn</span></span><br><span class="line"><span class="string">MAPRED_CONF_mapred_child_java_opts=-Xmx4096m</span></span><br><span class="line"><span class="string">MAPRED_CONF_mapreduce_map_memory_mb=4096</span></span><br><span class="line"><span class="string">MAPRED_CONF_mapreduce_reduce_memory_mb=8192</span></span><br><span class="line"><span class="string">MAPRED_CONF_mapreduce_map_java_opts=-Xmx3072m</span></span><br><span class="line"><span class="string">MAPRED_CONF_mapreduce_reduce_java_opts=-Xmx6144m</span></span><br></pre></td></tr></table></figure></p>
+<p>hbase-distributed-local.env<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">HBASE_CONF_hbase_rootdir=hdfs://namenode:9000/hbase</span></span><br><span class="line"><span class="string">HBASE_CONF_hbase_cluster_distributed=true</span></span><br><span class="line"><span class="string">HBASE_CONF_hbase_zookeeper_quorum=zoo</span></span><br><span class="line"></span><br><span class="line"><span class="string">HBASE_CONF_hbase_master=hbase-master:16000</span></span><br><span class="line"><span class="string">HBASE_CONF_hbase_master_hostname=hbase-master</span></span><br><span class="line"><span class="string">HBASE_CONF_hbase_master_port=16000</span></span><br><span class="line"><span class="string">HBASE_CONF_hbase_master_info_port=16010</span></span><br><span class="line"><span class="string">HBASE_CONF_hbase_regionserver_port=16020</span></span><br><span class="line"><span class="string">HBASE_CONF_hbase_regionserver_info_port=16030</span></span><br><span class="line"></span><br><span class="line"><span class="string">HBASE_MANAGES_ZK=false</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="一键启停"><a href="#一键启停" class="headerlink" title="一键启停"></a>一键启停</h2><p>可以把docker-compose.yml中的大数据组件配置分为多个文件写，这样就可以用docker界面去启停container。作者采用的方法是编写脚本去启停各个服务。</p>
+<h3 id="所有服务启停"><a href="#所有服务启停" class="headerlink" title="所有服务启停"></a>所有服务启停</h3><p>start.sh<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">docker-compose -f docker-compose.yml up -d namenode datanode1 datanode2 datanode3 resourcemanager nodemanager1 historyserver</span><br><span class="line"></span><br><span class="line">sleep 5</span><br><span class="line"></span><br><span class="line">docker-compose -f docker-compose.yml up -d hive-metastore-postgresql hive-server hive-metastore hive-metastore-postgresql mysql-server</span><br><span class="line"></span><br><span class="line">sleep 5</span><br><span class="line"></span><br><span class="line">docker-compose -f docker-compose.yml up -d spark-master spark-worker</span><br><span class="line"></span><br><span class="line">sleep 5</span><br><span class="line"></span><br><span class="line">docker-compose -f docker-compose.yml up -d elasticsearch kibana</span><br><span class="line"></span><br><span class="line">sleep 5</span><br><span class="line"></span><br><span class="line">docker-compose -f docker-compose.yml up -d zoo kafka</span><br><span class="line"></span><br><span class="line">sleep 5</span><br><span class="line"></span><br><span class="line">docker-compose -f docker-compose.yml up -d jobmanager taskmanager</span><br></pre></td></tr></table></figure></p>
+<p>stop.sh<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">docker-compose stop</span><br></pre></td></tr></table></figure></p>
+<h3 id="分别启停服务"><a href="#分别启停服务" class="headerlink" title="分别启停服务"></a>分别启停服务</h3><p>编写启停脚本，以启停flink为例，其他服务类似。<br>start-flink.sh<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose stop -f docker-compose.yml up -d jobmanager taskmanager</span><br></pre></td></tr></table></figure></p>
+<p>stop-fink.sh<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose stop jobmanager taskmanager</span><br></pre></td></tr></table></figure></p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()">×</a>
+            <div class="shang_tit">
+              <p>纯属好玩</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="">docker-compose搭建大数据环境</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 月 迹 的个人博客">月 迹</a></p>
+        <p><span>发布时间:</span>2020年06月05日 - 17时28分</p>
+        <p><span>最后更新:</span>2020年12月09日 - 14时34分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="" title="docker-compose搭建大数据环境">https://xyueji.github.io/docker-compose搭建大数据环境.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/docker-compose搭建大数据环境.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="Flink学习--基本概念与环境搭建.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Flink学习--基本概念与环境搭建
+        
+      </div>
+    </a>
+  
+  
+    <a href="Mac-docker动态给Container添加端口映射.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Mac-docker动态给Container添加端口映射</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#windows-docker桌面版安装"><span class="toc-number">1.</span> <span class="toc-text">windows docker桌面版安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-compose-yml"><span class="toc-number">2.</span> <span class="toc-text">docker-compose.yml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一键启停"><span class="toc-number">3.</span> <span class="toc-text">一键启停</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#所有服务启停"><span class="toc-number">3.1.</span> <span class="toc-text">所有服务启停</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分别启停服务"><span class="toc-number">3.2.</span> <span class="toc-text">分别启停服务</span></a></li></ol></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.css">
+<div id="gitalk-container" class="gitment-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '8864436c2b03c3753a80',
+        clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
+        id: 'docker-compose搭建大数据环境.html',
+        owner: 'xyueji',
+        repo: 'xyueji.github.io',
+        admin: 'xyueji',
+        proxy: 'https://still-shadow-c49f.xyueji.workers.dev/?https://github.com/login/oauth/access_token'
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="Flink学习--基本概念与环境搭建.html" title="上一篇: Flink学习--基本概念与环境搭建">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="Mac-docker动态给Container添加端口映射.html" title="下一篇: Mac-docker动态给Container添加端口映射">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="统计HDFS元数据.html">统计HDFS元数据</a></li><li class="post-list-item"><a class="post-list-link" href="元数据平台-数据血缘.html">元数据平台-数据血缘</a></li><li class="post-list-item"><a class="post-list-link" href="精准去重-字典编码+Bitmap.html">精准去重-字典编码+Bitmap</a></li><li class="post-list-item"><a class="post-list-link" href="大数据监控-Metrics2录入指标到OpenTSDB.html">大数据监控-Metrics2录入指标到OpenTSDB</a></li><li class="post-list-item"><a class="post-list-link" href="Spark解决数据倾斜问题.html">Spark解决数据倾斜问题</a></li><li class="post-list-item"><a class="post-list-link" href="Spark-Shuffle原理.html">Spark-Shuffle原理</a></li><li class="post-list-item"><a class="post-list-link" href="MapReduce-Shuffle过程.html">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+   <!-- 代码块复制功能-->
+   <script src="/js/clipboard-use.js"></script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2022 月 迹
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" style="color: #000">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank" style="color: #000">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数:
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量:
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="js/main.js"></script>
+
+    <!--<script>-->
+        <!--$(document).ready(function() {-->
+            <!--var backgroundnum = 0;-->
+            <!--var backgroundimg = "url(/background/bg-" + backgroundnum +".jpg)";-->
+            <!--$("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+            <!--$(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+        <!--})-->
+    <!--</script>-->
+
+
+
+<!-- Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-168200248-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-168200248-1');
+</script>
+
+<!-- End Google Analytics -->
+
+
+
+<script>
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "https://hm.baidu.com/hm.js?1c0d5d76b7455fc584663ce315f75837";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
+</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+    
+    
+    
+        <div class="search-result-list" ></div>
+        <div class="search-cover"></div>
+    <script type = "text/javascript" >
+        $('#search').bind('keypress',function(event){
+            if(event.keyCode == "13"){
+                search()
+            }
+        });
+
+    function search() {
+        var searchTool = {
+            data: [],
+            arrList: [],
+            oldList: [],
+            init() {
+                this.fetchJson()
+            },
+            fetchJson() {
+                window.fetch('/content.json?t=' + (+new Date()), {
+                    method: 'get',
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    this.data = data
+                    let keywords = $('#search').val()
+                    this.searchList(keywords)
+                }).catch((err) => {
+                    console.log(err)
+                });
+            },
+            // 搜索字符串里面是否存在关键字
+            isSreachIndexOF(oldstr, kw) {
+                // console.log(oldstr, kw)
+                var istrue = false
+                // console.log('isSreachIndexOF', oldstr && toString.call(oldstr) === '[object Array]')
+                if (oldstr && toString.call(oldstr) === '[object Array]') {
+                    for (var i = 0; i < oldstr.length; i++) {
+                        oldstr[i].toLowerCase() === kw.toLowerCase() ? istrue = true : null
+                    }
+                    return istrue
+                }
+                if (!oldstr || !kw) return false
+                istrue = oldstr.toLowerCase().indexOf(kw.toLowerCase()) > -1
+                return istrue
+            },
+            searchList(keywolds) {
+                let divList = ''
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        let tagsK = item.tags.map(item => item.name).join('-')
+                        let categoriesK = item.categories.map(item => item.name).join('-')
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(categoriesK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            divList += `
+                          <li>
+                            <a href="/${item.path}" class="search-result-title">${item.title}</a>
+                            <div class="main">
+                              <div class="left">
+                                <span>${item.author ? item.author : 'xyueji'}</span>
+                                ${item.tags.map(tags => `<a href="/tags/${tags.slug}" class="search-result-tags">${tags.name}</a>`)}
+                              </div>
+                              <div class="right">${this.getFriendlyTime(item.date.replace('T', ' '), new Date())}</div>
+                            </div>
+                          </li>`
+                        }
+                    })
+                    if (this.oldList.length) {
+                        this.clear()
+                    }
+                    if (this.arrList.length) this.add()
+                }
+                if (!divList) {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <div style="text-align: center;font-size: 30px; margin-top: 50px;" ">抱歉，未搜索到相关结果</div>`
+                } else {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <ul>` + divList + `</ul>`
+                }
+                $('.search-result-list').html(divList)
+                $('.search-result-list').fadeToggle();
+                $('.search-cover').fadeToggle();
+            },
+            clear() {
+                this.oldList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'none'
+                })
+                this.oldList = []
+            },
+            add() {
+                this.arrList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'block'
+                })
+                this.oldList = this.arrList
+            },
+            searchGo(keywolds) {
+                this.arrList = []
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(item.tags.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.categories.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            this.arrList.push(index)
+                        }
+                    })
+                    if (this.oldList.length) this.clear()
+                    if (this.arrList.length) this.add()
+                }
+            },
+            /**
+             * 获取指定时间的友好时间字符串。
+             * @param str 指定的时间字符串，如yyyy-MM-dd HH:mm:ss
+             * @param now 当前时间，允许时间戳，GMT时间，如果该参数为undefined，则使用浏览器时间。
+             */
+            getFriendlyTime(str, now) {
+                var currentTime = new Date(now);
+                var arr = str.split(/\s+/gi);
+                var temp = 0, arr1, arr2, oldTime, delta;
+                var getIntValue = function (ss, defaultValue) {
+                    try {
+                        return parseInt(ss, 10);
+                    } catch (e) {
+                        return defaultValue;
+                    }
+                };
+                var getWidthString = function (num) {
+                    return num < 10 ? ('0' + num) : num;
+                };
+                if (arr.length >= 2) {
+                    arr1 = arr[0].split(/[\/\-]/gi);
+                    arr2 = arr[1].split(':');
+                    oldTime = new Date();
+                    oldTime.setYear(getIntValue(arr1[0], currentTime.getFullYear()));
+                    oldTime.setMonth(getIntValue(arr1[1], currentTime.getMonth() + 1) - 1);
+                    oldTime.setDate(getIntValue(arr1[2], currentTime.getDate()));
+
+                    oldTime.setHours(getIntValue(arr2[0], currentTime.getHours()));
+                    oldTime.setMinutes(getIntValue(arr2[1], currentTime.getMinutes()));
+                    oldTime.setSeconds(getIntValue(arr2[2], currentTime.getSeconds()));
+
+                    delta = currentTime.getTime() - oldTime.getTime();
+
+                    if (delta <= 60 * 1000) {
+                        return '1分钟内';
+                    } else if (delta < 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 1000)) + '分钟前';
+                    } else if (delta < 24 * 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000)) + '天前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30 * 12) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000 * 30)) + '月前';
+                    } else if (currentTime.getFullYear() != oldTime.getFullYear()) {
+                        return [getWidthString(oldTime.getFullYear()), getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-')
+                    } else {
+                        return [getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-');
+                    }
+                }
+                return '';
+            }
+        }
+        searchTool.init()
+    }
+    function searchToggle() {
+        $('.search-cover').fadeToggle();
+        $('.search-result-list').fadeToggle();
+    }
+</script>
+
+
+  </div>
+</body>
+</html>

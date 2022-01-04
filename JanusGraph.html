@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>JanusGraph | 月迹的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="基础知识Configuration有以下两种方式构建JanusGraph对象： 1、通过配置文件构建图对象configuration里面至少要说明storage backend是什么，参考此。如果需要高级功能（e.g full-text search, geo search, or range queries），就需要一个indexing backend。一个基于Cassandra+Elastic">
+<meta name="keywords" content="JanusGraph">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JanusGraph">
+<meta property="og:url" content="https://xyueji.github.io/JanusGraph.html">
+<meta property="og:site_name" content="月迹的博客">
+<meta property="og:description" content="基础知识Configuration有以下两种方式构建JanusGraph对象： 1、通过配置文件构建图对象configuration里面至少要说明storage backend是什么，参考此。如果需要高级功能（e.g full-text search, geo search, or range queries），就需要一个indexing backend。一个基于Cassandra+Elastic">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-07-04T18:19:19.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JanusGraph">
+<meta name="twitter:description" content="基础知识Configuration有以下两种方式构建JanusGraph对象： 1、通过配置文件构建图对象configuration里面至少要说明storage backend是什么，参考此。如果需要高级功能（e.g full-text search, geo search, or range queries），就需要一个indexing backend。一个基于Cassandra+Elastic">
+  
+    <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+    
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.js"></script>
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">月 迹</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">用代码书写人生</p>
+        
+        
+            <input type="text" class="search" id="search" style="text-align: center" placeholder="搜点什么...">
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="index.html">博客首页</a></li>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="/tags">文章统计</a></li>
+                        
+                            <li><a href="/message">交友留言</a></li>
+                        
+                            <li><a href="/navigation">资源导航</a></li>
+                        
+                            <li><a href="/about">关于作者</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="tags/AppendTrie树/" style="font-size: 10px;">AppendTrie树</a> <a href="tags/HDFS/" style="font-size: 10px;">HDFS</a> <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/SQL解析/" style="font-size: 10px;">SQL解析</a> <a href="tags/SQL采集/" style="font-size: 10px;">SQL采集</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/bitmap/" style="font-size: 10px;">bitmap</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/git/" style="font-size: 10px;">git</a> <a href="tags/grafana/" style="font-size: 10px;">grafana</a> <a href="tags/hadoop/" style="font-size: 10px;">hadoop</a> <a href="tags/hbase/" style="font-size: 15px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/hive/" style="font-size: 15px;">hive</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/mapreduce/" style="font-size: 10px;">mapreduce</a> <a href="tags/metrics2/" style="font-size: 10px;">metrics2</a> <a href="tags/opentsdb/" style="font-size: 10px;">opentsdb</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/shuffle/" style="font-size: 15px;">shuffle</a> <a href="tags/spark/" style="font-size: 15px;">spark</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/修复工具/" style="font-size: 10px;">修复工具</a> <a href="tags/元数据/" style="font-size: 10px;">元数据</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/基础知识/" style="font-size: 10px;">基础知识</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/大查询/" style="font-size: 10px;">大查询</a> <a href="tags/安装/" style="font-size: 10px;">安装</a> <a href="tags/小文件/" style="font-size: 10px;">小文件</a> <a href="tags/开发规范/" style="font-size: 10px;">开发规范</a> <a href="tags/数据倾斜/" style="font-size: 10px;">数据倾斜</a> <a href="tags/数据血缘/" style="font-size: 10px;">数据血缘</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/精准去重/" style="font-size: 10px;">精准去重</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                    </div>
+                </section>
+                
+
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://dayesahh.github.io/">DaYesahh</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.54tianzhisheng.cn/">zhisjeng</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫、追小说、喜影视、迷于严谨和逻辑的编码之中！！！</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">月 迹</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">月 迹</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">用代码书写人生</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="index.html">博客首页</a></li>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="/tags">文章统计</a></li>
+                
+                    <li><a href="/message">交友留言</a></li>
+                
+                    <li><a href="/navigation">资源导航</a></li>
+                
+                    <li><a href="/about">关于作者</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-JanusGraph" class="article article-type-post" itemscope itemprop="blogPost">
+    
+    <div class="article-meta">
+      <a href="" class="article-date">
+      <time datetime="2019-10-15T07:04:51.000Z" itemprop="datePublished">2019-10-15</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JanusGraph
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="categories/JanusGraph/">JanusGraph</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/JanusGraph/">JanusGraph</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><p>有以下两种方式构建JanusGraph对象：</p>
+<p>1、通过配置文件构建图对象<br>configuration里面至少要说明storage backend是什么，参考此。<br>如果需要高级功能（e.g full-text search, geo search, or range queries），就需要一个indexing backend。<br>一个基于Cassandra+ElasticSearch的配置例子：<br><a id="more"></a><br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">storage.backend=hbase</span></span><br><span class="line"><span class="string">storage.hostname=localhost</span></span><br><span class="line"></span><br><span class="line"><span class="string">index.search.backend=elasticsearch</span></span><br><span class="line"><span class="string">index.search.hostname=100.100.101.1,</span> <span class="number">100.100</span><span class="number">.101</span><span class="number">.2</span></span><br><span class="line"><span class="string">index.search.elasticsearch.client-only=true</span></span><br></pre></td></tr></table></figure></p>
+<p>Java连接：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JanusGraph graph = JanusGraphFactory.open(<span class="string">"conf/janusgraph-hbase-es.properties"</span>); graph.close();</span><br></pre></td></tr></table></figure>
+<p>2、通过Configuration构建图对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">org.apache.commons.configuration.Configuration conf = <span class="keyword">new</span> BaseConfiguration();</span><br><span class="line">String tableName = <span class="string">"default:graphtest_x"</span>;</span><br><span class="line">conf.addProperty(<span class="string">"storage.backend"</span>, <span class="string">"hbase"</span>);</span><br><span class="line">conf.addProperty(<span class="string">"storage.hbase.region-count"</span>, <span class="number">50</span>);</span><br><span class="line">conf.addProperty(<span class="string">"storage.hostname"</span>, <span class="string">"hostname"</span>);</span><br><span class="line">conf.setProperty(<span class="string">"cache.db-cache"</span>, <span class="string">"true"</span>);</span><br><span class="line">conf.setProperty(<span class="string">"cache.db-cache-time"</span>, <span class="string">"300000"</span>);</span><br><span class="line">conf.setProperty(<span class="string">"cache.db-cache-size"</span>, <span class="string">"0.5"</span>);</span><br><span class="line">conf.setProperty(<span class="string">"storage.hbase.table"</span>, tableName);</span><br><span class="line"></span><br><span class="line">JanusGraph janusGraph = JanusGraphFactory.open(conf);</span><br><span class="line">GraphTraversalSource g = janusGraph.traversal();</span><br><span class="line">JanusGraphManagement jgmt = janusGraph.openManagement();</span><br><span class="line"></span><br><span class="line"><span class="comment">//EdgeLabel</span></span><br><span class="line">jgmt.makeEdgeLabel(<span class="string">"brother"</span>).make();</span><br><span class="line">jgmt.makeEdgeLabel(<span class="string">"lives"</span>).make();</span><br><span class="line"></span><br><span class="line"><span class="comment">//VertexLabel</span></span><br><span class="line">jgmt.makeVertexLabel(<span class="string">"god"</span>).make();</span><br><span class="line">jgmt.makeVertexLabel(<span class="string">"place"</span>).make();</span><br><span class="line"></span><br><span class="line"><span class="comment">//Property</span></span><br><span class="line">jgmt.makePropertyKey(<span class="string">"name"</span>).dataType(String.class).make();</span><br><span class="line">jgmt.makePropertyKey(<span class="string">"age"</span>).dataType(Integer.class).make();</span><br><span class="line">jgmt.makePropertyKey(<span class="string">"reason"</span>).dataType(String.class).make();</span><br><span class="line"></span><br><span class="line">jgmt.commit();</span><br><span class="line"></span><br><span class="line"><span class="comment">//createElement</span></span><br><span class="line"><span class="keyword">final</span> Vertex sky = g.addV(<span class="string">"place"</span>).property(<span class="string">"name"</span>, <span class="string">"sky"</span>).next();</span><br><span class="line"><span class="keyword">final</span> Vertex sea = g.addV(<span class="string">"place"</span>).property(<span class="string">"name"</span>, <span class="string">"sea"</span>).next();</span><br><span class="line"><span class="keyword">final</span> Vertex jupiter = g.addV(<span class="string">"god"</span>).property(<span class="string">"name"</span>, <span class="string">"jupiter"</span>).property(<span class="string">"age"</span>, <span class="number">5000</span>).next();</span><br><span class="line"><span class="keyword">final</span> Vertex neptune = g.addV(<span class="string">"god"</span>).property(<span class="string">"name"</span>, <span class="string">"neptune"</span>).property(<span class="string">"age"</span>, <span class="number">4500</span>).next();</span><br><span class="line"></span><br><span class="line">g.V(jupiter).as(<span class="string">"a"</span>).V(sky).addE(<span class="string">"lives"</span>).property(<span class="string">"reason"</span>, <span class="string">"loves fresh breezes"</span>).from(<span class="string">"a"</span>).next();</span><br><span class="line">g.V(jupiter).as(<span class="string">"a"</span>).V(neptune).addE(<span class="string">"brother"</span>).from(<span class="string">"a"</span>).next();</span><br><span class="line">g.tx().commit();</span><br><span class="line"></span><br><span class="line"><span class="comment">//查询</span></span><br><span class="line">System.out.println(<span class="string">"========="</span> + g.V().has(<span class="string">"name"</span>, <span class="string">"jupiter"</span>).next().value(<span class="string">"name"</span>));</span><br><span class="line">janusGraph.close();</span><br></pre></td></tr></table></figure>
+<h3 id="数据模型（Schema）"><a href="#数据模型（Schema）" class="headerlink" title="数据模型（Schema）"></a>数据模型（Schema）</h3><p>数据的Schema是JanusGraph的一个很重要的部分，数据schema主要定义在三个元素上：顶点，边和属性。听起来可能有点绕口，schema是干什么呢？其实就是去定义顶点的label，边的label的Property的key有哪些，再通俗点讲，就是有哪些类型的点（比如 god 和 human），有哪些类型的边（比如 trade 和 friends），然后点和边的属性列表都有哪些key（比如 human 有一个property key是name 和 age）。</p>
+<p>需要注意的几点：</p>
+<h4 id="schema"><a href="#schema" class="headerlink" title="schema"></a>schema</h4><p>schema可以显示地定义也不可以不显示地定义，但还是建议提前定义好。Schema可以在数据库使用的过程中更改和进化，这样并不会影响数据库正常的服务。</p>
+<h4 id="Vertex-label"><a href="#Vertex-label" class="headerlink" title="Vertex label"></a>Vertex label</h4><p>Vertex label描述的是vertice的语义，不过vertice label是optional的，用来区分不同类型的vertice，比如 user 和 product。利用 makeVertexLabel(String).make() 来创建vertice label，vertice label必须保持全局唯一性。<br>下面是个创建vertex label的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">person = mgmt.makeVertexLabel(‘person‘).make()</span><br><span class="line">mgmt.commit()</span><br><span class="line">// Create a labeled vertex</span><br><span class="line">person = graph.addVertex(label, ‘person‘)</span><br><span class="line">// Create an unlabeled vertex</span><br><span class="line">v = graph.addVertex()</span><br><span class="line">graph.tx().commit()</span><br></pre></td></tr></table></figure>
+<p>注意，需要显示地调用 builder 的 make() 函数来完成vertex label的定义。</p>
+<h4 id="Edge-label"><a href="#Edge-label" class="headerlink" title="Edge label"></a>Edge label</h4><p>Edge label主要描述的是relationship的语义（比如friends）。在一个事务中，用 makeEdgeLabel(String) 来定义一个edge label，注意，edge label必须是唯一的，这个方法会返回一个 builder，这个 builder 可以用来获取这种edge label的多度关系multiplicity，这个指标限定了每对（pair）之间edge最大的数量。<br>multiplicity包含的类型有：multi, simple, many2one, one2many, one2one （结合数据库E-R model这个概念不难理解）。默认的multiplicity 是 MULTI。<br>下面是创建edge label的一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">follow = mgmt.makeEdgeLabel(‘follow‘).multiplicity(MULTI).make()</span><br><span class="line">mother = mgmt.makeEdgeLabel(‘mother‘).multiplicity(MANY2ONE).make()</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>注意，需要显示地调用 builder 的 make() 函数来完成edge label的定义。</p>
+<h4 id="Property-keys"><a href="#Property-keys" class="headerlink" title="Property keys"></a>Property keys</h4><p>属性Property定义在顶点和边上，当然也可以用来定义其他东西，property是 key-value 对的形式。举个例子，‘name‘ = ‘John‘ 这就可以看做一个属性，它定义了 name 这个属性，这个属性的value是 ‘John‘。通过 makePropertyKey(String) 方法来常见Property key。属性名应该尽可能避免使用空格和特殊字符。</p>
+<p>属性需要关注两点：</p>
+<ol>
+<li><p>Property Key Data Type<br>每个属性都有自己的数据类型，也就是说它的value必须是某种支持的数据类型，可以通过 dataType(Class) 方法来定义数据类型。JanusGraph会保证加入进来的属性数据都满足该数据类型。属性数据类型可以申明为 Object.class，但这并不推荐，最好控制好数据类型，一来可以节省空间，二来可以让JanusGraph来帮我们检查导入的数据类型是不是符合要求。数据类型必须使用具体的类，不能是接口或者抽象类。JanusGraph使用的是完全相当去判断数据类型是否符合，所以使用子类的数据去导入到父类的属性中也是不会成功的。</p>
+</li>
+<li><p>Property Key Cardinality<br>用 cardinality(Cardinality) 方法来定义某一个顶点的某个属性的基底（cardinality）。   </p>
+<p>基底有三种情况：</p>
+<p>SINGLE：每一个元素对于这个key只能有一个value，比如 birthDate 就是一个single基底，因为每个人最多只能有一个生日。<br>LIST：每个元素对于这个key可以有任意数量的值，比如我们建模传感器（sensor），其有一个属性是 sensorRecords，那么，对于这个属性，可能有一系列的值。注意，LIST是允许有重复元素的。<br>SET: 与LIST相同，不同的是，SET不允许有重复的元素。<br>默认的cardinality是single。注意，对于边属性来说，property key的基底始终是single。</p>
+</li>
+</ol>
+<p>下面是在定义property key的时候定义对应的cardinality的例子：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">birthDate = mgmt.makePropertyKey(‘birthDate‘).dataType(Long.<span class="keyword">class</span>).cardinality(Cardinality.SINGLE).make()</span><br><span class="line">name = mgmt.makePropertyKey(‘name‘).dataType(String.<span class="keyword">class</span>).cardinality(Cardinality.SET).make()</span><br><span class="line">sensorReading = mgmt.makePropertyKey(‘sensorReading‘).dataType(Double.<span class="keyword">class</span>).cardinality(Cardinality.LIST).make()</span><br><span class="line">mgmt.commit()</span><br><span class="line">Relation types</span><br><span class="line">Edge label和property key共同地被称为relation type。</span><br></pre></td></tr></table></figure>
+<h4 id="relation-type"><a href="#relation-type" class="headerlink" title="relation type"></a>relation type</h4><p>Edge label和property key共同地被称为relation type。可以通过 containsRelationType() 方法来检测relation type是否存在。</p>
+<p>下面是个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if (mgmt.containsRelationType(‘name‘))</span><br><span class="line">    name = mgmt.getPropertyKey(‘name‘)</span><br><span class="line">mgmt.getRelationTypes(EdgeLabel.class)</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<h4 id="Changing-Schema-Elements"><a href="#Changing-Schema-Elements" class="headerlink" title="Changing Schema Elements"></a>Changing Schema Elements</h4><p>一旦我们创建好Vertex label, edge label和property key后，就不能更改了，我们唯一能改的是schema的名字，比如下面这个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">place = mgmt.getPropertyKey(‘place‘)</span><br><span class="line">mgmt.changeName(place, ‘location‘)</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>上面这个例子中，我们把property key的名字从place改成了location。</p>
+<h4 id="Schema-Constraints"><a href="#Schema-Constraints" class="headerlink" title="Schema Constraints"></a>Schema Constraints</h4><p>多个property可以绑定到同一个vertex或者edge上面，用 JanusGraphManagement.addProperties(VertexLabel, PropertyKey…) 方法：</p>
+<figure class="highlight plain"><figcaption><span>例子1</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">person = mgmt.makeVertexLabel(‘person‘).make()</span><br><span class="line">name = mgmt.makePropertyKey(‘name‘).dataType(String.class).cardinality(Cardinality.SET).make()</span><br><span class="line">birthDate = mgmt.makePropertyKey(‘birthDate‘).dataType(Long.class).cardinality(Cardinality.SINGLE).make()</span><br><span class="line">mgmt.addProperties(person, name, birthDate)</span><br><span class="line">mgmt.commit()</span><br><span class="line">// 例子2</span><br><span class="line">mgmt = graph.openManagement()</span><br><span class="line">follow = mgmt.makeEdgeLabel(‘follow‘).multiplicity(MULTI).make()</span><br><span class="line">name = mgmt.makePropertyKey(‘name‘).dataType(String.class).cardinality(Cardinality.SET).make()</span><br><span class="line">mgmt.addProperties(follow, name)</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>有一种很通俗的定义关系的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">person = mgmt.makeVertexLabel(‘person‘).make()</span><br><span class="line">company = mgmt.makeVertexLabel(‘company‘).make()</span><br><span class="line">works = mgmt.makeEdgeLabel(‘works‘).multiplicity(MULTI).make()</span><br><span class="line">mgmt.addConnection(works, person, company)</span><br><span class="line">mgmt.commit()</span><br><span class="line">这里，用到是 addConnection() 方法。</span><br></pre></td></tr></table></figure>
+<h3 id="Gremlin"><a href="#Gremlin" class="headerlink" title="Gremlin"></a>Gremlin</h3><p>Gremlin是JanusGraph默认的query language。</p>
+<p>Gremlin用来从JanusGraph里面查询数据，修改数据，Gremlin是一种traversal查询语言，可以很方便地查询此类查询：</p>
+<p>从小明开始，遍历到他的父亲，再从他的父亲遍历到他父亲的父亲，然后返回他父亲的父亲的名字</p>
+<p>更多关于JanusGraph中Gremlin相关的说明，参考这个文档<a href="https://docs.janusgraph.org/basics/gremlin/。" target="_blank" rel="noopener">https://docs.janusgraph.org/basics/gremlin/。</a></p>
+<h3 id="JanusGraph-Server"><a href="#JanusGraph-Server" class="headerlink" title="JanusGraph Server"></a>JanusGraph Server</h3><p>JanusGrpah Server其实就是Gremlin server<br>两种交互方式：分别是webSocket和HTTP</p>
+<h4 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h4><p>使用预先打好的包<br>这种方式主要是用来学习使用JanusGraph，生产环境下不建议用这种配置。</p>
+<p>./bin/janusgraph.sh start 就可以启动了，会自动fork cassandra的包，elasticsearch的包，gremlin-server的包，并连接到对应的服务器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Forking Cassandra...</span><br><span class="line">Running `nodetool statusthrift`.. OK (returned exit status 0 and printed string "running").</span><br><span class="line">Forking Elasticsearch...</span><br><span class="line">Connecting to Elasticsearch (127.0.0.1:9300)... OK (connected to 127.0.0.1:9300).</span><br><span class="line">Forking Gremlin-Server...</span><br><span class="line">Connecting to Gremlin-Server (127.0.0.1:8182)... OK (connected to 127.0.0.1:8182).</span><br><span class="line">Run gremlin.sh to connect.</span><br></pre></td></tr></table></figure>
+<p>使用完毕后关系JanusGraph，使用 ./bin/janusgraph.sh stop命令就可以了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Killing Gremlin-Server (pid 59687)...</span><br><span class="line">Killing Elasticsearch (pid 59494)...</span><br><span class="line">Killing Cassandra (pid 58809)...</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>使用WebSocket的方式<br>上面pre-package的方式其实是使用的内置的backend和index backend（在这个例子里面，分别是cassandra和elasticsearch），其实我们也可以把JanusGraph连接到自己的HBase等Backend。</p>
+</li>
+<li><p>使用Http的方式<br>配置方式和使用WebSocket的方式基本相同，可以用Curl命令来test服务的可用性：</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST -Hcontent-type:application/json -d ‘&#123;&quot;gremlin&quot;:&quot;g.V().count()&quot;&#125;‘ http://[IP for JanusGraph server host]:8182</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>同时使用WebSocket和Http的方式<br>修改gremlin-server.yaml文件，更改channelizer为：</li>
+</ol>
+<figure class="highlight plain"><figcaption><span>org.apache.tinkerpop.gremlin.server.channel.WsAndHttpChannelize```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 一些高级用法</span><br><span class="line">  还有一些高级用法，比如认证（Authentication over HTTP），具体这里就不细说了，可以参考官方文档。</span><br><span class="line"></span><br><span class="line">#### 服务部署</span><br><span class="line"></span><br><span class="line">JanusGraph Server本身是个服务器服务，这个服务背后很多Backends(es, Hbase等等），客户端应用（application）主要通过Gremlin查询语句和JanusGraph instance交互，JanusGraph instance交互然后和对应的后端交互来执行对应的query。</span><br><span class="line">没有master JanusGraph server的概念，application可以连接任何JanusGraph instance。当然，也可以用负载均衡的方法来分流到不同的JanusGraph instance。</span><br><span class="line">各个JanusGraph instance之间并不相互交互。</span><br><span class="line">部署方式：</span><br><span class="line"></span><br><span class="line">- 方式1：每个server上起一个JanusGraph Instance，并在同一个server起对应的backend和index</span><br><span class="line">- 方式2：JanusServe和backend server, index server分离</span><br><span class="line">- 方法3：直接embedded到客户端appplication中，相当于引入了一个jar包</span><br><span class="line"></span><br><span class="line">### ConfiguredGraphFactory</span><br><span class="line"></span><br><span class="line">ConfiguredGraphFactory是一个singleton，和JanusGraphFactory一样。它们提供了一套API（methods，方法）来动态地操作服务器上的图。</span><br><span class="line"></span><br><span class="line">在gremlin-console下我们可以直接用这个接口去操作图，如下：</span><br><span class="line"></span><br><span class="line">```shell</span><br><span class="line">==&gt;Configured localhost/127.0.0.1:8182</span><br><span class="line">gremlin&gt; :remote console</span><br><span class="line">==&gt;All scripts will now be sent to Gremlin Server - [localhost/127.0.0.1:8182] - type ‘:remote console‘ to return to local mode</span><br><span class="line">gremlin&gt; ConfiguredGraphFactory.open(&quot;graph1&quot;)</span><br><span class="line">==&gt;standardjanusgraph[cassandrathrift:[127.0.0.1]]</span><br><span class="line">gremlin&gt; graph1</span><br><span class="line">==&gt;standardjanusgraph[cassandrathrift:[127.0.0.1]]</span><br><span class="line">gremlin&gt; graph1_traversal</span><br><span class="line">==&gt;graphtraversalsource[standardjanusgraph[cassandrathrift:[127.0.0.1]], standard]</span><br></pre></td></tr></table></figure>
+<p>先来谈一谈 JanusGraphFactory，它是我们在gremlin-console里面操作一个图的时候的entry-point，每当我们访问一个图的时候，系统就为我们创建了一个Configuration类的实例。</p>
+<p>可以将这个东西和spark-shell里面的sparkSession做类比来方便理解。</p>
+<p>ConfiguredGraphFactory不太一样，它也是我们访问、操作一个图的时候的entry-point，但配置是通过另一个singleton来实现的，叫ConfigurationManagementGraph。</p>
+<p>ConfigurationManagementGraph 使我们可以很方便地管理图的配置。</p>
+<p>就像上面例子一样，我们可以通过下面两种方法来访问一个图：</p>
+<p> ConfiguredGraphFactory.create(“graphName”)<br>或者</p>
+<p>ConfiguredGraphFactory.open(“graphName”)<br>可以通过下面的方法来罗列所有配置好了的图。配置好是指之前有用ConfigurationManagementGraph的API配置过：</p>
+<p>ConfiguredGraphFactory.getGraphNames()<br>用下面的放来来drop一个graph database：</p>
+<p>ConfiguredGraphFactory.drop(“graphName”)<br>如果想使用ConfiguredGraphFactory这个接口，比如在启动前JanusGraph server前配置好。修改gremlin-server.yaml文件，在graphs这个section下面，添加一行：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ConfigurationManagementGraph:</span> <span class="string">conf/JanusGraph-configurationmanagement.properties</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>在这个例子中，ConfigurationManagementGraph这个graph便是使用位于onf/JanusGraph-configurationmanagement.properties下的配置文件来配置，下面是配置文件的一个例子：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">storage.backend=cql</span></span><br><span class="line"><span class="string">graph.graphname=ConfigurationManagementGraph</span></span><br><span class="line"><span class="string">storage.hostname=127.0.0.1</span></span><br></pre></td></tr></table></figure>
+<p>具体ConfigurationManagementGraph怎么用呢？下面是一个例子（在gremlin-console下）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">map.put(<span class="string">"storage.backend"</span>, <span class="string">"cql"</span>);</span><br><span class="line">map.put(<span class="string">"storage.hostname"</span>, <span class="string">"127.0.0.1"</span>);</span><br><span class="line">map.put(<span class="string">"graph.graphname"</span>, <span class="string">"graph1"</span>);</span><br><span class="line">ConfiguredGraphFactory.createConfiguration(<span class="keyword">new</span> MapConfiguration(map));</span><br><span class="line"><span class="comment">// then access the graph</span></span><br><span class="line">ConfiguredGraphFactory.open(<span class="string">"graph1"</span>);</span><br></pre></td></tr></table></figure>
+<p>graph.graphname这个属性指定了上述配置是针对哪张graph的。</p>
+<h3 id="Multi-node"><a href="#Multi-node" class="headerlink" title="Multi-node"></a>Multi-node</h3><p>如果我们希望在JanusGraph server启动后去动态地创建图，就要用到上面章节提到的ConfiguredGraphFactory，这要求JanusGraph集群的每个server的配置文件里面都声明了使用JanusGraphManager和ConfigurationManagementGraph，具体方法，见这个链接<a href="https://docs.janusgraph.org/basics/multi-node/。" target="_blank" rel="noopener">https://docs.janusgraph.org/basics/multi-node/。</a><br>为了保证graph的consistency，每个server node都要使用ConfiguredGraphFactory(保持集群上每个node server的配置一致性)。</p>
+<h3 id="Indexing"><a href="#Indexing" class="headerlink" title="Indexing"></a>Indexing</h3><ul>
+<li>支持两类graph indexing: Graph Index和Vertex-centric Index。</li>
+<li>graph index包含两类：Composite Index和Mixed Index。</li>
+</ul>
+<p>实际上在操作时会遇到很多问题，其中最头疼的就是在执行 awaitGraphIndexStatus()方法时，会报 “Script evaluation exceeded the configured ‘scriptEvaluationTimeout’ threshold of 30000 ms or evaluation was otherwise cancelled directly for request [mgmt.awaitGraphIndexStatus(graph, ‘byNameComposite’).call()]” 的错误。</p>
+<p>　  上面的命令其实忽略了关键的几步，下面具体说明以下。</p>
+<ol>
+<li><p>创建索引之前，确定JanusGraph没有其它事务正在运行</p>
+<p>查询事务命令：graph.getOpenTransactions()</p>
+<p>关闭其他事务：graph.getOpenTransactions().forEach { tx -&gt; tx.rollback() }</p>
+</li>
+<li><p>执行 REGISTER_INDEX ACTION，使索引状态INSTALLED 转为 REGISTERED</p>
+<p>官方文档里没有这关键的一步，在创建完索引后，需要执行以下命令：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">m = graph.openManagement()</span><br><span class="line">m.updateIndex(m.getGraphIndex(<span class="string">'index'</span>), SchemaAction.REGISTER_INDEX).get()</span><br><span class="line">m.commit()</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>​       其中第三条命令执行后实际上是在后台运行的，此时如果我们执行ManagementSystem.awaitGraphIndexStatus(graph,”byNameComposite”).status(SchemaStatus.REGISTERED).call() ，等待30s后很可能依然返回超时错误。这时候需要<strong>耐心等待</strong>。期间，我可以直接查看索引的状态：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">index = mgmt.getGraphIndex(<span class="string">'index'</span>)</span><br><span class="line">index.getIndexStatus(mgmt.getPropertyKey(<span class="string">'name'</span>))</span><br></pre></td></tr></table></figure>
+<p>等待一段时间后，索引的状态最终会变为 <strong>REGISTERED</strong>，此时再执行awaitGraphIndexStatus() ，会返回</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GraphIndexStatusReport[success=<span class="keyword">true</span>, indexName=<span class="string">'byTitleLowercaseComposite'</span>, targetStatus=[REGISTERED], notConverged=&#123;&#125;, converged=&#123;title_lowercase=REGISTERED&#125;, elapsed=PT0.001S]</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：若索引迟迟没有变为REGISTERED，也可尝试进行下一步，更新到ENABLE。</p>
+<ol start="3">
+<li><p>执行REINDEX与ENABLE_INDEX，完成索引</p>
+<p>与上一步类似，需要通过updateIndex()方法来改变索引状态。如果要索引的属性中还未导入数据，则不需要REINDEX的操作，下面的命令二选一：</p>
+<ul>
+<li>REINDEX ACTION</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">m = graph.openManagement()</span><br><span class="line">m.updateIndex(m.getGraphIndex(<span class="string">'index'</span>), SchemaAction.REINDEX).get()</span><br><span class="line">m.commit()</span><br><span class="line"> </span><br><span class="line">ManagementSystem.awaitGraphIndexStatus(graph,<span class="string">'byNameComposite'</span>).status(SchemaStatus.ENABLED).call()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ENABLED ACTION</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">m = graph.openManagement()</span><br><span class="line">m.updateIndex(m.getGraphIndex(<span class="string">'index'</span>), SchemaAction.ENABLE_INDEX).get() </span><br><span class="line">m.commit() </span><br><span class="line"> </span><br><span class="line">ManagementSystem.awaitGraphIndexStatus(graph, <span class="string">'byNameComposite'</span>).status(SchemaStatus.ENABLED).call()</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 错误示例: </span></span><br><span class="line">i = m.getGraphIndex(<span class="string">'index'</span>)</span><br><span class="line">m.updateIndex(i, SchemeAction.ENABLE_INDEX)</span><br><span class="line">m.commit()</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 必须要加‘get()’</span></span><br></pre></td></tr></table></figure>
+<p>　　到最后， 执行awaitGraphIndexStatus()返回成功信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GraphIndexStatusReport[success=<span class="keyword">true</span>, indexName=<span class="string">'byTitleLowercaseComposite'</span>, targetStatus=[ENABLED], notConverged=&#123;&#125;, converged=&#123;title_lowercase=ENABLED&#125;, elapsed=PT0.001S]</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="Janusgraph索引状态不变更的问题"><a href="#Janusgraph索引状态不变更的问题" class="headerlink" title="Janusgraph索引状态不变更的问题"></a>Janusgraph索引状态不变更的问题</h4><p>JanusGraph的索引因为要同步不同实例及不同后端的数据，因此不是实时能够完成的，视配置，网络和数据量不同，建立/生效索引通常需要一段时间，这也是为什么创建索引时会创建wait()的原因。</p>
+<p>在实践中，我们经常遇到timeout()异常的出现，这一方面有数据量，网络，配置的原因，另外一方面，如果系统中有未关闭的事务或者无效的实例，均会导致索引创建阻塞，不断等待，最后超时。下面是我们团队在使用JansuGraph总结出的，解决索引超时的实践，希望对后来者有所帮助。</p>
+<p><strong>1.存在没有关闭的Transaction</strong></p>
+<p>如果图中存在有没有关系的Transaction，则索引状态不会变更，虽然在官方文档中提到了使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">graph.tx().rollback()</span><br></pre></td></tr></table></figure>
+<p>但该方法只能关闭当前事务，对系统中其他打开的事务无效，可以使用下面的语句替换：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;graph.getOpenTransactions().size();i++) &#123;graph.getOpenTransactions().getAt(i).rollback()&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>2.存在幽灵实例</strong></p>
+<p>使用下面的语句查询：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">mgmt.getOpenInstances();</span><br><span class="line">mgmt.commit();</span><br></pre></td></tr></table></figure>
+<p>使用下面的语句关闭：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement();</span><br><span class="line">ids = mgmt.getOpenInstances();</span><br><span class="line"><span class="keyword">for</span>(String id : ids)&#123;<span class="keyword">if</span>(!id.contains(<span class="string">"("</span>))&#123;mgmt.forceCloseInstance(id)&#125;&#125;;</span><br><span class="line">mgmt.commit();</span><br></pre></td></tr></table></figure>
+<h4 id="Composite-Index"><a href="#Composite-Index" class="headerlink" title="Composite Index"></a>Composite Index</h4><p>通过下面的方法创建Composite Index：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">name = mgmt.getPropertyKey(‘name‘)</span><br><span class="line">age = mgmt.getPropertyKey(‘age‘)</span><br><span class="line">mgmt.buildIndex(‘byNameComposite‘, Vertex.class).addKey(name).buildCompositeIndex()</span><br><span class="line">mgmt.buildIndex(‘byNameAndAgeComposite‘, Vertex.class).addKey(name).addKey(age).buildCompositeIndex()</span><br><span class="line">mgmt.commit()</span><br><span class="line"><span class="comment">//Wait for the index to become available</span></span><br><span class="line">ManagementSystem.awaitGraphIndexStatus(graph, ‘byNameComposite‘).call()</span><br><span class="line">ManagementSystem.awaitGraphIndexStatus(graph, ‘byNameAndAgeComposite‘).call()</span><br><span class="line"><span class="comment">//Reindex the existing data</span></span><br><span class="line">mgmt = graph.openManagement()</span><br><span class="line">mgmt.updateIndex(mgmt.getGraphIndex(<span class="string">"byNameComposite"</span>), SchemaAction.REINDEX).get()</span><br><span class="line">mgmt.updateIndex(mgmt.getGraphIndex(<span class="string">"byNameAndAgeComposite"</span>), SchemaAction.REINDEX).get()</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>Composite Index方式不需要特殊地去配置底层的存储引擎（比如cassandra），主要的底层存储引擎都支持这种方式。</p>
+<p>通过Composite Index可以来保证Property key的唯一性，用下面这种方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">name = mgmt.getPropertyKey(‘name‘)</span><br><span class="line">mgmt.buildIndex(‘byNameUnique‘, Vertex.class).addKey(name).unique().buildCompositeIndex()</span><br><span class="line">mgmt.commit()</span><br><span class="line"><span class="comment">//Wait for the index to become available</span></span><br><span class="line">ManagementSystem.awaitGraphIndexStatus(graph, ‘byNameUnique‘).call()</span><br><span class="line"><span class="comment">//Reindex the existing data</span></span><br><span class="line">mgmt = graph.openManagement()</span><br><span class="line">mgmt.updateIndex(mgmt.getGraphIndex(<span class="string">"byNameUnique"</span>), SchemaAction.REINDEX).get()</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<h4 id="Mixed-Index"><a href="#Mixed-Index" class="headerlink" title="Mixed Index"></a>Mixed Index</h4><p>通过下面的方式来创建Mixed Index：</p>
+<figure class="highlight plain"><figcaption><span>//Never create new indexes while a transaction is active</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">name = mgmt.getPropertyKey(‘name‘)</span><br><span class="line">age = mgmt.getPropertyKey(‘age‘)</span><br><span class="line">mgmt.buildIndex(‘nameAndAge‘, Vertex.class).addKey(name).addKey(age).buildMixedIndex(&quot;search&quot;)</span><br><span class="line">mgmt.commit()</span><br><span class="line">//Wait for the index to become available</span><br><span class="line">ManagementSystem.awaitGraphIndexStatus(graph, ‘nameAndAge‘).call()</span><br><span class="line">//Reindex the existing data</span><br><span class="line">mgmt = graph.openManagement()</span><br><span class="line">mgmt.updateIndex(mgmt.getGraphIndex(&quot;nameAndAge&quot;), SchemaAction.REINDEX).get()</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>Mixed Index方式需要特殊地去配置底层的存储引擎（比如cassandra）的索引。</p>
+<p>Mixed Index比Composite Index更加灵活，但是对于含有相等关系的谓语关系的查询效率更慢。</p>
+<p>buildMixedIndex方法的参数string要和properties文件中配置的一致，比如：</p>
+<ul>
+<li>index.search.backend<br>这个配置中间的部分search就是buildMixedIndex方法的参数。</li>
+</ul>
+<p>有了Mixed Index，这面这些query就支持用索引来加速了：</p>
+<figure class="highlight plain"><figcaption><span>textContains(‘hercules‘)).has(‘age‘, inside(20, 50))</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g.V().has(‘name‘, textContains(‘hercules‘))</span><br><span class="line">g.V().has(‘age‘, lt(50))</span><br><span class="line">g.V().has(‘age‘, outside(20, 50))</span><br><span class="line">g.V().has(‘age‘, lt(50).or(gte(60)))</span><br><span class="line">g.V().or(__.has(‘name‘, textContains(‘hercules‘)), __.has(‘age‘, inside(20, 50)))</span><br></pre></td></tr></table></figure>
+<p>总结两种Graph Index的区别：</p>
+<ol>
+<li><p>Use a composite index for exact match index retrievals. Composite indexes do not require configuring or operating an external index system and are often significantly faster than mixed indexes.</p>
+<p>a. As an exception, use a mixed index for exact matches when the number of distinct values for query constraint is relatively small or if one value is expected to be associated with many elements in the graph (i.e. in case of low selectivity).</p>
+</li>
+<li><p>Use a mixed indexes for numeric range, full-text or geo-spatial indexing. Also, using a mixed index can speed up the order().by() queries.</p>
+</li>
+</ol>
+<h4 id="Vertex-centric-Indexes"><a href="#Vertex-centric-Indexes" class="headerlink" title="Vertex-centric Indexes"></a>Vertex-centric Indexes</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">time = mgmt.getPropertyKey(‘time‘)</span><br><span class="line">rating = mgmt.makePropertyKey(‘rating‘).dataType(Double.class).make()</span><br><span class="line">battled = mgmt.getEdgeLabel(‘battled‘)</span><br><span class="line">mgmt.buildEdgeIndex(battled, ‘battlesByRatingAndTime‘, Direction.OUT, Order.decr, rating, time)</span><br><span class="line">mgmt.commit()</span><br><span class="line"><span class="comment">//Wait for the index to become available</span></span><br><span class="line">ManagementSystem.awaitRelationIndexStatus(graph, ‘battlesByRatingAndTime‘, ‘battled‘).call()</span><br><span class="line"><span class="comment">//Reindex the existing data</span></span><br><span class="line">mgmt = graph.openManagement()</span><br><span class="line">mgmt.updateIndex(mgmt.getRelationIndex(battled, ‘battlesByRatingAndTime‘), SchemaAction.REINDEX).get()</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>注意上面的Index是有顺序的，先对rating做index，再对time做index，因此：</p>
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">g.V(h).outE(‘battled‘).property(‘rating‘, <span class="number">5.0</span>) <span class="comment">//Add some rating properties</span></span><br><span class="line">g.V(h).outE(‘battled‘).has(‘rating‘, gt(<span class="number">3.0</span>)).inV() <span class="comment">// query-1</span></span><br><span class="line">g.V(h).outE(‘battled‘).has(‘rating‘, <span class="number">5.0</span>).has(‘time‘, inside(<span class="number">10</span>, <span class="number">50</span>)).inV() <span class="comment">// query-2</span></span><br><span class="line">g.V(h).outE(‘battled‘).has(‘time‘, inside(<span class="number">10</span>, <span class="number">50</span>)).inV() <span class="comment">// query-3</span></span><br></pre></td></tr></table></figure>
+<p>上述3个query中，前两个被加速了，但第三没并没有。</p>
+<p>JanusGraph automatically builds vertex-centric indexes per edge label and property key. That means, even with thousands of incident battled edges, queries like g.V(h).out(‘mother‘) or g.V(h).values(‘age‘) are efficiently answered by the local index.</p>
+<h3 id="Transaction-事务"><a href="#Transaction-事务" class="headerlink" title="Transaction 事务"></a>Transaction 事务</h3><p>JanusGraph具有事务安全性，可以在多个并行的线程中同时使用。通常，使用：graph.V(…) and graph.tx().commit()这样的ThreadLocal接口来执行一次事务。<br>例：根据TinkerPop框架事务机制的描述，每一个线程在它执行第一个操作的时候开启一个事务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">juno = graph.addVertex() <span class="comment">//Automatically opens a new transaction</span></span><br><span class="line">juno.property(<span class="string">"name"</span>, <span class="string">"juno"</span>)</span><br><span class="line">graph.tx().commit() <span class="comment">//Commits transaction</span></span><br></pre></td></tr></table></figure>
+<p>在上面这个例子中，addVertex()函数执行的时候，事务被开启，然后当我们显示执行graph.tx().commit()的时候，事务关闭。</p>
+<p>当事务还没有完成，却调用了graph.close()关闭了数据库，那么这个事务的后期行为是不得而知的，一般情况下，事务应该会被回滚。但执行close()的线程所对应的事务会被顺利地commit。</p>
+<h4 id="事务处理范围（scope）"><a href="#事务处理范围（scope）" class="headerlink" title="事务处理范围（scope）"></a>事务处理范围（scope）</h4><p>根据TinkerPop框架事务机制的描述，每一个线程在它执行第一个操作的时候开启一个事务，所有的图操作元素（顶点，边，类型等变量等）均和该事务自动绑定了，当我们使用commit()或者rollback()关闭/回滚一个事务的时候，这些图操作元素就会失效，但是，顶点和类型会被自动地转移到下一个事务中，如下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">juno = graph.addVertex() <span class="comment">//Automatically opens a new transaction</span></span><br><span class="line">graph.tx().commit() <span class="comment">//Ends transaction</span></span><br><span class="line">juno.property(<span class="string">"name"</span>, <span class="string">"juno"</span>) <span class="comment">//Vertex is automatically transitioned</span></span><br></pre></td></tr></table></figure>
+<p>但是，边不能自动转移到下一个事务中，需要显式地刷新，如下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph.tx().commit() <span class="comment">//Ends transaction</span></span><br><span class="line">e = g.E(e).next() <span class="comment">//Need to refresh edge</span></span><br><span class="line">e.property(<span class="string">"time"</span>, <span class="number">99</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="事务失败（failure）"><a href="#事务失败（failure）" class="headerlink" title="事务失败（failure）"></a>事务失败（failure）</h4><p>当我们在创建一个事务，并做一系列操作的时候，应该事先考虑到事务失败的可能性（IO exceptions, network errors, machine crashes or resource unavailability…），所以推荐用下面的方式处理异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (g.V().has(<span class="string">"name"</span>, name).iterator().hasNext())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Username already taken: "</span> + name)</span><br><span class="line">    user = graph.addVertex()</span><br><span class="line">    user.property(<span class="string">"name"</span>, name)</span><br><span class="line">    graph.tx().commit()</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="comment">//Recover, retry, or return error message</span></span><br><span class="line">    println(e.getMessage())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的例子描述了一个注册功能，先检查名字存不存在，如果不存在，则创建该user，然后commit。</p>
+<p>如果事务失败了，会抛出JanusGraphException异常，事务失败有很多种可能，JanusGraph区分了两种常见的failure：</p>
+<ol>
+<li><p>potentially temporary failure<br>potentially temporary failure主要与是IO异常（IO hiccups (e.g. network timeouts)）和资源可用情况（resource unavailability）有关。<br>JanusGrpah会自动去尝试从temporary failure中恢复，重新尝试commit事务，retry的次数可以配置。</p>
+</li>
+<li><p>permanent failure<br>permanent failure主要与完全的连接失败，硬件故障和锁挣脱有关（complete connection loss, hardware failure or lock contention）。<br>锁的争夺，比如两个人同时同时以”juno”的用户名去注册，其中一个事务必然失败。根据事务的语义，可以通过重试失败的事务来尝试从锁争夺中恢复（比如使用另一个用户名）。<br>一般有两种典型的情形</p>
+<ul>
+<li>PermanentLockingException(Local lock contention)：另一个线程已经被赋予了竞争锁</li>
+<li>PermanentLockingException(Expected value mismatch for X: expected=Y vs actual=Z)：</li>
+</ul>
+<p>Tips: The verification that the value read in this transaction is the same as the one in the datastore after applying for the lock failed. In other words, another transaction modified the value after it had been read and modified.</p>
+</li>
+</ol>
+<h4 id="多线程事务（Multi-Threaded-Transactions）"><a href="#多线程事务（Multi-Threaded-Transactions）" class="headerlink" title="多线程事务（Multi-Threaded Transactions）"></a>多线程事务（Multi-Threaded Transactions）</h4><p>多线程事务指的是同一个事务可以充分利用机器的多核架构来多线程执行，见TinkerPop关于threaded transaction的描述。</p>
+<p>可以通过createThreadedTx()方法来创建一个线程独立的事务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">threads = <span class="keyword">new</span> Thread[<span class="number">10</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;threads.length; i++) &#123;</span><br><span class="line">    threads[i]=<span class="keyword">new</span> Thread(&#123;</span><br><span class="line">        println(<span class="string">"Do something with ‘threadedGraph‘‘"</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    threads[i].start();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;threads.length; i++) threads[i].join();</span><br><span class="line">threadedGraph.tx().commit();</span><br></pre></td></tr></table></figure>
+<p>createThreadedTx()方法返回了一个新的Graph对象，tx()对象在创建线程的时候，并没有为每个线程创建一个事务，也就是说，所有的线程都运行在同一个事务中，这样我们就实现了threaded transaction。</p>
+<p>JanusGraph可以支持数百个线程运行在同一个事务中。</p>
+<p>通过createThreadedTx()接口可以很轻松的创建并行算法（Concurrent Algorithms），尤其是那些适用于并行计算的算法。</p>
+<p>createThreadedTx()接口的另一个应用是创建嵌套式的事务（Nested Transactions），具体的例子见这里，这对于那些long-time running的事务尤其有作用。</p>
+<h4 id="事务处理的一些常见问题"><a href="#事务处理的一些常见问题" class="headerlink" title="事务处理的一些常见问题"></a>事务处理的一些常见问题</h4><p>再次强调一下，JanusGraph的逻辑是，当我们对一个graph进行第一次操作的时候，事务就自动被打开了，我们并不需要去手动的创建一个事务，除非我们希望创建一个multi-threaded transaction。</p>
+<p>每个事物都要显式地用commit()和rollback()方法去关闭。</p>
+<p>一个事务在开始的时候，就会去维持它的状态，在多线程应用的环境中，可能会出现不可预知的问题，比如下面这个例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;returns nothing, v has no edges</span></span><br><span class="line">//thread is idle for a few seconds, another thread adds edges to v</span><br><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;still returns nothing because the transactional state from the beginning is maintained</span></span><br></pre></td></tr></table></figure>
+<p>这种情况在客户端应用端很常见，server会维持多个线程去相应服务器的请求。比较好的一个习惯是，在没完成一部分工作后，就去显式地terminate任务，如下面这个例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">g.V(v).bothE()</span><br><span class="line">graph.tx().commit()</span><br><span class="line">//thread is idle for a few seconds, another thread adds edges to v</span><br><span class="line">g.V(v).bothE()</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;returns the newly added edge</span></span><br><span class="line">graph.tx().commit()</span><br></pre></td></tr></table></figure>
+<p>多线程事务（Multi-Threaded Transactions）还可以通过newTransaction()方法来创建，但要注意的是，在该事务中创建的点和边只在该事务中可用，事务被关闭以后，访问这些点和边就会抛出异常，如果还想使用这些点和边怎么办？答案是显式地去刷新这些点和边，如下面这个例子：</p>
+<ul>
+<li>g.V(existingVertex)</li>
+<li>g.E(existingEdge)</li>
+</ul>
+<h4 id="事务的相关配置（configuration）"><a href="#事务的相关配置（configuration）" class="headerlink" title="事务的相关配置（configuration）"></a>事务的相关配置（configuration）</h4><p>JanusGraph.buildTransaction() 也可以启动一个多线程的事务，因此它和上面提到的newTransaction()方法其实是一样的功能，只不过buildTransaction()方法提供了附加的配置选项。</p>
+<p>buildTransaction()会返回一个TransactionBuilder实例，TransactionBuilder实例可以配置选项。</p>
+<p>配置好后，接着可以调用start()方法来启动一个线程，这样会返回一个JanusGraphTransaction实例。</p>
+<h3 id="缓存机制（JanusGraph-Cache）"><a href="#缓存机制（JanusGraph-Cache）" class="headerlink" title="缓存机制（JanusGraph Cache）"></a>缓存机制（JanusGraph Cache）</h3><h4 id="Transaction-level-caching"><a href="#Transaction-level-caching" class="headerlink" title="Transaction-level caching"></a>Transaction-level caching</h4><p>通过graph.buildTransaction().setVertexCacheSize(int)可以来设置事务的缓存大小（cache.tx-cache-size）。</p>
+<p>当一个事务被打开的时候，维持了两类缓存：</p>
+<ul>
+<li>Vertex cache</li>
+<li>Index cache</li>
+</ul>
+<ol>
+<li><p>Vertex cache<br>Vertex cache主要包含了事务中使用到的点，以及这些点的邻接点列表（adjacency list）的一个子集，这个子集包括了在同一个事务中被取出的该点的邻接点。所以，heap中vertex cache使用的空间不仅与事务中存在的顶点数有关，还与这些点的邻接点数目有关。</p>
+<p>Vertex cache中能维持的最多的顶点数等于transaction cache size。Vertex cache能显著地提高iteractive traversal的速度。当然，如果同样的vertex在后面并没有被重新访问，那vertex cache就没有起到作用。</p>
+</li>
+<li><p>Index cache<br>如果在一个事务中，前面部分的query用到了某个索引（index），那么后面使用这个query的时候，获取结果的速度会大大加快，这就是index cache的作用，当然，如果后面并没有再使用相同的index和相同的query，那Index query的作用也就没有体现了。</p>
+<p>Index cache中的每个条目都会被赋予一个权重，这个权重等与 2 + result set size，整个index cache的权重不会超过transaction cache size的一半。</p>
+</li>
+</ol>
+<h4 id="Database-level-caching"><a href="#Database-level-caching" class="headerlink" title="Database-level caching"></a>Database-level caching</h4><p>Database-level caching实现了多个transaction之间cache的共享，从空间利用率上来说，database-lvel caching更经济，但访问速度比transaction-level稍慢。</p>
+<p>Database-level cache不会在一个事务结束后马上失效，这使得处于多个事务中的读操作速度显著地提高。</p>
+<ul>
+<li>Cache Expiration Time<br>Cache expiration time通过 cache.db-cache-time （单位为：milliseconds）参数来调整。</li>
+</ul>
+<p>这里有一个trick，如果我们只启动了一个JanusGraph instance，因为没有另一个instance去改变玩我们的图（graph），cache expiration time便可以设置为 0，这样的话，cache就会无限期保留处于cache中的元素（除非因为空间不足被顶替）。</p>
+<p>如果我们启动了多个JanusGraph实例，这个时间应该被设置成当一个instance修改了图，另一个instance能够看到修改所需要等待的最大时间。如果希望修改被其他的instance迅速能够看到，那么应该停止使用Database-level cache。允许的时延越长，cache的效率越高。</p>
+<p>当然，一个JanusGraph instance始终能够马上看到它自己做出的修改。</p>
+<ul>
+<li><p>Cache Size<br>Cache size通过 cache.db-cache-size 参数来控制Database-level的cache能使用多少heap space，cache越大， 效率越高，但由此带来的GC性能问题却不容小觑。</p>
+<p>cache size也可以配置成百分比（占整个剩余的heap空间的比例）。</p>
+<p>注意cache size的配置是排他性的，也就是说cache会独占你配置的空间，其他资源（e.g. Gremlin Server, embedded Cassandra, etc）也需要heap spave，所以不要把cache size配置得太过分，否则可能会引起out of memory错误或者GC问题。</p>
+</li>
+<li><p>Clean Up Wait Time<br>还有一个需要注意的参数是 cache.db-cache-clean-wait，当一个顶点被修改后，所有与该顶点有关的Database-level的cache都会失效并且会被驱逐。JanusGraph会从底层的storage backend重新fetch新的顶点数据，并re-populate缓存。</p>
+<p>cache.db-cache-clean-wait 这个参数可以控制，cache会等待 cache.db-cache-clean-wait milliseconds时间再repopulate新的cache。</p>
+</li>
+<li><p>Storage Backend Caching<br>底层的storage backend也会有自己的cache策略，这个就要参考对应的底层存储的文档了。</p>
+</li>
+</ul>
+<h3 id="事务日志（Transaction-Log）"><a href="#事务日志（Transaction-Log）" class="headerlink" title="事务日志（Transaction Log）"></a>事务日志（Transaction Log）</h3><p>可以启动记录事务的变化日志，日志可以用来在后期进行处理，或者作为一个record备份。</p>
+<p>在启动一个事务的时候指定是否需要采集日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tx = graph.buildTransaction().logIdentifier(‘addedPerson‘).start()</span><br><span class="line">u = tx.addVertex(label, ‘human‘)</span><br><span class="line">u.property(‘name‘, ‘proteros‘)</span><br><span class="line">u.property(‘age‘, 36)</span><br><span class="line">tx.commit()</span><br></pre></td></tr></table></figure>
+<p>这里有个 log processor 的概念，其实就是内置的日志监听处理器。例如，可以统计在一个transaction里面，某一个label下被添加的顶点的数目。</p>
+<h3 id="其他常见问题"><a href="#其他常见问题" class="headerlink" title="其他常见问题"></a>其他常见问题</h3><h4 id="Accidental-type-creation"><a href="#Accidental-type-creation" class="headerlink" title="Accidental type creation"></a>Accidental type creation</h4><p>默认地，当遇到一个新的type的时候，janusGrpah会自动地去创建property keys和边的label。对于schema这个问题，还是建议用户自己去定义schema，而不要使用自动发现schema的方式，可以在配置文件里面如下申明关闭自动infer schema的功能：</p>
+<h4 id="schema-default-none"><a href="#schema-default-none" class="headerlink" title="schema.default = none"></a>schema.default = none</h4><p>创建type的操作也不宜放在不同的线程中，因为这会引起不可知的后果，最好放到一个batch操作中把所有的type都事先创建好，然后再去做其他的图操作。</p>
+<h4 id="Custom-Class-Datatype"><a href="#Custom-Class-Datatype" class="headerlink" title="Custom Class Datatype"></a>Custom Class Datatype</h4><p>可以自己去创建class，作为value的类别。</p>
+<h4 id="Transactional-Scope-for-Edges"><a href="#Transactional-Scope-for-Edges" class="headerlink" title="Transactional Scope for Edges"></a>Transactional Scope for Edges</h4><p>边应该先取出来，再操作，每个transaction都是有scope的，如果超出了这个scope，去访问之前的边，会报错。</p>
+<h4 id="Ghost-Vertices"><a href="#Ghost-Vertices" class="headerlink" title="Ghost Vertices"></a>Ghost Vertices</h4><p>这个概念比较新奇，指的是：我们在一个事务中删除了一个vertex，却同时在另一个transaction中修改了它。这种情况下，这个vertex还是会依然存在的，我们称这种vertex为ghost vertex。</p>
+<p>对于这个问题的解决办法最好是暂时允许ghost vertices，然后定期地写脚本去删除它们。</p>
+<h4 id="Debug-level-Logging-Slows-Execution"><a href="#Debug-level-Logging-Slows-Execution" class="headerlink" title="Debug-level Logging Slows Execution"></a>Debug-level Logging Slows Execution</h4><p>Log level如果被设置成了 DEBUG，输出可能会很大，日志中会包括一个query如何被编译、优化和执行的过程，这会显著地影响处理的性能，在生产环境下，不建议使用 DEBUG level，建议是用 INFO level。</p>
+<h4 id="Elasticsearch-OutOfMemoryException"><a href="#Elasticsearch-OutOfMemoryException" class="headerlink" title="Elasticsearch OutOfMemoryException"></a>Elasticsearch OutOfMemoryException</h4><p>当有很多客户端连接到Elasticsearch的时候，可能会报 OutOfMemoryException 异常，通常这不是一个内存溢出的问题，而是OS不允许运行ES的用户起太多的进程。</p>
+<p>可以通过调整运行es的用户可运行的进程数（number of allowed processes）也许可以解决这个问题。</p>
+<h4 id="Dropping-a-Database"><a href="#Dropping-a-Database" class="headerlink" title="Dropping a Database"></a>Dropping a Database</h4><p>删除一个graph instance，可以使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph = JanusGraphFactory.open(‘path/to/configuration.properties‘)</span><br><span class="line">JanusGraphFactory.drop(graph);</span><br><span class="line"></span><br><span class="line"># ConfiguredGraphFactory接口</span><br><span class="line">graph = ConfiguredGraphFactory.open(‘example‘)</span><br><span class="line">ConfiguredGraphFactory.drop(‘example‘);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Note:<br>0.3.0以前的版本除了需要执行上面的命令，还需要显示地调用 JanusGraphFactory.close(graph)和 ConfiguredGraphFactory.close(“example”)来关闭这个graph，以防cache中还存在这个graph，造成错误。</li>
+</ul>
+<h3 id="技术上的限制（Technical-Limitations）"><a href="#技术上的限制（Technical-Limitations）" class="headerlink" title="技术上的限制（Technical Limitations）"></a>技术上的限制（Technical Limitations）</h3><p>这个部分可以理解JanusGrpah还存在的一些可改进或者无法改进的地方。</p>
+<h4 id="设计上的限制"><a href="#设计上的限制" class="headerlink" title="设计上的限制"></a>设计上的限制</h4><p>下面这些缺陷是JanusGraph天然设计上的一些缺陷，这些缺陷短期内是得不到解决的。</p>
+<ul>
+<li>Size Limitation</li>
+</ul>
+<p>JanusGraph can store up to a quintillion edges (2^60) and half as many vertices. That limitation is imposed by JanusGraph’s id scheme.</p>
+<ul>
+<li>DataType Definitions</li>
+</ul>
+<p>当我们用 dataType(Class) 接口去定义property key的数据类型的时候，JanusGraph会enforce该key的所有属性都严格是该类型。这是严格的类型判断，子类也不可行。比如，如果我们定义的数据类型是Number.class，使用的却是Integer或者Long型，这种情况大多数情况下会报错。</p>
+<p>用Object.class或许可以解决这个问题，比较灵活，但带来的问题也显而易见，那就是性能上会降低，同时数据类型的check也会失效。</p>
+<ul>
+<li>Type Definitions cannot be changed</li>
+</ul>
+<p>Edge label, vertex label和property key一旦创建就不能改变了，当然，type可以被重命名，新的类型也可以在runtime中创建，所以schema是支持envolving的。</p>
+<ul>
+<li>保留的关键字（Reserved Keywords）<br>下面是JanusGraph保留的关键字，不要使用这些关键字作为变量名、函数名等。</li>
+</ul>
+<p>vertex<br>element<br>edge<br>property<br>label<br>key</p>
+<h4 id="临时的缺陷"><a href="#临时的缺陷" class="headerlink" title="临时的缺陷"></a>临时的缺陷</h4><p>下面这些缺陷在将来的release中会被逐渐解决。</p>
+<ul>
+<li><p>Limited Mixed Index Support<br>Mixed Index只支持JanusGraph所支持的数据类型（Data type）的一个子集，Mixed Index目前也不支持 SET 和 LIST 作为基数（cardinality）的property key。</p>
+</li>
+<li><p>Batch Loading Speed<br>可以通过下面的configuration来开启 batch loading mode：</p>
+</li>
+<li><p>Name    Description    Datatype    Default Value    Mutability<br>storage.batch-loading    Whether to enable batch loading into the storage backend    Boolean    false    LOCAL<br>这个trick其实并没有使用底层的backend的batch loading技术。</p>
+</li>
+</ul>
+<p>另一个限制是，如果同时向一个顶点导入数百万条边，这种情况下很可能failure，我们称这种loading为 supernode loading，这种loading之所以失败是受到了后端存储的限制，具体这里就不细数了。</p>
+<h2 id="后端存储（Storage-Backends）"><a href="#后端存储（Storage-Backends）" class="headerlink" title="后端存储（Storage Backends）"></a>后端存储（Storage Backends）</h2><ul>
+<li><p>Apache Cassandra<br>JanusGraph后端通过四种方式来支持整合Cassandra:</p>
+</li>
+<li><p>cql - CQL based driver （推荐使用）</p>
+</li>
+<li>cassandrathrift - JanusGraph’s Thrift connection pool driver （v2.3以后退休了，也不建议使用)</li>
+<li>cassandra - Astyanax driver. The Astyanax project is retired.</li>
+<li>embeddedcassandra - Embedded driver for running Cassandra and JanusGraph within the same</li>
+<li>JVM（测试可以，但生产环境不建议使用这种方式）</li>
+<li>Local Server Mode</li>
+<li>Cassandra可以作为一个standalone的数据库与JanusGraph一样运行在localhost，在这种情况下，JanusGraph和Cassandra之间通过socket通信。</li>
+</ul>
+<h3 id="Apache-Cassandra"><a href="#Apache-Cassandra" class="headerlink" title="Apache Cassandra"></a>Apache Cassandra</h3><p>通过下面的步骤配置JanusGraph on Cassandra：</p>
+<p>Download Cassandra, unpack it, and set filesystem paths in conf/cassandra.yaml and conf/log4j-server.properties<br>Connecting Gremlin Server to Cassandra using the default configuration files provided in the pre-packaged distribution requires that Cassandra Thrift is enabled. To enable Cassandra Thrift open conf/cassandra.yaml and update start_rpc: false to start_rpc: true. If Cassandra is already running Thrift can be started manually with bin/nodetool enablethrift. the Thrift status can be verified with bin/nodetool statusthrift.<br>Start Cassandra by invoking bin/cassandra -f on the command line in the directory where Cassandra was unpacked. Read output to check that Cassandra started successfully.<br>Now, you can create a Cassandra JanusGraph as follows</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">JanusGraph g = JanusGraphFactory.build().</span><br><span class="line">set(&quot;storage.backend&quot;, &quot;cql&quot;).</span><br><span class="line">set(&quot;storage.hostname&quot;, &quot;127.0.0.1&quot;).</span><br><span class="line">open();</span><br></pre></td></tr></table></figure>
+<h4 id="Local-Container-Mode"><a href="#Local-Container-Mode" class="headerlink" title="Local Container Mode"></a>Local Container Mode</h4><p>通过docker安装Cassandra，去release界面看一下JanusGraph版本测试通过的Cassandra版本，使用下面的docker命令运行Cassandra：</p>
+<p>docker run –name jg-cassandra -d -e CASSANDRA_START_RPC=true -p 9160:9160 -p 9042:9042 -p 7199:7199 -p 7001:7001 -p 7000:7000 cassandra:3.11<br>Note: Port 9160 is used for the Thrift client API. Port 9042 is for CQL native clients. Ports 7000, 7001 and 7099 are for inter-node communication.</p>
+<h4 id="Remote-Server-Mode"><a href="#Remote-Server-Mode" class="headerlink" title="Remote Server Mode"></a>Remote Server Mode</h4><p>集群模式下，有一个Cassandra集群，然后所有的JanusGraph的instance通过socket的方式去读写Cassandra集群，客户端应用程序也可以和JanusGraph的实例运行在同一个JVM中。</p>
+<p>举个例子，我们启动了一个Cassandra的集群，其中一个机器的IP是77.77.77.77，我们可以通过以下方式连接：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">JanusGraph graph = JanusGraphFactory.build().</span><br><span class="line">set("storage.backend", "cql").</span><br><span class="line">set("storage.hostname", "77.77.77.77").</span><br><span class="line">open();</span><br><span class="line"><span class="meta">&gt;</span><span class="bash">&gt;Remote Server Mode with Gremlin Server</span></span><br></pre></td></tr></table></figure>
+<p>可以在JanusGraph server外面包上一层Gremlin server，这样，不仅可以和JanusGraph server交互，也可以和Gremlin server交互。</p>
+<p>通过：</p>
+<p>bin/gremlin-server.sh<br>启动Gremlin server，然后通过 bin/gremlin.sh 打开Gremlin的终端，然后运行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">:remote connect tinkerpop.server conf/remote.yaml</span><br><span class="line">:&gt; g.addV()</span><br></pre></td></tr></table></figure>
+<p>便可以了。</p>
+<h4 id="JanusGraph-Embedded-Mode"><a href="#JanusGraph-Embedded-Mode" class="headerlink" title="JanusGraph Embedded Mode"></a>JanusGraph Embedded Mode</h4><p>Cassandra也可以整合到JanusGraph中，在这种情况下，JanusGraph和Cassandra运行在同一个JVM中，本次通过进程间通信而不是网络传输信息，这种情况通过在performance上有很大的帮助。</p>
+<p>如果想使用Cassandra的embedded mode，需要配置embeddedcassandra作为存储后端。</p>
+<p>这种embedded模式推荐通过Gremlin server来暴露JanusGraph。</p>
+<p>需要注意的是，embedded方式需要GC调优。</p>
+<h3 id="Apache-HBase"><a href="#Apache-HBase" class="headerlink" title="Apache HBase"></a>Apache HBase</h3><h4 id="Local-Server-Mode"><a href="#Local-Server-Mode" class="headerlink" title="Local Server Mode"></a>Local Server Mode</h4><p>从此处<a href="http://hbase.apache.org/下载一个HBase的stable" target="_blank" rel="noopener">http://hbase.apache.org/下载一个HBase的stable</a> release。<br>Start HBase by invoking the start-hbase.sh script in the bin directory inside the extracted HBase directory. To stop HBase, use stop-hbase.sh.<br>然后通过：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">JanusGraph graph = JanusGraphFactory.build()</span><br><span class="line">.set(&quot;storage.backend&quot;, &quot;hbase&quot;)</span><br><span class="line">.open();</span><br></pre></td></tr></table></figure>
+<p>连接到HBase。</p>
+<p>Remote Server Mode<br>集群模式，JanusGraph的实例通过socket与HBase建立连接，并进行读写操作。</p>
+<p>假设我们启动了一个HBase并使用zookeeper作为协调器，zk的IP是 77.77.77.77, 77.77.77.78和77.77.77.79，那么我们通过下面的方式连接到HBase：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">JanusGraph g = JanusGraphFactory.build()</span><br><span class="line">.set(&quot;storage.backend&quot;, &quot;hbase&quot;)</span><br><span class="line">.set(&quot;storage.hostname&quot;, &quot;77.77.77.77, 77.77.77.78, 77.77.77.79&quot;)</span><br><span class="line">.open();</span><br><span class="line">&gt;&gt;Remote Server Mode with Gremlin Server</span><br></pre></td></tr></table></figure>
+<p>和Cassandra章节讲的一样，我们可以在JanusGraph server外面再包一层Gremlin server：</p>
+<p><a href="http://gremlin-server.janusgraph.machine1/mygraph/vertices/1" target="_blank" rel="noopener">http://gremlin-server.janusgraph.machine1/mygraph/vertices/1</a><br><a href="http://gremlin-server.janusgraph.machine2/mygraph/tp/gremlin?script=g.v(1).out(‘follows‘).out(‘created‘)" target="_blank" rel="noopener">http://gremlin-server.janusgraph.machine2/mygraph/tp/gremlin?script=g.v(1).out(‘follows‘).out(‘created‘)</a><br>Gremlin-server的配置文件也要做响应的修改，下面是个例子：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">graphs</span>: <span class="string">&#123;</span></span><br><span class="line">  <span class="attr">g</span>: <span class="string">conf/janusgraph-hbase.properties</span></span><br><span class="line"><span class="attr">&#125;</span></span><br><span class="line"><span class="attr">scriptEngines</span>: <span class="string">&#123;</span></span><br><span class="line">  <span class="meta">gremlin-groovy</span>: <span class="string">&#123;</span></span><br><span class="line">    <span class="attr">plugins</span>: <span class="string">&#123; org.janusgraph.graphdb.tinkerpop.plugin.JanusGraphGremlinPlugin: &#123;&#125;,</span></span><br><span class="line">               <span class="meta">org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin</span>: <span class="string">&#123;&#125;,</span></span><br><span class="line">               <span class="meta">org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin</span>: <span class="string">&#123;&#125;,</span></span><br><span class="line">               <span class="meta">org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin</span>: <span class="string">&#123;classImports: [java.lang.Math], methodImports: [java.lang.Math#*]&#125;,</span></span><br><span class="line">               <span class="meta">org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin</span>: <span class="string">&#123;files: [scripts/empty-sample.groovy]&#125;&#125;&#125;&#125;</span></span><br><span class="line"><span class="attr">...</span></span><br></pre></td></tr></table></figure>
+<h4 id="HBase的配置"><a href="#HBase的配置" class="headerlink" title="HBase的配置"></a>HBase的配置</h4><p>在配置说明章节，有一系列配置选项，要注意 storage.hbase.table 参数，默认table的名字是janusgraph。</p>
+<ul>
+<li>Gloabl Graph Operations</li>
+</ul>
+<p>JanusGraph over HBase 支持全局的点和边的遍历，但这种情况下，会把所有的点和边导入到内存中，可能会报 OutOfMemoryException 错误。可以使用 Gremlin-hadoop 的方式去遍历。</p>
+<ul>
+<li>InMemory Storage Backend</li>
+</ul>
+<p>JanusGraph支持使用纯内存，可以通过下面的属性配置：</p>
+<ul>
+<li>storage.backend=inmemory</li>
+</ul>
+<h3 id="InMemory-Storage-Backend"><a href="#InMemory-Storage-Backend" class="headerlink" title="InMemory Storage Backend"></a>InMemory Storage Backend</h3><p>可以在Gremlin-console直接打开内存中的图：</p>
+<p>graph = JanusGraphFactory.build().set(‘storage.backend‘, ‘inmemory‘).open()<br>这种情况下，如果关闭该图或者停止graph的进程，图的所有数据都会丢失。这种模式也只支持单点模式，不支持多个JanusGraph的图实例共享。</p>
+<p>这种存储策略不适合在生产中使用。</p>
+<h4 id="后端索引（Index-Backends）"><a href="#后端索引（Index-Backends）" class="headerlink" title="后端索引（Index Backends）"></a>后端索引（Index Backends）</h4><p>查询谓语和数据类型<br>比较谓语<br>eq (equal)<br>neq (not equal)<br>gt (greater than)<br>gte (greater than or equal)<br>lt (less than)<br>lte (less than or equal)<br>文本操作谓语（Text Predicate）<br>主要可以用这些operator做full-text search，常见的有两类：</p>
+<ol>
+<li>String中以词为粒度的<br>textContains<br>textContainsPrefix<br>textContainsRegex<br>textContainsFuzzy</li>
+<li>以整个String为粒度的<br>textPrefix<br>textRegex<br>textFuzzy<br>区间操作谓语（Geo Predicate)<br>区间操作谓语包括：</li>
+</ol>
+<p>geoIntersect<br>geoWithin<br>geoDisjoint<br>geoContains<br>查询样例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">g.V().has(<span class="string">"name"</span>, <span class="string">"hercules"</span>)</span><br><span class="line"><span class="comment">// 2) Find all vertices with an age greater than 50</span></span><br><span class="line">g.V().has(<span class="string">"age"</span>, gt(<span class="number">50</span>))</span><br><span class="line"><span class="comment">// or find all vertices between 1000 (inclusive) and 5000 (exclusive) years of age and order by increasing age</span></span><br><span class="line">g.V().has(<span class="string">"age"</span>, inside(<span class="number">1000</span>, <span class="number">5000</span>)).order().by(<span class="string">"age"</span>, incr)</span><br><span class="line"><span class="comment">// which returns the same result set as the following query but in reverse order</span></span><br><span class="line">g.V().has(<span class="string">"age"</span>, inside(<span class="number">1000</span>, <span class="number">5000</span>)).order().by(<span class="string">"age"</span>, decr)</span><br><span class="line"><span class="comment">// 3) Find all edges where the place is at most 50 kilometers from the given latitude-longitude pair</span></span><br><span class="line">g.E().has(<span class="string">"place"</span>, geoWithin(Geoshape.circle(<span class="number">37.97</span>, <span class="number">23.72</span>, <span class="number">50</span>)))</span><br><span class="line"><span class="comment">// 4) Find all edges where reason contains the word "loves"</span></span><br><span class="line">g.E().has(<span class="string">"reason"</span>, textContains(<span class="string">"loves"</span>))</span><br><span class="line"><span class="comment">// or all edges which contain two words (need to chunk into individual words)</span></span><br><span class="line">g.E().has(<span class="string">"reason"</span>, textContains(<span class="string">"loves"</span>)).has(<span class="string">"reason"</span>, textContains(<span class="string">"breezes"</span>))</span><br><span class="line"><span class="comment">// or all edges which contain words that start with "lov"</span></span><br><span class="line">g.E().has(<span class="string">"reason"</span>, textContainsPrefix(<span class="string">"lov"</span>))</span><br><span class="line"><span class="comment">// or all edges which contain words that match the regular expression "br[ez]*s" in their entirety</span></span><br><span class="line">g.E().has(<span class="string">"reason"</span>, textContainsRegex(<span class="string">"br[ez]*s"</span>))</span><br><span class="line"><span class="comment">// or all edges which contain words similar to "love"</span></span><br><span class="line">g.E().has(<span class="string">"reason"</span>, textContainsFuzzy(<span class="string">"love"</span>))</span><br><span class="line"><span class="comment">// 5) Find all vertices older than a thousand years and named "saturn"</span></span><br><span class="line">g.V().has(<span class="string">"age"</span>, gt(<span class="number">1000</span>)).has(<span class="string">"name"</span>, <span class="string">"saturn"</span>)</span><br><span class="line">数据类型（Data Type Support）</span><br></pre></td></tr></table></figure>
+<p>Composite index可以支持任何类型的index，mixed index只支持下面的数据类型：</p>
+<p>Byte<br>Short<br>Integer<br>Long<br>Float<br>Double<br>String<br>Geoshape<br>Date<br>Instant<br>UUID</p>
+<h4 id="Geoshape-Data-Type"><a href="#Geoshape-Data-Type" class="headerlink" title="Geoshape Data Type"></a>Geoshape Data Type</h4><p>只有mixed indexes支持Geoshape Data Type，支持的数据类型有point, circle, box, line, polygon, multi-point, multi-line 和 multi-polygon。</p>
+<h4 id="集合类型（Collections）"><a href="#集合类型（Collections）" class="headerlink" title="集合类型（Collections）"></a>集合类型（Collections）</h4><p>如果使用 Elasticsearch，可以索引cardinality为 SET 或者 LIST 的属性，如下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">nameProperty = mgmt.makePropertyKey(<span class="string">"names"</span>).dataType(String.class).cardinality(Cardinality.SET).make()</span><br><span class="line">mgmt.buildIndex(<span class="string">"search"</span>, Vertex.class).addKey(nameProperty, Mapping.STRING.asParameter()).buildMixedIndex(<span class="string">"search"</span>)</span><br><span class="line">mgmt.commit()</span><br><span class="line"><span class="comment">//Insert a vertex</span></span><br><span class="line">person = graph.addVertex()</span><br><span class="line">person.property(<span class="string">"names"</span>, <span class="string">"Robert"</span>)</span><br><span class="line">person.property(<span class="string">"names"</span>, <span class="string">"Bob"</span>)</span><br><span class="line">graph.tx().commit()</span><br><span class="line"><span class="comment">//Now query it</span></span><br><span class="line">g.V().has(<span class="string">"names"</span>, <span class="string">"Bob"</span>).count().next() <span class="comment">//1</span></span><br><span class="line">g.V().has(<span class="string">"names"</span>, <span class="string">"Robert"</span>).count().next() <span class="comment">//1</span></span><br></pre></td></tr></table></figure>
+<h4 id="索引参数和全局搜索"><a href="#索引参数和全局搜索" class="headerlink" title="索引参数和全局搜索"></a>索引参数和全局搜索</h4><p>当我们定义一个Mixed index的时候，每一个被添加到索引中的property key都有一系列参数可以设置。</p>
+<p>Full-Text Search<br>全局索引，这是一个很重要的功能。当我们去索引字符串类型的property key的时候，我们可以选择从character层面后者text层面去索引，这需要改变 mapping 参数。</p>
+<p>当我们从text层面去索引的时候，字符串会被tokenize成bag of words，用户便可以去query是否包含一个或多个词，这叫做 full-text search。</p>
+<p>当我们从char层面去索引的时候，string会直接和char串做match，不会有futher analysis后者tokenize操作。这可以方便我们去查找是否包含某个字符序列，这也叫做 string search。</p>
+<p>下面分开讲：</p>
+<ul>
+<li>Full-Text Search</li>
+</ul>
+<p>默认地，string会使用text层面的索引，可以通过下面的方式显示地去创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">summary = mgmt.makePropertyKey(‘booksummary‘).dataType(String.class).make()</span><br><span class="line">mgmt.buildIndex(‘booksBySummary‘, Vertex.class).addKey(summary, Mapping.TEXT.asParameter()).buildMixedIndex(<span class="string">"search"</span>)</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>可以看到，这和普通的创建索引唯一的一个区别是我们在调用 addKey() 方法的时候，多添加了一个 Mapping.TEXT 映射参数。</p>
+<p>前面我们提到过，如果是使用text层面的index，JanusGraph会自己去维护一个bag of words，JanusGraph默认的tokenization方案是：它会使用非字母数字的字段去split，然后会移除到所有小于2个字符的token。</p>
+<p>当我们使用text层面的index的时候，只有全局索引的谓语才真正用到了我们创建的索引，包括textContains方法，textContainsPrefix方法，textContainsRegex方法和textContainsFuzzy方法，注意，full-text search是case-insensitive的，下面是具体的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.janusgraph.core.attribute.Text.*</span><br><span class="line">g.V().has(‘booksummary‘, textContains(‘unicorns‘))</span><br><span class="line">g.V().has(‘booksummary‘, textContainsPrefix(‘uni‘))</span><br><span class="line">g.V().has(‘booksummary‘, textContainsRegex(‘.*corn.*‘))</span><br><span class="line">g.V().has(‘booksummary‘, textContainsFuzzy(‘unicorn‘))</span><br></pre></td></tr></table></figure>
+<ul>
+<li>String Search</li>
+</ul>
+<p>首先要明确的是，string search会把数据load到内存中，这其实是非常costly的。</p>
+<p>可以通过下面的方式去显示地创建string search：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">name = mgmt.makePropertyKey(‘bookname‘).dataType(String.class).make()</span><br><span class="line">mgmt.buildIndex(‘booksBySummary‘, Vertex.class).addKey(name, Mapping.STRING.asParameter()).buildMixedIndex(<span class="string">"search"</span>)</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>这种 bookname 会按照 as-is 的方式去分析，包括stop word和no-letter character。</p>
+<p>当我们使用string层面的index的时候，只有下面的谓语才真正用到了我们创建的索引，包括eq，neq、textPrefix、textRegex和textFuzzy。注意，string search是case-insensitive的，下面是具体的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.apache.tinkerpop.gremlin.process.traversal.P.*</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.janusgraph.core.attribute.Text.*</span><br><span class="line">g.V().has(‘bookname‘, eq(‘unicorns‘))</span><br><span class="line">g.V().has(‘bookname‘, neq(‘unicorns‘))</span><br><span class="line">g.V().has(‘bookname‘, textPrefix(‘uni‘))</span><br><span class="line">g.V().has(‘bookname‘, textRegex(‘.*corn.*‘))</span><br><span class="line">g.V().has(‘bookname‘, textFuzzy(‘unicorn‘))</span><br></pre></td></tr></table></figure>
+<p>同时使用text和string层面的full-text search<br>如果我们使用elasticsearch作为后端，这样就可以用所有的谓语去做精确或者模糊的查询了。</p>
+<p>通过下面的方式创建这种叫做 Mapping.TEXTSTRING 的full-text search方案：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">summary = mgmt.makePropertyKey(‘booksummary‘).dataType(String.class).make()</span><br><span class="line">mgmt.buildIndex(‘booksBySummary‘, Vertex.class).addKey(summary, Mapping.TEXTSTRING.asParameter()).buildMixedIndex(<span class="string">"search"</span>)</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Geo Mapping</li>
+</ul>
+<p>默认地，JanusGraph支持索引点（point）的索引，并且去查询circle或者box类型的property，如果想索引一个非-点类型的property，需要使用 Mapping.PREFIX_TREE：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">name = mgmt.makePropertyKey(‘border‘).dataType(Geoshape.class).make()</span><br><span class="line">mgmt.buildIndex(‘borderIndex‘, Vertex.class).addKey(name, Mapping.PREFIX_TREE.asParameter()).buildMixedIndex(<span class="string">"search"</span>)</span><br><span class="line">mgmt.commit()</span><br><span class="line">Direct Index Query</span><br></pre></td></tr></table></figure>
+<p>可以直接向index backend发送query，下面是个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ManagementSystem mgmt = graph.openManagement();</span><br><span class="line">PropertyKey text = mgmt.makePropertyKey(<span class="string">"text"</span>).dataType(String.class).make();</span><br><span class="line">mgmt.buildIndex(<span class="string">"vertexByText"</span>, Vertex.class).addKey(text).buildMixedIndex(<span class="string">"search"</span>);</span><br><span class="line">mgmt.commit();</span><br><span class="line"><span class="comment">// ... Load vertices ...</span></span><br><span class="line"><span class="keyword">for</span> (Result&lt;Vertex&gt; result : graph.indexQuery(<span class="string">"vertexByText"</span>, <span class="string">"v.text:(farm uncle berry)"</span>).vertices()) &#123;</span><br><span class="line">   System.out.println(result.getElement() + <span class="string">": "</span> + result.getScore());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要指明两个元素：</p>
+<p>想要查询的index backend的index名字，在上面的例子中是 vertexByText 。<br>查询语句，在上面的例子中是 v.text:(farm uncle berry) 。<br>Elasticsearch<br>Running elasticsearch<br>下载包里面本身包含兼容的elasticsearch的distribution，通过：</p>
+<p>elasticsearch/bin/elasticsearch<br>来运行elasticsearch。要注意的是，es不能使用root运行。</p>
+<p>ES配置<br>JanusGraph支持通过HTTP客户端连接到正在运行的ES集群。</p>
+<p>在配置文件中，Elasticsearch client需要通过下面这一行指明：</p>
+<p>index.search.backend=elasticsearch<br>通过 index.[X].hostname 指明某一个或者一系列es的实例的地址：</p>
+<p>index.search.backend=elasticsearch<br>index.search.hostname=10.0.0.10:9200<br>可以通过下面的方式绑定要一段连续的IP:PORT对：</p>
+<p>index.search.backend=elasticsearch<br>index.search.hostname=10.0.0.10, 10.0.0.20:7777<br>REST Client<br>Rest client可以通过 index.[X].bulk-refresh 参数控制改变多久能被索引到。</p>
+<p>REST Client 既可以配置成HTTP的方式也可以配置成HTTPS的方式。</p>
+<p>HTTPS authentification<br>可以通过 index.[X].elasticsearch.ssl.enabled 开启HTTP的SSL支持。注意，这可能需要修改 index.[X].port 参数，因为ES的HTTPS服务的端口号可能和通常意义的REST API端口（9200）不一样。</p>
+<p>HTTP authentification<br>可以通过配置 index.[X].elasticsearch.http.auth.basic.realm 参数来通过HTTP协议做认证。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">index.search.elasticsearch.http.auth.type=basic</span><br><span class="line">index.search.elasticsearch.http.auth.basic.username=httpuser</span><br><span class="line">index.search.elasticsearch.http.auth.basic.password=httppassword</span><br><span class="line">tips:</span><br></pre></td></tr></table></figure>
+<p>可以自己实现class来实现认证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index.search.elasticsearch.http.auth.custom.authenticator-<span class="class"><span class="keyword">class</span></span>=fully.qualified.class.Name</span><br><span class="line">index.search.elasticsearch.elasticsearch.http.auth.custom.authenticator-args=arg1,arg2,...</span><br></pre></td></tr></table></figure>
+<p>自己实现的class必须实现 org.janusgraph.diskstorage.es.rest.util.RestClientAuthenticator 接口。</p>
+<h3 id="高级功能"><a href="#高级功能" class="headerlink" title="高级功能"></a>高级功能</h3><h4 id="Advanced-Schema"><a href="#Advanced-Schema" class="headerlink" title="Advanced Schema"></a>Advanced Schema</h4><ol>
+<li>Static Vertex<br>Vertex label可以定义为static的，一旦创建，就不能修改了。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">tweet = mgmt.makeVertexLabel(‘tweet‘).setStatic().make()</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>Edge and Vertex TTL<br>边和顶点可以配置对应的time-to-live(TTL)，这个概念有点类似于数据库中的临时表的概念，用这种方式创建的点和边在使用一段时间以后会被自动移除掉。</li>
+</ol>
+<ul>
+<li><p>Edge TTL</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">visits = mgmt.makeEdgeLabel(‘visits‘).make()</span><br><span class="line">mgmt.setTTL(visits, Duration.ofDays(<span class="number">7</span>))</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，这种方法后端数据库必须支持cell level TTL，目前只有Cassandra和HBase支持。</p>
+</li>
+<li><p>Property TTL</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">sensor = mgmt.makePropertyKey(‘sensor‘).cardinality(Cardinality.LIST).dataType(Double.class).make()</span><br><span class="line">mgmt.setTTL(sensor, Duration.ofDays(<span class="number">21</span>))</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Vertex TTL</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">tweet = mgmt.makeVertexLabel(‘tweet‘).setStatic().make()</span><br><span class="line">mgmt.setTTL(tweet, Duration.ofHours(<span class="number">36</span>))</span><br><span class="line">mgmt.commit()</span><br><span class="line">Undirected Edges</span><br><span class="line">mgmt = graph.openManagement()</span><br><span class="line">mgmt.makeEdgeLabel(‘author‘).unidirected().make()</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>这种undirected edge只能通过out-going的方向去遍历，这有点像万维网。</p>
+</li>
+</ul>
+<h4 id="Eventually-Consistent-Storage-Backends"><a href="#Eventually-Consistent-Storage-Backends" class="headerlink" title="Eventually-Consistent Storage Backends"></a>Eventually-Consistent Storage Backends</h4><p>底层数据的最终一致性问题。</p>
+<p>Eventually consistent storage backend有哪些？Apache Cassandra 或者 Apache HBase其实都是这种数据库类型。</p>
+<ul>
+<li><p>数据的一致性<br>通过 JanusGraphManagement.setConsistency(element, ConsistencyModifier.LOCK) 方法去定义数据的一致性问题， 如下面的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">name = mgmt.makePropertyKey(‘consistentName‘).dataType(String.class).make()</span><br><span class="line">index = mgmt.buildIndex(‘byConsistentName‘, Vertex.class).addKey(name).unique().buildCompositeIndex()</span><br><span class="line">mgmt.setConsistency(name, ConsistencyModifier.LOCK) <span class="comment">// Ensures only one name per vertex</span></span><br><span class="line">mgmt.setConsistency(index, ConsistencyModifier.LOCK) <span class="comment">// Ensures name uniqueness in the graph</span></span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>使用锁其实开销还是很大的，在对数据一致性要求不高的情形，最好不用锁，让后期数据库自己在读操作中去解决数据一致性问题。</p>
+</li>
+</ul>
+<p>当有两个事务同时对一个元素进行写操作的时候，怎么办呢？我们可以先让写操作成功，然后后期再去解决一致性问题，具体有两种思路解决这个问题：</p>
+<ol>
+<li>Forking Edges<br>思想就是，每一个事务fork一个对应的要修改的edge，再根据时间戳去在后期修改。</li>
+</ol>
+<p>下面是个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">related = mgmt.makeEdgeLabel(‘related‘).make()</span><br><span class="line">mgmt.setConsistency(related, ConsistencyModifier.FORK)</span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>这里，我们创建了一个edge label，叫做 related，然后我们把一致性属性设置成了 ConsistencyModifier.FORK。</p>
+<p>这个策略只对MULTI类别的边适用。其他的multiplicity并不适用，因为其它multiplicity显式地应用了锁。</p>
+<h4 id="Failure-amp-Recovery"><a href="#Failure-amp-Recovery" class="headerlink" title="Failure &amp; Recovery"></a>Failure &amp; Recovery</h4><p>失败和恢复，主要是两个部分：</p>
+<ul>
+<li>事务的失败和恢复</li>
+<li>实例的宕机和恢复</li>
+</ul>
+<ol>
+<li><p>事务的失败和恢复</p>
+<p>事务如果在调用 commit() 之前失败，是可以恢复的。commit() 之前的改变也会被回滚。</p>
+</li>
+</ol>
+<p>有时候，数据persist到存储系统的过程成功了，但创建index的的过程却失败了。这种情况下，该事务会被认为成功了，因为底层存储才是source of graph。</p>
+<p>但这样会带来数据和索引的不一致性。JanusGraph维护了一份 transaction write-ahead log，对应的有两个参数可以调整：</p>
+<p>tx.log-tx = true<br>tx.max-commit-time = 10000<br>如果一个事务的persistance过程超过了 max-commit-time，JanusGrpah会尝试从中恢复。与此同时，另外有一个进程去扫描维护好的这份log，去identify那些只成功了一半的事务。建议使用另一台机器专门去做失败恢复，运行：</p>
+<p>recovery = JanusGraphFactory.startTransactionRecovery(graph, startTime, TimeUnit.MILLISECONDS);<br>transaction write-ahead log 本身也有维护成本，因为涉及到大量的写操作。transaction write-ahead log 自动维护的时间是2天，2天前的数据会被自动删除。</p>
+<p>对于这样的系统，如何 fine tune log system 也是需要仔细考虑的因素。</p>
+<ol start="2">
+<li>实例的恢复<br>如果某个JanusGraph instance宕机了，其他的实例应该不能受影响。如果涉及到schema相关的操作，比如创建索引，这就需要不同instance保持协作了，JanusGraph会自动地去维护一份running instance的列表，如果某一个实例被意外关闭了，创建索引的操作就会失败。</li>
+</ol>
+<p>在这种情况下，有一个方案是去手动地remove某一个实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mgmt = graph.openManagement()</span><br><span class="line">mgmt.getOpenInstances() <span class="comment">//all open instances</span></span><br><span class="line">==&gt;<span class="number">7f</span>0001016161-dunwich1(current)</span><br><span class="line">==&gt;<span class="number">7f</span>0001016161-atlantis1</span><br><span class="line">mgmt.forceCloseInstance(‘<span class="number">7f</span>0001016161-atlantis1‘) <span class="comment">//remove an instance</span></span><br><span class="line">mgmt.commit()</span><br></pre></td></tr></table></figure>
+<p>但这样做有数据不一致的风险，应该尽量少使用这种方式。</p>
+<h4 id="索引的管理"><a href="#索引的管理" class="headerlink" title="索引的管理"></a>索引的管理</h4><ol>
+<li>重新索引</li>
+</ol>
+<p>一般来讲，我们在创建schema的时候，就应该把索引建立好，如果事先没有创建好索引，就需要重新索引了。</p>
+<p>可以通过两种方式来执行重索引：</p>
+<ul>
+<li>MapReduce</li>
+<li>JanusGraphManagement<br>具体的代码可以参考：<a href="https://docs.janusgraph.org/index-management/index-reindexing/" target="_blank" rel="noopener">https://docs.janusgraph.org/index-management/index-reindexing/</a></li>
+</ul>
+<ol start="2">
+<li>删除索引<br>删除索引分两步：</li>
+</ol>
+<p>JanusGraph通知所有其他的实例，说明索引即将被删除，索引便会标记成 DISABLED 状态，此时JanusGraph便会停止使用该索引去回答查询，或者更新索引，索引相关的底层数据还保留但会被忽略。<br>根据索引是属于composite索引还是mixed索引，如果是composite索引，可以直接用 JanusGraphManagement 或者 MapReduce 去删除，如果是mixed索引就比较麻烦了，因为这涉及到后端存储的索引，所以需要手动地去后端drop掉对应的索引。</p>
+<ol start="3">
+<li>重建索引的相关问题<br>当一个索引刚刚被建立，就执行重索引的时候，可能会报如下错误：</li>
+</ol>
+<p>The index mixedExample is in an invalid state and cannot be indexed.<br>The following index keys have invalid status: desc has status INSTALLED<br>(status must be one of [REGISTERED, ENABLED])<br>这是因为建立索引后，索引信息会被慢慢地广播到集群中其他的Instances，这需要一定的时间，所以，最好不要在索引刚刚建立以后就去执行重索引任务。</p>
+<h4 id="大规模导入（Bulk-Loading）"><a href="#大规模导入（Bulk-Loading）" class="headerlink" title="大规模导入（Bulk Loading）"></a>大规模导入（Bulk Loading）</h4><p>大规模导入需要的配置<br>通过 storage.batch-loading 参数来支持 Bulk loading。</p>
+<p>如果打开了 Builk loading，最好关闭自动创建schema的功能（schema.default = none）。因为automatic type creation会不断地check来保证数据的一致性和完整性，对于Bulk loading的场合，这或许是不需要的。</p>
+<p>另外一个需要关注的参数是 ids.block-size，可以通过增大这个参数来减少id获取过程的数量（id block acquisition process），但这会造成大量的id浪费，这个参数需要根据每台机器添加的顶点的数量来做调整，默认值已经比较合理了，如果不行，可以适当地增大这个数值（10倍，100倍，比如）。</p>
+<p>对于这个参数，有个技巧：Rule of thumb: Set ids.block-size to the number of vertices you expect to add per JanusGraph instance per hour.</p>
+<ul>
+<li>Note：要保证所有JanusGraph instance这个参数的配置都一样，如果需要调整这个参数，最好先关闭所有的instance，调整好后再上线。</li>
+</ul>
+<p>如果有多个实例，这些实例在不断地分配id，可能会造成冲突问题，有时候甚至会报出异常，一般来说，对于这个问题，可以调整下面几个参数：</p>
+<ul>
+<li>ids.authority.wait-time：单位是milliseconds，id pool mamager在等待id block应用程序获得底层存储所需要等待的时间，这个时间越短，越容易出问题。</li>
+<li><p>Rule of thumb: Set this to the sum of the 95th percentile read and write times measured on the storage backend cluster under load. Important: This value should be the same across all JanusGraph instances.</p>
+</li>
+<li><p>ids.renew-timeout：单位是milliseconds，JanusGraph 的 id pool manager 在获取新一个id之前会等待的总时间。</p>
+</li>
+<li>Rule of thumb: Set this value to be as large feasible to not have to wait too long for unrecoverable failures. The only downside of increasing it is that JanusGraph will try for a long time on an unavailable storage backend cluster.</li>
+</ul>
+<p>还有一些需要注意的读写参数：</p>
+<ul>
+<li><p>storage.buffer-size：我们执行很多query的时候，JanusGraph会把它们封装成一个个的小batch，然后推送到后端的存储执行，当我们在短时间内执行大量的写操作的时候，后端存储可能承受不了这么大的压力。在这种情况下，我们可以增大这个buffer参数，但与此相对的代价是每秒中可以发送的request数量会减小。这个参数不建议在用事务的方式导入数据的时候进行修改。</p>
+</li>
+<li><p>storage.read-attempts 和 storage.write-attempts 参数，这个参数指的是每个推送到后端的batch会被尝试多少次（直至认为这个batch fail），如果希望在导数据的时候支持 high load，最好调大这几个参数。</p>
+</li>
+<li><p>storage.attempt-wait 参数指定了JanusGraph在重新执行一次失败的操作之前会等待的时间（millisecond)，这个值越大，后端能抗住的load越高。</p>
+</li>
+</ul>
+<h4 id="Graph-Partitioning"><a href="#Graph-Partitioning" class="headerlink" title="Graph Partitioning"></a>Graph Partitioning</h4><p>分区策略，主要是两种：</p>
+<ul>
+<li><p>Edge Cut<br>砍边策略，经常一起遍历到的点尽量放在同一个机器上。</p>
+</li>
+<li><p>Vertex Cut<br>砍点策略。砍边策略的目的是减小通信量，砍点策略主要是为了处理hotspot问题（超级点问题），比如有的点，入度非常大，这种情况下，用邻接表的方式+砍边的方式存储的话，势必造成某一个分区上某一个点的存储量过大（偏移），这个时候，利用砍点策略，把这种点均匀地分布到不同的partition上面就显得很重要了。</p>
+</li>
+</ul>
+<p>一个典型的场景是 User 和 Product 的关系，product 可能只有几千个，但用户却有上百万个，这种情况下，product 最好就始终砍点策略。</p>
+<p>对与分区这个问题，如果数据量小，就用随机分区（默认的）就好，如果数据量过大，就要好好地去fine tune分区的策略了。</p>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()">×</a>
+            <div class="shang_tit">
+              <p>纯属好玩</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="">JanusGraph</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 月 迹 的个人博客">月 迹</a></p>
+        <p><span>发布时间:</span>2019年10月15日 - 15时04分</p>
+        <p><span>最后更新:</span>2020年07月05日 - 02时19分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="" title="JanusGraph">https://xyueji.github.io/JanusGraph.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/JanusGraph.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="hbase的hbck工具.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          hbase的hbck工具
+        
+      </div>
+    </a>
+  
+  
+    <a href="iptables禁用启用端口.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iptables禁用启用端口</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基础知识"><span class="toc-number">1.</span> <span class="toc-text">基础知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Configuration"><span class="toc-number">1.1.</span> <span class="toc-text">Configuration</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据模型（Schema）"><span class="toc-number">1.2.</span> <span class="toc-text">数据模型（Schema）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#schema"><span class="toc-number">1.2.1.</span> <span class="toc-text">schema</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vertex-label"><span class="toc-number">1.2.2.</span> <span class="toc-text">Vertex label</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Edge-label"><span class="toc-number">1.2.3.</span> <span class="toc-text">Edge label</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Property-keys"><span class="toc-number">1.2.4.</span> <span class="toc-text">Property keys</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#relation-type"><span class="toc-number">1.2.5.</span> <span class="toc-text">relation type</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Changing-Schema-Elements"><span class="toc-number">1.2.6.</span> <span class="toc-text">Changing Schema Elements</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Schema-Constraints"><span class="toc-number">1.2.7.</span> <span class="toc-text">Schema Constraints</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Gremlin"><span class="toc-number">1.3.</span> <span class="toc-text">Gremlin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JanusGraph-Server"><span class="toc-number">1.4.</span> <span class="toc-text">JanusGraph Server</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#使用方式"><span class="toc-number">1.4.1.</span> <span class="toc-text">使用方式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Multi-node"><span class="toc-number">1.5.</span> <span class="toc-text">Multi-node</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Indexing"><span class="toc-number">1.6.</span> <span class="toc-text">Indexing</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Janusgraph索引状态不变更的问题"><span class="toc-number">1.6.1.</span> <span class="toc-text">Janusgraph索引状态不变更的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Composite-Index"><span class="toc-number">1.6.2.</span> <span class="toc-text">Composite Index</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Mixed-Index"><span class="toc-number">1.6.3.</span> <span class="toc-text">Mixed Index</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Vertex-centric-Indexes"><span class="toc-number">1.6.4.</span> <span class="toc-text">Vertex-centric Indexes</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Transaction-事务"><span class="toc-number">1.7.</span> <span class="toc-text">Transaction 事务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#事务处理范围（scope）"><span class="toc-number">1.7.1.</span> <span class="toc-text">事务处理范围（scope）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#事务失败（failure）"><span class="toc-number">1.7.2.</span> <span class="toc-text">事务失败（failure）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多线程事务（Multi-Threaded-Transactions）"><span class="toc-number">1.7.3.</span> <span class="toc-text">多线程事务（Multi-Threaded Transactions）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#事务处理的一些常见问题"><span class="toc-number">1.7.4.</span> <span class="toc-text">事务处理的一些常见问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#事务的相关配置（configuration）"><span class="toc-number">1.7.5.</span> <span class="toc-text">事务的相关配置（configuration）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存机制（JanusGraph-Cache）"><span class="toc-number">1.8.</span> <span class="toc-text">缓存机制（JanusGraph Cache）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Transaction-level-caching"><span class="toc-number">1.8.1.</span> <span class="toc-text">Transaction-level caching</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Database-level-caching"><span class="toc-number">1.8.2.</span> <span class="toc-text">Database-level caching</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#事务日志（Transaction-Log）"><span class="toc-number">1.9.</span> <span class="toc-text">事务日志（Transaction Log）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他常见问题"><span class="toc-number">1.10.</span> <span class="toc-text">其他常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Accidental-type-creation"><span class="toc-number">1.10.1.</span> <span class="toc-text">Accidental type creation</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#schema-default-none"><span class="toc-number">1.10.2.</span> <span class="toc-text">schema.default = none</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Custom-Class-Datatype"><span class="toc-number">1.10.3.</span> <span class="toc-text">Custom Class Datatype</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Transactional-Scope-for-Edges"><span class="toc-number">1.10.4.</span> <span class="toc-text">Transactional Scope for Edges</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Ghost-Vertices"><span class="toc-number">1.10.5.</span> <span class="toc-text">Ghost Vertices</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Debug-level-Logging-Slows-Execution"><span class="toc-number">1.10.6.</span> <span class="toc-text">Debug-level Logging Slows Execution</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Elasticsearch-OutOfMemoryException"><span class="toc-number">1.10.7.</span> <span class="toc-text">Elasticsearch OutOfMemoryException</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Dropping-a-Database"><span class="toc-number">1.10.8.</span> <span class="toc-text">Dropping a Database</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#技术上的限制（Technical-Limitations）"><span class="toc-number">1.11.</span> <span class="toc-text">技术上的限制（Technical Limitations）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#设计上的限制"><span class="toc-number">1.11.1.</span> <span class="toc-text">设计上的限制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#临时的缺陷"><span class="toc-number">1.11.2.</span> <span class="toc-text">临时的缺陷</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后端存储（Storage-Backends）"><span class="toc-number">2.</span> <span class="toc-text">后端存储（Storage Backends）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Apache-Cassandra"><span class="toc-number">2.1.</span> <span class="toc-text">Apache Cassandra</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Local-Container-Mode"><span class="toc-number">2.1.1.</span> <span class="toc-text">Local Container Mode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Remote-Server-Mode"><span class="toc-number">2.1.2.</span> <span class="toc-text">Remote Server Mode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JanusGraph-Embedded-Mode"><span class="toc-number">2.1.3.</span> <span class="toc-text">JanusGraph Embedded Mode</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apache-HBase"><span class="toc-number">2.2.</span> <span class="toc-text">Apache HBase</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Local-Server-Mode"><span class="toc-number">2.2.1.</span> <span class="toc-text">Local Server Mode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HBase的配置"><span class="toc-number">2.2.2.</span> <span class="toc-text">HBase的配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InMemory-Storage-Backend"><span class="toc-number">2.3.</span> <span class="toc-text">InMemory Storage Backend</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#后端索引（Index-Backends）"><span class="toc-number">2.3.1.</span> <span class="toc-text">后端索引（Index Backends）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Geoshape-Data-Type"><span class="toc-number">2.3.2.</span> <span class="toc-text">Geoshape Data Type</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#集合类型（Collections）"><span class="toc-number">2.3.3.</span> <span class="toc-text">集合类型（Collections）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#索引参数和全局搜索"><span class="toc-number">2.3.4.</span> <span class="toc-text">索引参数和全局搜索</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#高级功能"><span class="toc-number">2.4.</span> <span class="toc-text">高级功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Advanced-Schema"><span class="toc-number">2.4.1.</span> <span class="toc-text">Advanced Schema</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Eventually-Consistent-Storage-Backends"><span class="toc-number">2.4.2.</span> <span class="toc-text">Eventually-Consistent Storage Backends</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Failure-amp-Recovery"><span class="toc-number">2.4.3.</span> <span class="toc-text">Failure &amp; Recovery</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#索引的管理"><span class="toc-number">2.4.4.</span> <span class="toc-text">索引的管理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#大规模导入（Bulk-Loading）"><span class="toc-number">2.4.5.</span> <span class="toc-text">大规模导入（Bulk Loading）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Graph-Partitioning"><span class="toc-number">2.4.6.</span> <span class="toc-text">Graph Partitioning</span></a></li></ol></li></ol></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.css">
+<div id="gitalk-container" class="gitment-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '8864436c2b03c3753a80',
+        clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
+        id: 'JanusGraph.html',
+        owner: 'xyueji',
+        repo: 'xyueji.github.io',
+        admin: 'xyueji',
+        proxy: 'https://still-shadow-c49f.xyueji.workers.dev/?https://github.com/login/oauth/access_token'
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="hbase的hbck工具.html" title="上一篇: hbase的hbck工具">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="iptables禁用启用端口.html" title="下一篇: iptables禁用启用端口">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="统计HDFS元数据.html">统计HDFS元数据</a></li><li class="post-list-item"><a class="post-list-link" href="元数据平台-数据血缘.html">元数据平台-数据血缘</a></li><li class="post-list-item"><a class="post-list-link" href="精准去重-字典编码+Bitmap.html">精准去重-字典编码+Bitmap</a></li><li class="post-list-item"><a class="post-list-link" href="大数据监控-Metrics2录入指标到OpenTSDB.html">大数据监控-Metrics2录入指标到OpenTSDB</a></li><li class="post-list-item"><a class="post-list-link" href="Spark解决数据倾斜问题.html">Spark解决数据倾斜问题</a></li><li class="post-list-item"><a class="post-list-link" href="Spark-Shuffle原理.html">Spark-Shuffle原理</a></li><li class="post-list-item"><a class="post-list-link" href="MapReduce-Shuffle过程.html">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+   <!-- 代码块复制功能-->
+   <script src="/js/clipboard-use.js"></script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2022 月 迹
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" style="color: #000">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank" style="color: #000">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数:
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量:
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="js/main.js"></script>
+
+    <!--<script>-->
+        <!--$(document).ready(function() {-->
+            <!--var backgroundnum = 0;-->
+            <!--var backgroundimg = "url(/background/bg-" + backgroundnum +".jpg)";-->
+            <!--$("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+            <!--$(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+        <!--})-->
+    <!--</script>-->
+
+
+
+<!-- Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-168200248-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-168200248-1');
+</script>
+
+<!-- End Google Analytics -->
+
+
+
+<script>
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "https://hm.baidu.com/hm.js?1c0d5d76b7455fc584663ce315f75837";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
+</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+    
+    
+    
+        <div class="search-result-list" ></div>
+        <div class="search-cover"></div>
+    <script type = "text/javascript" >
+        $('#search').bind('keypress',function(event){
+            if(event.keyCode == "13"){
+                search()
+            }
+        });
+
+    function search() {
+        var searchTool = {
+            data: [],
+            arrList: [],
+            oldList: [],
+            init() {
+                this.fetchJson()
+            },
+            fetchJson() {
+                window.fetch('/content.json?t=' + (+new Date()), {
+                    method: 'get',
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    this.data = data
+                    let keywords = $('#search').val()
+                    this.searchList(keywords)
+                }).catch((err) => {
+                    console.log(err)
+                });
+            },
+            // 搜索字符串里面是否存在关键字
+            isSreachIndexOF(oldstr, kw) {
+                // console.log(oldstr, kw)
+                var istrue = false
+                // console.log('isSreachIndexOF', oldstr && toString.call(oldstr) === '[object Array]')
+                if (oldstr && toString.call(oldstr) === '[object Array]') {
+                    for (var i = 0; i < oldstr.length; i++) {
+                        oldstr[i].toLowerCase() === kw.toLowerCase() ? istrue = true : null
+                    }
+                    return istrue
+                }
+                if (!oldstr || !kw) return false
+                istrue = oldstr.toLowerCase().indexOf(kw.toLowerCase()) > -1
+                return istrue
+            },
+            searchList(keywolds) {
+                let divList = ''
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        let tagsK = item.tags.map(item => item.name).join('-')
+                        let categoriesK = item.categories.map(item => item.name).join('-')
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(categoriesK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            divList += `
+                          <li>
+                            <a href="/${item.path}" class="search-result-title">${item.title}</a>
+                            <div class="main">
+                              <div class="left">
+                                <span>${item.author ? item.author : 'xyueji'}</span>
+                                ${item.tags.map(tags => `<a href="/tags/${tags.slug}" class="search-result-tags">${tags.name}</a>`)}
+                              </div>
+                              <div class="right">${this.getFriendlyTime(item.date.replace('T', ' '), new Date())}</div>
+                            </div>
+                          </li>`
+                        }
+                    })
+                    if (this.oldList.length) {
+                        this.clear()
+                    }
+                    if (this.arrList.length) this.add()
+                }
+                if (!divList) {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <div style="text-align: center;font-size: 30px; margin-top: 50px;" ">抱歉，未搜索到相关结果</div>`
+                } else {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <ul>` + divList + `</ul>`
+                }
+                $('.search-result-list').html(divList)
+                $('.search-result-list').fadeToggle();
+                $('.search-cover').fadeToggle();
+            },
+            clear() {
+                this.oldList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'none'
+                })
+                this.oldList = []
+            },
+            add() {
+                this.arrList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'block'
+                })
+                this.oldList = this.arrList
+            },
+            searchGo(keywolds) {
+                this.arrList = []
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(item.tags.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.categories.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            this.arrList.push(index)
+                        }
+                    })
+                    if (this.oldList.length) this.clear()
+                    if (this.arrList.length) this.add()
+                }
+            },
+            /**
+             * 获取指定时间的友好时间字符串。
+             * @param str 指定的时间字符串，如yyyy-MM-dd HH:mm:ss
+             * @param now 当前时间，允许时间戳，GMT时间，如果该参数为undefined，则使用浏览器时间。
+             */
+            getFriendlyTime(str, now) {
+                var currentTime = new Date(now);
+                var arr = str.split(/\s+/gi);
+                var temp = 0, arr1, arr2, oldTime, delta;
+                var getIntValue = function (ss, defaultValue) {
+                    try {
+                        return parseInt(ss, 10);
+                    } catch (e) {
+                        return defaultValue;
+                    }
+                };
+                var getWidthString = function (num) {
+                    return num < 10 ? ('0' + num) : num;
+                };
+                if (arr.length >= 2) {
+                    arr1 = arr[0].split(/[\/\-]/gi);
+                    arr2 = arr[1].split(':');
+                    oldTime = new Date();
+                    oldTime.setYear(getIntValue(arr1[0], currentTime.getFullYear()));
+                    oldTime.setMonth(getIntValue(arr1[1], currentTime.getMonth() + 1) - 1);
+                    oldTime.setDate(getIntValue(arr1[2], currentTime.getDate()));
+
+                    oldTime.setHours(getIntValue(arr2[0], currentTime.getHours()));
+                    oldTime.setMinutes(getIntValue(arr2[1], currentTime.getMinutes()));
+                    oldTime.setSeconds(getIntValue(arr2[2], currentTime.getSeconds()));
+
+                    delta = currentTime.getTime() - oldTime.getTime();
+
+                    if (delta <= 60 * 1000) {
+                        return '1分钟内';
+                    } else if (delta < 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 1000)) + '分钟前';
+                    } else if (delta < 24 * 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000)) + '天前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30 * 12) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000 * 30)) + '月前';
+                    } else if (currentTime.getFullYear() != oldTime.getFullYear()) {
+                        return [getWidthString(oldTime.getFullYear()), getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-')
+                    } else {
+                        return [getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-');
+                    }
+                }
+                return '';
+            }
+        }
+        searchTool.init()
+    }
+    function searchToggle() {
+        $('.search-cover').fadeToggle();
+        $('.search-result-list').fadeToggle();
+    }
+</script>
+
+
+  </div>
+</body>
+</html>

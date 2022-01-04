@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>Linux-top命令详解 | 月迹的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Linux top命令详解 第一行，任务队列信息，同 uptime 命令的执行结果  系统时间：17:45:56">
+<meta name="keywords" content="top">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux-top命令详解">
+<meta property="og:url" content="https://xyueji.github.io/Linux-top命令详解.html">
+<meta property="og:site_name" content="月迹的博客">
+<meta property="og:description" content="Linux top命令详解 第一行，任务队列信息，同 uptime 命令的执行结果  系统时间：17:45:56">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200116174612220.png">
+<meta property="og:updated_time" content="2020-07-04T18:19:19.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux-top命令详解">
+<meta name="twitter:description" content="Linux top命令详解 第一行，任务队列信息，同 uptime 命令的执行结果  系统时间：17:45:56">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200116174612220.png">
+  
+    <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+    
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.js"></script>
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">月 迹</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">用代码书写人生</p>
+        
+        
+            <input type="text" class="search" id="search" style="text-align: center" placeholder="搜点什么...">
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="index.html">博客首页</a></li>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="/tags">文章统计</a></li>
+                        
+                            <li><a href="/message">交友留言</a></li>
+                        
+                            <li><a href="/navigation">资源导航</a></li>
+                        
+                            <li><a href="/about">关于作者</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="tags/AppendTrie树/" style="font-size: 10px;">AppendTrie树</a> <a href="tags/HDFS/" style="font-size: 10px;">HDFS</a> <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/SQL解析/" style="font-size: 10px;">SQL解析</a> <a href="tags/SQL采集/" style="font-size: 10px;">SQL采集</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/bitmap/" style="font-size: 10px;">bitmap</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/git/" style="font-size: 10px;">git</a> <a href="tags/grafana/" style="font-size: 10px;">grafana</a> <a href="tags/hadoop/" style="font-size: 10px;">hadoop</a> <a href="tags/hbase/" style="font-size: 15px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/hive/" style="font-size: 15px;">hive</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/mapreduce/" style="font-size: 10px;">mapreduce</a> <a href="tags/metrics2/" style="font-size: 10px;">metrics2</a> <a href="tags/opentsdb/" style="font-size: 10px;">opentsdb</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/shuffle/" style="font-size: 15px;">shuffle</a> <a href="tags/spark/" style="font-size: 15px;">spark</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/修复工具/" style="font-size: 10px;">修复工具</a> <a href="tags/元数据/" style="font-size: 10px;">元数据</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/基础知识/" style="font-size: 10px;">基础知识</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/大查询/" style="font-size: 10px;">大查询</a> <a href="tags/安装/" style="font-size: 10px;">安装</a> <a href="tags/小文件/" style="font-size: 10px;">小文件</a> <a href="tags/开发规范/" style="font-size: 10px;">开发规范</a> <a href="tags/数据倾斜/" style="font-size: 10px;">数据倾斜</a> <a href="tags/数据血缘/" style="font-size: 10px;">数据血缘</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/精准去重/" style="font-size: 10px;">精准去重</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                    </div>
+                </section>
+                
+
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://dayesahh.github.io/">DaYesahh</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.54tianzhisheng.cn/">zhisjeng</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫、追小说、喜影视、迷于严谨和逻辑的编码之中！！！</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">月 迹</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">月 迹</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">用代码书写人生</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="index.html">博客首页</a></li>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="/tags">文章统计</a></li>
+                
+                    <li><a href="/message">交友留言</a></li>
+                
+                    <li><a href="/navigation">资源导航</a></li>
+                
+                    <li><a href="/about">关于作者</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Linux-top命令详解" class="article article-type-post" itemscope itemprop="blogPost">
+    
+    <div class="article-meta">
+      <a href="" class="article-date">
+      <time datetime="2020-01-17T08:38:31.000Z" itemprop="datePublished">2020-01-17</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux-top命令详解
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="categories/linux/">linux</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/top/">top</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h1 id="Linux-top命令详解"><a href="#Linux-top命令详解" class="headerlink" title="Linux top命令详解"></a>Linux top命令详解</h1><p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20200116174612220.png" alt="image-20200116174612220"></p>
+<p><strong>第一行，任务队列信息，同 uptime 命令的执行结果</strong></p>
+<blockquote>
+<p>系统时间：17:45:56</p>
+</blockquote>
+<a id="more"></a>
+<blockquote>
+<p>运行时间：up 190 days,</p>
+<p>当前登录用户： 2 users</p>
+<p>负载均衡(uptime) load average: 2.94, 4.45, 4.67</p>
+<p>   average后面的三个数分别是1分钟、5分钟、15分钟的负载情况。</p>
+<p>load average数据是每隔5秒钟检查一次活跃的进程数，然后按特定算法计算出的数值。如果这个数除以逻辑CPU的数量，结果高于5的时候就表明系统在超负荷运转了</p>
+</blockquote>
+<p><strong>第二行，Tasks — 任务（进程）</strong></p>
+<blockquote>
+<p>总进程: 506 total, 运行:1 running, 休眠:504 sleeping, 停止: 1 stopped, 僵尸进程: 0 zombie</p>
+</blockquote>
+<p><strong>第三行，cpu状态信息</strong></p>
+<blockquote>
+<p>0.3%us【user space】— 用户空间占用CPU的百分比。</p>
+<p>0.8%sy【sysctl】— 内核空间占用CPU的百分比。</p>
+<p>0.0%ni【】— 改变过优先级的进程占用CPU的百分比</p>
+<p>98.9%id【idolt】— 空闲CPU百分比</p>
+<p>0.0%wa【wait】— IO等待占用CPU的百分比</p>
+<p>0.0%hi【Hardware IRQ】— 硬中断占用CPU的百分比</p>
+<p>0.0%si【Software Interrupts】— 软中断占用CPU的百分比</p>
+</blockquote>
+<p><strong>第四行,内存状态</strong></p>
+<blockquote>
+<p> 13191564+ total, 23990396 free,  34428288 used,  73496960 buff/cache【缓存的内存量】</p>
+</blockquote>
+<p><strong>第五行，swap交换分区信息</strong></p>
+<blockquote>
+<p>0 total, 0 free, 0 used,  25810716 avail Mem</p>
+</blockquote>
+<blockquote>
+<p>备注：</p>
+<p>可用内存=free + buffer + cached</p>
+<p>对于内存监控，在top里我们要时刻监控第五行swap交换分区的used，如果这个数值在不断的变化，说明内核在不断进行内存和swap的数据交换，这是真正的内存不够用了。</p>
+<p>第四行中使用中的内存总量（used）指的是现在系统内核控制的内存数，</p>
+<p>第四行中空闲内存总量（free）是内核还未纳入其管控范围的数量。</p>
+<p>纳入内核管理的内存不见得都在使用中，还包括过去使用过的现在可以被重复利用的内存，内核并不把这些可被重新使用的内存交还到free中去，因此在linux上free内存会越来越少，但不用为此担心。</p>
+</blockquote>
+<p><strong>第六行，空行</strong></p>
+<p><strong>第七行以下：各进程（任务）的状态监控</strong></p>
+<blockquote>
+<p>PID — 进程id<br>USER — 进程所有者<br>PR — 进程优先级<br>NI — nice值。负值表示高优先级，正值表示低优先级<br>VIRT — 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES<br>RES — 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA<br>SHR — 共享内存大小，单位kb<br>S —进程状态。D=不可中断的睡眠状态 R=运行 S=睡眠 T=跟踪/停止 Z=僵尸进程<br>%CPU — 上次更新到现在的CPU时间占用百分比<br>%MEM — 进程使用的物理内存百分比<br>TIME+ — 进程使用的CPU时间总计，单位1/100秒<br>COMMAND — 进程名称（命令名/命令行）</p>
+</blockquote>
+<p>详解</p>
+<blockquote>
+<p><strong>VIRT：virtual memory usage 虚拟内存
+</strong>1、进程“需要的”虚拟内存大小，包括进程使用的库、代码、数据等<br>2、假如进程申请100m的内存，但实际只使用了10m，那么它会增长100m，而不是实际的使用量</p>
+<p><strong>RES：resident memory usage 常驻内存</strong><br>1、进程当前使用的内存大小，但不包括swap out<br>2、包含其他进程的共享<br>3、如果申请100m的内存，实际使用10m，它只增长10m，与VIRT相反<br>4、关于库占用内存的情况，它只统计加载的库文件所占内存大小</p>
+<p><strong>SHR：shared memory 共享内存</strong><br>1、除了自身进程的共享内存，也包括其他进程的共享内存<br>2、虽然进程只使用了几个共享库的函数，但它包含了整个共享库的大小<br>3、计算某个进程所占的物理内存大小公式：RES – SHR<br>4、swap out后，它将会降下来</p>
+<p><strong>DATA</strong><br>1、数据占用的内存。如果top没有显示，按f键可以显示出来。<br>2、真正的该程序要求的数据空间，是真正在运行中要使用的。</p>
+<p><strong>top 运行中可以通过 top 的内部命令对进程的显示方式进行控制。内部命令如下：</strong><br>s – 改变画面更新频率<br>l – 关闭或开启第一部分第一行 top 信息的表示<br>t – 关闭或开启第一部分第二行 Tasks 和第三行 Cpus 信息的表示<br>m – 关闭或开启第一部分第四行 Mem 和 第五行 Swap 信息的表示<br>N – 以 PID 的大小的顺序排列表示进程列表<br>P – 以 CPU 占用率大小的顺序排列进程列表<br>M – 以内存占用率大小的顺序排列进程列表<br>h – 显示帮助<br>n – 设置在进程列表所显示进程的数量<br>q – 退出 top<br>s – 改变画面更新周期</p>
+</blockquote>
+<h2 id="附：Linux查看物理CPU个数、核数、逻辑CPU个数"><a href="#附：Linux查看物理CPU个数、核数、逻辑CPU个数" class="headerlink" title="附：Linux查看物理CPU个数、核数、逻辑CPU个数"></a>附：Linux查看物理CPU个数、核数、逻辑CPU个数</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 总核数 = 物理CPU个数 X 每颗物理CPU的核数 </span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看物理CPU个数</span></span><br><span class="line">cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看每个物理CPU中core的个数(即核数)</span></span><br><span class="line">cat /proc/cpuinfo| grep "cpu cores"| uniq</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看逻辑CPU的个数</span></span><br><span class="line">cat /proc/cpuinfo| grep "processor"| wc -l</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看CPU信息（型号）</span></span><br><span class="line">cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c</span><br></pre></td></tr></table></figure>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()">×</a>
+            <div class="shang_tit">
+              <p>纯属好玩</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="">Linux-top命令详解</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 月 迹 的个人博客">月 迹</a></p>
+        <p><span>发布时间:</span>2020年01月17日 - 16时38分</p>
+        <p><span>最后更新:</span>2020年07月05日 - 02时19分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="" title="Linux-top命令详解">https://xyueji.github.io/Linux-top命令详解.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/Linux-top命令详解.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="Alluxio+Presto多版本测试.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Alluxio+Presto多版本测试
+        
+      </div>
+    </a>
+  
+  
+    <a href="Linux-free命令详解.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux-free命令详解</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-top命令详解"><span class="toc-number">1.</span> <span class="toc-text">Linux top命令详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#附：Linux查看物理CPU个数、核数、逻辑CPU个数"><span class="toc-number">1.1.</span> <span class="toc-text">附：Linux查看物理CPU个数、核数、逻辑CPU个数</span></a></li></ol></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.css">
+<div id="gitalk-container" class="gitment-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '8864436c2b03c3753a80',
+        clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
+        id: 'Linux-top命令详解.html',
+        owner: 'xyueji',
+        repo: 'xyueji.github.io',
+        admin: 'xyueji',
+        proxy: 'https://still-shadow-c49f.xyueji.workers.dev/?https://github.com/login/oauth/access_token'
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="Alluxio+Presto多版本测试.html" title="上一篇: Alluxio+Presto多版本测试">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="Linux-free命令详解.html" title="下一篇: Linux-free命令详解">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="统计HDFS元数据.html">统计HDFS元数据</a></li><li class="post-list-item"><a class="post-list-link" href="元数据平台-数据血缘.html">元数据平台-数据血缘</a></li><li class="post-list-item"><a class="post-list-link" href="精准去重-字典编码+Bitmap.html">精准去重-字典编码+Bitmap</a></li><li class="post-list-item"><a class="post-list-link" href="大数据监控-Metrics2录入指标到OpenTSDB.html">大数据监控-Metrics2录入指标到OpenTSDB</a></li><li class="post-list-item"><a class="post-list-link" href="Spark解决数据倾斜问题.html">Spark解决数据倾斜问题</a></li><li class="post-list-item"><a class="post-list-link" href="Spark-Shuffle原理.html">Spark-Shuffle原理</a></li><li class="post-list-item"><a class="post-list-link" href="MapReduce-Shuffle过程.html">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+   <!-- 代码块复制功能-->
+   <script src="/js/clipboard-use.js"></script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2022 月 迹
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" style="color: #000">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank" style="color: #000">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数:
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量:
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="js/main.js"></script>
+
+    <!--<script>-->
+        <!--$(document).ready(function() {-->
+            <!--var backgroundnum = 0;-->
+            <!--var backgroundimg = "url(/background/bg-" + backgroundnum +".jpg)";-->
+            <!--$("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+            <!--$(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+        <!--})-->
+    <!--</script>-->
+
+
+
+<!-- Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-168200248-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-168200248-1');
+</script>
+
+<!-- End Google Analytics -->
+
+
+
+<script>
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "https://hm.baidu.com/hm.js?1c0d5d76b7455fc584663ce315f75837";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
+</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+    
+    
+    
+        <div class="search-result-list" ></div>
+        <div class="search-cover"></div>
+    <script type = "text/javascript" >
+        $('#search').bind('keypress',function(event){
+            if(event.keyCode == "13"){
+                search()
+            }
+        });
+
+    function search() {
+        var searchTool = {
+            data: [],
+            arrList: [],
+            oldList: [],
+            init() {
+                this.fetchJson()
+            },
+            fetchJson() {
+                window.fetch('/content.json?t=' + (+new Date()), {
+                    method: 'get',
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    this.data = data
+                    let keywords = $('#search').val()
+                    this.searchList(keywords)
+                }).catch((err) => {
+                    console.log(err)
+                });
+            },
+            // 搜索字符串里面是否存在关键字
+            isSreachIndexOF(oldstr, kw) {
+                // console.log(oldstr, kw)
+                var istrue = false
+                // console.log('isSreachIndexOF', oldstr && toString.call(oldstr) === '[object Array]')
+                if (oldstr && toString.call(oldstr) === '[object Array]') {
+                    for (var i = 0; i < oldstr.length; i++) {
+                        oldstr[i].toLowerCase() === kw.toLowerCase() ? istrue = true : null
+                    }
+                    return istrue
+                }
+                if (!oldstr || !kw) return false
+                istrue = oldstr.toLowerCase().indexOf(kw.toLowerCase()) > -1
+                return istrue
+            },
+            searchList(keywolds) {
+                let divList = ''
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        let tagsK = item.tags.map(item => item.name).join('-')
+                        let categoriesK = item.categories.map(item => item.name).join('-')
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(categoriesK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            divList += `
+                          <li>
+                            <a href="/${item.path}" class="search-result-title">${item.title}</a>
+                            <div class="main">
+                              <div class="left">
+                                <span>${item.author ? item.author : 'xyueji'}</span>
+                                ${item.tags.map(tags => `<a href="/tags/${tags.slug}" class="search-result-tags">${tags.name}</a>`)}
+                              </div>
+                              <div class="right">${this.getFriendlyTime(item.date.replace('T', ' '), new Date())}</div>
+                            </div>
+                          </li>`
+                        }
+                    })
+                    if (this.oldList.length) {
+                        this.clear()
+                    }
+                    if (this.arrList.length) this.add()
+                }
+                if (!divList) {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <div style="text-align: center;font-size: 30px; margin-top: 50px;" ">抱歉，未搜索到相关结果</div>`
+                } else {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <ul>` + divList + `</ul>`
+                }
+                $('.search-result-list').html(divList)
+                $('.search-result-list').fadeToggle();
+                $('.search-cover').fadeToggle();
+            },
+            clear() {
+                this.oldList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'none'
+                })
+                this.oldList = []
+            },
+            add() {
+                this.arrList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'block'
+                })
+                this.oldList = this.arrList
+            },
+            searchGo(keywolds) {
+                this.arrList = []
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(item.tags.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.categories.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            this.arrList.push(index)
+                        }
+                    })
+                    if (this.oldList.length) this.clear()
+                    if (this.arrList.length) this.add()
+                }
+            },
+            /**
+             * 获取指定时间的友好时间字符串。
+             * @param str 指定的时间字符串，如yyyy-MM-dd HH:mm:ss
+             * @param now 当前时间，允许时间戳，GMT时间，如果该参数为undefined，则使用浏览器时间。
+             */
+            getFriendlyTime(str, now) {
+                var currentTime = new Date(now);
+                var arr = str.split(/\s+/gi);
+                var temp = 0, arr1, arr2, oldTime, delta;
+                var getIntValue = function (ss, defaultValue) {
+                    try {
+                        return parseInt(ss, 10);
+                    } catch (e) {
+                        return defaultValue;
+                    }
+                };
+                var getWidthString = function (num) {
+                    return num < 10 ? ('0' + num) : num;
+                };
+                if (arr.length >= 2) {
+                    arr1 = arr[0].split(/[\/\-]/gi);
+                    arr2 = arr[1].split(':');
+                    oldTime = new Date();
+                    oldTime.setYear(getIntValue(arr1[0], currentTime.getFullYear()));
+                    oldTime.setMonth(getIntValue(arr1[1], currentTime.getMonth() + 1) - 1);
+                    oldTime.setDate(getIntValue(arr1[2], currentTime.getDate()));
+
+                    oldTime.setHours(getIntValue(arr2[0], currentTime.getHours()));
+                    oldTime.setMinutes(getIntValue(arr2[1], currentTime.getMinutes()));
+                    oldTime.setSeconds(getIntValue(arr2[2], currentTime.getSeconds()));
+
+                    delta = currentTime.getTime() - oldTime.getTime();
+
+                    if (delta <= 60 * 1000) {
+                        return '1分钟内';
+                    } else if (delta < 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 1000)) + '分钟前';
+                    } else if (delta < 24 * 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000)) + '天前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30 * 12) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000 * 30)) + '月前';
+                    } else if (currentTime.getFullYear() != oldTime.getFullYear()) {
+                        return [getWidthString(oldTime.getFullYear()), getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-')
+                    } else {
+                        return [getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-');
+                    }
+                }
+                return '';
+            }
+        }
+        searchTool.init()
+    }
+    function searchToggle() {
+        $('.search-cover').fadeToggle();
+        $('.search-result-list').fadeToggle();
+    }
+</script>
+
+
+  </div>
+</body>
+</html>

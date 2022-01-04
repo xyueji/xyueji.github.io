@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>精准去重-字典编码+Bitmap | 月迹的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Bitmap的基本思想是以一个bit位来表示一个元素对应的value，即使用bit数组下标来表示元素值，以大大缩小存储空间。BitMap一般用来快速查找、去重、删除等操作，但是它只能用于数字类型。那么如果要使用字符串类型的该怎么办呢？ 这就需要先把字符串字典编码，生成字符串到数字的映射。本文参考kylin的全局字典编码配合RoaringBitmap以实现精准去重。 AppendTrie树">
+<meta name="keywords" content="大数据,精准去重,bitmap,AppendTrie树">
+<meta property="og:type" content="article">
+<meta property="og:title" content="精准去重-字典编码+Bitmap">
+<meta property="og:url" content="https://xyueji.github.io/精准去重-字典编码+Bitmap.html">
+<meta property="og:site_name" content="月迹的博客">
+<meta property="og:description" content="Bitmap的基本思想是以一个bit位来表示一个元素对应的value，即使用bit数组下标来表示元素值，以大大缩小存储空间。BitMap一般用来快速查找、去重、删除等操作，但是它只能用于数字类型。那么如果要使用字符串类型的该怎么办呢？ 这就需要先把字符串字典编码，生成字符串到数字的映射。本文参考kylin的全局字典编码配合RoaringBitmap以实现精准去重。 AppendTrie树">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20210902161324316.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20210902161548529.png">
+<meta property="og:updated_time" content="2021-09-02T08:59:45.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="精准去重-字典编码+Bitmap">
+<meta name="twitter:description" content="Bitmap的基本思想是以一个bit位来表示一个元素对应的value，即使用bit数组下标来表示元素值，以大大缩小存储空间。BitMap一般用来快速查找、去重、删除等操作，但是它只能用于数字类型。那么如果要使用字符串类型的该怎么办呢？ 这就需要先把字符串字典编码，生成字符串到数字的映射。本文参考kylin的全局字典编码配合RoaringBitmap以实现精准去重。 AppendTrie树">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20210902161324316.png">
+  
+    <link rel="alternative" href="/atom.xml" title="月迹的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+    
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+  <script>
+      var yiliaConfig = {
+          rootUrl: '/',
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.js"></script>
+    <script>
+        (function(){
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/head.png" class="js-avatar">
+            
+        </a>
+
+        <hgroup>
+          <h1 class="header-author"><a href="/" title="Hi Mate">月 迹</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">用代码书写人生</p>
+        
+        
+            <input type="text" class="search" id="search" style="text-align: center" placeholder="搜点什么...">
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="index.html">博客首页</a></li>
+                        
+                            <li><a href="/archives">文章归档</a></li>
+                        
+                            <li><a href="/tags">文章统计</a></li>
+                        
+                            <li><a href="/message">交友留言</a></li>
+                        
+                            <li><a href="/navigation">资源导航</a></li>
+                        
+                            <li><a href="/about">关于作者</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="tags/AppendTrie树/" style="font-size: 10px;">AppendTrie树</a> <a href="tags/HDFS/" style="font-size: 10px;">HDFS</a> <a href="tags/JanusGraph/" style="font-size: 10px;">JanusGraph</a> <a href="tags/SQL解析/" style="font-size: 10px;">SQL解析</a> <a href="tags/SQL采集/" style="font-size: 10px;">SQL采集</a> <a href="tags/alluxio/" style="font-size: 10px;">alluxio</a> <a href="tags/bitmap/" style="font-size: 10px;">bitmap</a> <a href="tags/container/" style="font-size: 10px;">container</a> <a href="tags/datasource/" style="font-size: 10px;">datasource</a> <a href="tags/docker/" style="font-size: 15px;">docker</a> <a href="tags/docker-compose/" style="font-size: 15px;">docker-compose</a> <a href="tags/flink/" style="font-size: 15px;">flink</a> <a href="tags/free/" style="font-size: 10px;">free</a> <a href="tags/git/" style="font-size: 10px;">git</a> <a href="tags/grafana/" style="font-size: 10px;">grafana</a> <a href="tags/hadoop/" style="font-size: 10px;">hadoop</a> <a href="tags/hbase/" style="font-size: 15px;">hbase</a> <a href="tags/hbck/" style="font-size: 10px;">hbck</a> <a href="tags/hive/" style="font-size: 15px;">hive</a> <a href="tags/idea/" style="font-size: 15px;">idea</a> <a href="tags/impala/" style="font-size: 10px;">impala</a> <a href="tags/iptables/" style="font-size: 10px;">iptables</a> <a href="tags/mac/" style="font-size: 10px;">mac</a> <a href="tags/mapreduce/" style="font-size: 10px;">mapreduce</a> <a href="tags/metrics2/" style="font-size: 10px;">metrics2</a> <a href="tags/opentsdb/" style="font-size: 10px;">opentsdb</a> <a href="tags/phoenix/" style="font-size: 15px;">phoenix</a> <a href="tags/presto/" style="font-size: 10px;">presto</a> <a href="tags/prometheus/" style="font-size: 10px;">prometheus</a> <a href="tags/pycharm/" style="font-size: 10px;">pycharm</a> <a href="tags/salt-api/" style="font-size: 10px;">salt-api</a> <a href="tags/shuffle/" style="font-size: 15px;">shuffle</a> <a href="tags/spark/" style="font-size: 15px;">spark</a> <a href="tags/springboot/" style="font-size: 10px;">springboot</a> <a href="tags/top/" style="font-size: 10px;">top</a> <a href="tags/vue/" style="font-size: 10px;">vue</a> <a href="tags/wordcount/" style="font-size: 10px;">wordcount</a> <a href="tags/修复工具/" style="font-size: 10px;">修复工具</a> <a href="tags/元数据/" style="font-size: 10px;">元数据</a> <a href="tags/分片/" style="font-size: 10px;">分片</a> <a href="tags/基础知识/" style="font-size: 10px;">基础知识</a> <a href="tags/大数据/" style="font-size: 20px;">大数据</a> <a href="tags/大文件/" style="font-size: 10px;">大文件</a> <a href="tags/大查询/" style="font-size: 10px;">大查询</a> <a href="tags/安装/" style="font-size: 10px;">安装</a> <a href="tags/小文件/" style="font-size: 10px;">小文件</a> <a href="tags/开发规范/" style="font-size: 10px;">开发规范</a> <a href="tags/数据倾斜/" style="font-size: 10px;">数据倾斜</a> <a href="tags/数据血缘/" style="font-size: 10px;">数据血缘</a> <a href="tags/测试/" style="font-size: 10px;">测试</a> <a href="tags/热门商品/" style="font-size: 10px;">热门商品</a> <a href="tags/端口/" style="font-size: 10px;">端口</a> <a href="tags/端口映射/" style="font-size: 10px;">端口映射</a> <a href="tags/精准去重/" style="font-size: 10px;">精准去重</a> <a href="tags/系统表/" style="font-size: 10px;">系统表</a> <a href="tags/表重建/" style="font-size: 10px;">表重建</a>
+                    </div>
+                </section>
+                
+
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://dayesahh.github.io/">DaYesahh</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="http://www.54tianzhisheng.cn/">zhisjeng</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫、追小说、喜影视、迷于严谨和逻辑的编码之中！！！</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="Me">月 迹</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/head.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="Me">月 迹</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">用代码书写人生</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="index.html">博客首页</a></li>
+                
+                    <li><a href="/archives">文章归档</a></li>
+                
+                    <li><a href="/tags">文章统计</a></li>
+                
+                    <li><a href="/message">交友留言</a></li>
+                
+                    <li><a href="/navigation">资源导航</a></li>
+                
+                    <li><a href="/about">关于作者</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=U2FhYmdrZGVjamITIiJ9MDw_" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/xyueji" title="github">github</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-精准去重-字典编码+Bitmap" class="article article-type-post" itemscope itemprop="blogPost">
+    
+    <div class="article-meta">
+      <a href="" class="article-date">
+      <time datetime="2021-09-02T08:59:45.000Z" itemprop="datePublished">2021-09-02</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      精准去重-字典编码+Bitmap
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="categories/功能小记/">功能小记</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/AppendTrie树/">AppendTrie树</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/bitmap/">bitmap</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/大数据/">大数据</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="tags/精准去重/">精准去重</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>Bitmap的基本思想是以一个bit位来表示一个元素对应的value，即使用bit数组下标来表示元素值，以大大缩小存储空间。BitMap一般用来快速查找、去重、删除等操作，但是它只能用于数字类型。那么如果要使用字符串类型的该怎么办呢？</p>
+<p>这就需要先把字符串字典编码，生成字符串到数字的映射。本文参考kylin的全局字典编码配合RoaringBitmap以实现精准去重。</p>
+<h3 id="AppendTrie树"><a href="#AppendTrie树" class="headerlink" title="AppendTrie树"></a>AppendTrie树</h3><a id="more"></a>
+<p><strong>Trie树</strong></p>
+<p>Trie树又名前缀树，是是一种有序树，一个节点的所有子孙都有相同的前缀，也就是这个节点对应的字符串，根节点对应空字符串，而每个字符串对应的编码值由对应节点在树中的位置来决定。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20210902161324316.png" alt="image-20210902161324316"></p>
+<p><strong>AppendTrie树</strong></p>
+<p>Trie 树模型可以实现 Append，有两种方式：</p>
+<ul>
+<li>按照节点 ( 而不是位置 ) 保存 ID，从而保持已有 ID 不变。</li>
+<li>记录当前模型最大 ID，便于给新增节点分配 ID 。</li>
+</ul>
+<p>但是这种模型会带来一个问题：假如基数特别大，Trie 树在内存中就会无限扩张。为了控制内存占用率，选择单颗子树设定阈值，超过即分裂，进而控制单颗子树内存消耗。分裂后，每棵树负责一个范围 ( 类似于 HBase 中的 region 分区 ) ；查询时候只需要查询一颗子树即可。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/xyueji/img@master/web/image-20210902161548529.png" alt="image-20210902161548529"></p>
+<p>注：本文直接使用Kylin构建全局字典类AppendTrieDictionaryBuilder。</p>
+<h3 id="构建字典任务"><a href="#构建字典任务" class="headerlink" title="构建字典任务"></a>构建字典任务</h3><p><strong>BuildDictJob</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.traffic.dict;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.core.bean.Constants;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang.StringUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.conf.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.fs.Path;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.LongWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.NullWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.Text;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Job;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Mapper;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Partitioner;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Reducer;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</span><br><span class="line"><span class="keyword">import</span> org.apache.kylin.dict.AppendTrieDictionary;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintStream;</span><br><span class="line"><span class="keyword">import</span> java.nio.ByteBuffer;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.Charset;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.StandardCharsets;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-07-28 11:07</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> 实现文本的固定列精准去重</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BuildDictJob</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(BuildDictJob.class);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException, InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (args.length != <span class="number">2</span>) &#123;</span><br><span class="line">            System.out.println(<span class="string">"&lt;Usage&gt;: &lt;InputPath&gt; &lt;OutputPath&gt;"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Configuration conf = <span class="keyword">new</span> Configuration();</span><br><span class="line">        conf.set(<span class="string">"dict.zookeeper.quorum"</span>, <span class="string">"hadoop1:2181"</span>);</span><br><span class="line">        conf.set(<span class="string">"dict.znode.lock.bath"</span>, <span class="string">"/dict"</span>);</span><br><span class="line">        conf.set(<span class="string">"dict.datasource"</span>, <span class="string">"traffic"</span>);</span><br><span class="line">        conf.set(<span class="string">"dict.table"</span>, Constants.ROAD_SECT_SPEED_TABLE());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建job</span></span><br><span class="line">        Job job = Job.getInstance(conf);</span><br><span class="line">        job.setJobName(<span class="string">"BuildDictJob"</span>);</span><br><span class="line">        job.setJarByClass(BuildDictJob.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置mapper、reducer</span></span><br><span class="line">        job.setMapperClass(BuildDictMapper.class);</span><br><span class="line">        job.setReducerClass(BuildDictReducer.class);</span><br><span class="line"></span><br><span class="line">        job.setCombinerClass(BuildDictCombine.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置map输出的k-v</span></span><br><span class="line">        job.setMapOutputKeyClass(SelfDefineSortableKey.class);</span><br><span class="line">        job.setMapOutputValueClass(NullWritable.class);</span><br><span class="line"></span><br><span class="line">        job.setPartitionerClass(BuildDictPartitioner.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置最终输出的k-v</span></span><br><span class="line">        job.setOutputKeyClass(NullWritable.class);</span><br><span class="line">        job.setOutputValueClass(NullWritable.class);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置输入输出路径</span></span><br><span class="line">        FileInputFormat.setInputPaths(job, <span class="keyword">new</span> Path(args[<span class="number">0</span>]));</span><br><span class="line">        FileOutputFormat.setOutputPath(job, <span class="keyword">new</span> Path(args[<span class="number">1</span>]));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">boolean</span> res = job.waitForCompletion(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        System.exit(res ? <span class="number">0</span> : <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BuildDictMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">SelfDefineSortableKey</span>, <span class="title">NullWritable</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String columnIndexes;</span><br><span class="line">        <span class="keyword">private</span> String splitChar;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> maxIndex;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> isLegal;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> Text outputKey = <span class="keyword">new</span> Text();</span><br><span class="line">        <span class="keyword">private</span> ByteBuffer tmpBuf;</span><br><span class="line">        <span class="keyword">private</span> SelfDefineSortableKey sortableKey = <span class="keyword">new</span> SelfDefineSortableKey();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">setup</span><span class="params">(Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            Configuration conf = context.getConfiguration();</span><br><span class="line">            columnIndexes = conf.get(<span class="string">"dict.column.index.quorum"</span>);</span><br><span class="line">            splitChar = conf.get(<span class="string">"dict.column.split.char"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (StringUtils.isEmpty(splitChar)) &#123;</span><br><span class="line">                splitChar = <span class="string">","</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (isLegal = isLegal() &amp;&amp; StringUtils.isNotEmpty(columnIndexes)) &#123;</span><br><span class="line">                maxIndex = getMaxIndex(columnIndexes);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            tmpBuf = ByteBuffer.allocate(<span class="number">4096</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">map</span><span class="params">(LongWritable key, Text value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (StringUtils.isEmpty(columnIndexes)) &#123;</span><br><span class="line">                writeValue(value.toString(), context);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                String line = value.toString();</span><br><span class="line">                String[] fields = line.split(splitChar);</span><br><span class="line">                <span class="keyword">if</span> (isLegal &amp;&amp; maxIndex &lt; fields.length) &#123;</span><br><span class="line">                    String[] indexes = columnIndexes.split(<span class="string">","</span>);</span><br><span class="line">                    StringBuilder val = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">                    <span class="keyword">for</span> (String index : indexes) &#123;</span><br><span class="line">                        val.append(fields[Integer.parseInt(index)]).append(splitChar);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    writeValue(val.substring(<span class="number">0</span>, val.length() - <span class="number">1</span>), context);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeValue</span><span class="params">(String value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            <span class="keyword">byte</span>[] bytesValue = value.getBytes(Charset.forName(<span class="string">"UTF-8"</span>));</span><br><span class="line"></span><br><span class="line">            tmpBuf.clear();</span><br><span class="line">            <span class="keyword">int</span> size = bytesValue.length;</span><br><span class="line">            <span class="keyword">if</span> (size &gt;= tmpBuf.capacity()) &#123;</span><br><span class="line">                tmpBuf = ByteBuffer.allocate(countNewSize(tmpBuf.capacity(), size));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            tmpBuf.put(bytesValue, <span class="number">0</span>, bytesValue.length);</span><br><span class="line">            outputKey.set(tmpBuf.array(), <span class="number">0</span>, tmpBuf.position());</span><br><span class="line">            sortableKey.init(outputKey);</span><br><span class="line"></span><br><span class="line">            context.write(sortableKey, NullWritable.get());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">countNewSize</span><span class="params">(<span class="keyword">int</span> oldSize, <span class="keyword">int</span> dataSize)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span> newSize = oldSize * <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">while</span> (newSize &lt; dataSize) &#123;</span><br><span class="line">                newSize *= <span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> newSize;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 检查数据是否合法</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isLegal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (StringUtils.isNotEmpty(columnIndexes)) &#123;</span><br><span class="line">                String indexes = columnIndexes.replaceAll(<span class="string">","</span>, <span class="string">""</span>);</span><br><span class="line">                <span class="keyword">return</span> StringUtils.isNumeric(indexes);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getMaxIndex</span><span class="params">(String columnIndexes)</span> </span>&#123;</span><br><span class="line">            String[] indexes = columnIndexes.split(<span class="string">","</span>);</span><br><span class="line">            <span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (String i : indexes) &#123;</span><br><span class="line">                index = Math.max(Integer.parseInt(i), index);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> index;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BuildDictCombine</span> <span class="keyword">extends</span> <span class="title">Reducer</span>&lt;<span class="title">SelfDefineSortableKey</span>, <span class="title">NullWritable</span>, <span class="title">SelfDefineSortableKey</span>, <span class="title">NullWritable</span>&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(SelfDefineSortableKey key, Iterable&lt;NullWritable&gt; values, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            context.write(key, NullWritable.get());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BuildDictReducer</span> <span class="keyword">extends</span> <span class="title">Reducer</span>&lt;<span class="title">SelfDefineSortableKey</span>, <span class="title">NullWritable</span>, <span class="title">NullWritable</span>, <span class="title">NullWritable</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> GlobalDictionaryBuilder builder;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">setup</span><span class="params">(Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            Configuration conf = context.getConfiguration();</span><br><span class="line">            String datasource = conf.get(<span class="string">"dict.datasource"</span>);</span><br><span class="line">            String table = conf.get(<span class="string">"dict.table"</span>);</span><br><span class="line">            String column = conf.get(<span class="string">"dict.column"</span>);</span><br><span class="line">            String zkHosts = conf.get(<span class="string">"dict.zookeeper.quorum"</span>);</span><br><span class="line">            String zkBase = conf.get(<span class="string">"dict.znode.lock.bath"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.builder = <span class="keyword">new</span> GlobalDictionaryBuilder();</span><br><span class="line">            <span class="keyword">this</span>.builder.init(datasource, table, column, zkHosts, zkBase);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(SelfDefineSortableKey key, Iterable&lt;NullWritable&gt; values, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            Text keyText = key.getText();</span><br><span class="line">            String value = toString(keyText.getBytes(), <span class="number">0</span>, keyText.getLength());</span><br><span class="line">            <span class="keyword">this</span>.builder.addValue(value);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">toString</span><span class="params">(<span class="keyword">final</span> <span class="keyword">byte</span>[] b, <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (b == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(b, off, len, Charset.forName(<span class="string">"UTF-8"</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">cleanup</span><span class="params">(Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">            AppendTrieDictionary dict = <span class="keyword">this</span>.builder.build();</span><br><span class="line">            <span class="keyword">final</span> ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">            <span class="keyword">try</span> (PrintStream ps = <span class="keyword">new</span> PrintStream(baos, <span class="keyword">true</span>, <span class="string">"UTF-8"</span>)) &#123;</span><br><span class="line">                dict.dump(ps);</span><br><span class="line">            &#125;</span><br><span class="line">            String dictInfo = <span class="keyword">new</span> String(baos.toByteArray(), StandardCharsets.UTF_8);</span><br><span class="line"></span><br><span class="line">            log.info(<span class="string">"dict info:&#123;&#125;,min:&#123;&#125;,max:&#123;&#125;"</span>, dictInfo, dict.getMinId(), dict.getMaxId() &amp; <span class="number">0xFFFFFFFFL</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">BuildDictPartitioner</span> <span class="keyword">extends</span> <span class="title">Partitioner</span>&lt;<span class="title">SelfDefineSortableKey</span>, <span class="title">NullWritable</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPartition</span><span class="params">(SelfDefineSortableKey sKey, NullWritable nullWritable, <span class="keyword">int</span> numReduceTasks)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> (readUnsigned(sKey.getText().getBytes(), <span class="number">0</span>, <span class="number">1</span>) &amp; <span class="number">2147483647</span>) % numReduceTasks;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">readUnsigned</span><span class="params">(<span class="keyword">byte</span>[] bytes, <span class="keyword">int</span> offset, <span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span> res = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = offset, n = offset + size; i &lt; n; i++) &#123;</span><br><span class="line">                res &lt;&lt;= <span class="number">8</span>;</span><br><span class="line">                res |= (<span class="keyword">int</span>)(bytes[i]) &amp; <span class="number">0xFF</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> res;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>SelfDefineSortableKey</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Licensed to the Apache Software Foundation (ASF) under one</span></span><br><span class="line"><span class="comment"> * or more contributor license agreements.  See the NOTICE file</span></span><br><span class="line"><span class="comment"> * distributed with this work for additional information</span></span><br><span class="line"><span class="comment"> * regarding copyright ownership.  The ASF licenses this file</span></span><br><span class="line"><span class="comment"> * to you under the Apache License, Version 2.0 (the</span></span><br><span class="line"><span class="comment"> * "License"); you may not use this file except in compliance</span></span><br><span class="line"><span class="comment"> * with the License.  You may obtain a copy of the License at</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   http://www.apache.org/licenses/LICENSE-2.0</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Unless required by applicable law or agreed to in writing,</span></span><br><span class="line"><span class="comment"> * software distributed under the License is distributed on an</span></span><br><span class="line"><span class="comment"> * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span></span><br><span class="line"><span class="comment"> * KIND, either express or implied.  See the License for the</span></span><br><span class="line"><span class="comment"> * specific language governing permissions and limitations</span></span><br><span class="line"><span class="comment"> * under the License.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> com.xyueji.traffic.dict;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.Text;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.WritableComparable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.DataInput;</span><br><span class="line"><span class="keyword">import</span> java.io.DataOutput;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Modified from the SelfDefineSortableKey in https://github.com/apache/kylin</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SelfDefineSortableKey</span> <span class="keyword">implements</span> <span class="title">WritableComparable</span>&lt;<span class="title">SelfDefineSortableKey</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">enum</span> TypeFlag &#123;</span><br><span class="line">    NONE_NUMERIC_TYPE,</span><br><span class="line">    INTEGER_FAMILY_TYPE,</span><br><span class="line">    DOUBLE_FAMILY_TYPE</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">byte</span> typeId = (<span class="keyword">byte</span>) TypeFlag.NONE_NUMERIC_TYPE.ordinal(); <span class="comment">//non-numeric(0000 0000) int(0000 0001) other numberic(0000 0010)</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> Text rawKey;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> Object keyInObj;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">SelfDefineSortableKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">SelfDefineSortableKey</span><span class="params">(Text key)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    init(key, (<span class="keyword">byte</span>) TypeFlag.NONE_NUMERIC_TYPE.ordinal());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Text key, <span class="keyword">byte</span> typeId)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.typeId = typeId;</span><br><span class="line">    <span class="keyword">this</span>.rawKey = key;</span><br><span class="line">    <span class="keyword">this</span>.keyInObj = key;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(Text key)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    init(key, (<span class="keyword">byte</span>) TypeFlag.NONE_NUMERIC_TYPE.ordinal());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(SelfDefineSortableKey o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.typeId != o.typeId) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Error. Incompatible types"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ((Text) <span class="keyword">this</span>.keyInObj).compareTo(((Text) o.keyInObj));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(DataOutput dataOutput)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    dataOutput.writeByte(typeId);</span><br><span class="line">    rawKey.write(dataOutput);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readFields</span><span class="params">(DataInput dataInput)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.typeId = dataInput.readByte();</span><br><span class="line">    Text inputKey = <span class="keyword">new</span> Text();</span><br><span class="line">    inputKey.readFields(dataInput);</span><br><span class="line">    init(inputKey, typeId);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">short</span> <span class="title">getTypeId</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> typeId;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Text <span class="title">getText</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> rawKey;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTypeId</span><span class="params">(<span class="keyword">byte</span> typeId)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.typeId = typeId;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>GlobalDictionaryBuilder</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.traffic.dict;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang.StringUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.kylin.common.KylinConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.kylin.dict.AppendTrieDictionary;</span><br><span class="line"><span class="keyword">import</span> org.apache.kylin.dict.global.AppendTrieDictionaryBuilder;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-07-28 15:18</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GlobalDictionaryBuilder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(GlobalDictionaryBuilder.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AppendTrieDictionaryBuilder builder;</span><br><span class="line">    <span class="keyword">private</span> DistributedLock lock;</span><br><span class="line">    <span class="keyword">private</span> String lockPath;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> counter;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String EMPTY_FILL = <span class="string">"all"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CONNECT_CHAR = <span class="string">"_"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化appendtrie，因需并发操作hdfs同目录，则需使用分布式锁，此处采用zk实现。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> datasource</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> table</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> column</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> zkHosts</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> zkBase</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(String datasource, String table, String column, String zkHosts, String zkBase)</span> </span>&#123;</span><br><span class="line">        datasource = StringUtils.isEmpty(datasource) ? EMPTY_FILL : datasource;</span><br><span class="line">        table = StringUtils.isEmpty(table) ? EMPTY_FILL : table;</span><br><span class="line">        column = StringUtils.isEmpty(column) ? EMPTY_FILL : column;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.lockPath = datasource + CONNECT_CHAR + table + CONNECT_CHAR + column;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取锁</span></span><br><span class="line">        <span class="keyword">this</span>.lock = <span class="keyword">new</span> ZookeeperDistributedLock.Factory(zkHosts, zkBase).lockForCurrentThread();</span><br><span class="line">        lock.lock(getLockPath(<span class="keyword">this</span>.lockPath), Long.MAX_VALUE);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// build in kylin job server</span></span><br><span class="line">        String hdfsDir = KylinConfig.getInstanceFromEnv().getHdfsWorkingDirectory();</span><br><span class="line"></span><br><span class="line">        String baseDir = hdfsDir + <span class="string">"/resources/GlobalDict/dict/"</span></span><br><span class="line">                + datasource + <span class="string">"/"</span> + table + <span class="string">"/"</span> + column;</span><br><span class="line">        <span class="keyword">int</span> maxEntriesPerSlice = KylinConfig.getInstanceFromEnv().getAppendDictEntrySize();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.builder = <span class="keyword">new</span> AppendTrieDictionaryBuilder(baseDir, maxEntriesPerSlice, <span class="keyword">true</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">this</span>.lock.unlock(lockPath);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(String.format(<span class="string">"Failed to create global dictionary on %s"</span>, lockPath), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addValue</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">        counter++;</span><br><span class="line">        <span class="keyword">if</span> (counter % <span class="number">1_000_000</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (lock.lock(getLockPath(lockPath))) &#123;</span><br><span class="line">                log.info(<span class="string">"processed &#123;&#125; values for &#123;&#125;"</span>, counter, lockPath);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Failed to create global dictionary on "</span> + lockPath + <span class="string">" This client doesn't keep the lock"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.builder.addValue(value);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">            lock.unlock(getLockPath(lockPath));</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(String.format(<span class="string">"Failed to create global dictionary on %s "</span>, lockPath), e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> AppendTrieDictionary <span class="title">build</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (lock.lock(getLockPath(lockPath))) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">this</span>.builder.build(<span class="number">0</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Failed to create global dictionary on "</span> + lockPath + <span class="string">" This client doesn't keep the lock"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock(getLockPath(lockPath));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getLockPath</span><span class="params">(String pathName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"/dict/"</span> + pathName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h5><p><strong>DistributedLock</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Licensed to the Apache Software Foundation (ASF) under one</span></span><br><span class="line"><span class="comment"> * or more contributor license agreements.  See the NOTICE file</span></span><br><span class="line"><span class="comment"> * distributed with this work for additional information</span></span><br><span class="line"><span class="comment"> * regarding copyright ownership.  The ASF licenses this file</span></span><br><span class="line"><span class="comment"> * to you under the Apache License, Version 2.0 (the</span></span><br><span class="line"><span class="comment"> * "License"); you may not use this file except in compliance</span></span><br><span class="line"><span class="comment"> * with the License.  You may obtain a copy of the License at</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   http://www.apache.org/licenses/LICENSE-2.0</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Unless required by applicable law or agreed to in writing,</span></span><br><span class="line"><span class="comment"> * software distributed under the License is distributed on an</span></span><br><span class="line"><span class="comment"> * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span></span><br><span class="line"><span class="comment"> * KIND, either express or implied.  See the License for the</span></span><br><span class="line"><span class="comment"> * specific language governing permissions and limitations</span></span><br><span class="line"><span class="comment"> * under the License.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> com.xyueji.traffic.dict;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Modified from the DistributedLock in https://github.com/apache/kylin</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * A distributed lock. Every instance is owned by a client, on whose behalf locks are acquired and/or released.</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * Implementation must ensure all &lt;code&gt;lockPath&lt;/code&gt; will be prefix-ed with "/kylin/metadata-prefix" automatically.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DistributedLock</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the client that owns this instance.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">getClient</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Acquire the lock at given path, non-blocking.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> If the lock is acquired or not.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">lock</span><span class="params">(String lockPath)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Acquire the lock at given path, block until given timeout.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> If the lock is acquired or not.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">lock</span><span class="params">(String lockPath, <span class="keyword">long</span> timeout)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns if lock is available at given path.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isLocked</span><span class="params">(String lockPath)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns if lock is available at given path.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isLockedByMe</span><span class="params">(String lockPath)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the owner of a lock path; returns null if the path is not locked by any one.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">peekLock</span><span class="params">(String lockPath)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Unlock the lock at given path.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IllegalStateException if the client is not holding the lock.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">unlock</span><span class="params">(String lockPath)</span> <span class="keyword">throws</span> IllegalStateException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Purge all locks under given path. For clean up.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">purgeLocks</span><span class="params">(String lockPathRoot)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>ZookeeperDistributedLock</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.traffic.dict;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.CuratorFramework;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.framework.CuratorFrameworkFactory;</span><br><span class="line"><span class="keyword">import</span> org.apache.curator.retry.ExponentialBackoffRetry;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.CreateMode;</span><br><span class="line"><span class="keyword">import</span> org.apache.zookeeper.KeeperException;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.management.ManagementFactory;</span><br><span class="line"><span class="keyword">import</span> java.nio.charset.Charset;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ConcurrentHashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ThreadLocalRandom;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021-07-28 15:32</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span> zk分布式锁</span></span><br><span class="line"><span class="comment"> * Modified from the ZookeeperDistributedLock in https://github.com/apache/kylin</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZookeeperDistributedLock</span> <span class="keyword">implements</span> <span class="title">DistributedLock</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(ZookeeperDistributedLock.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> CuratorFramework curator;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String zkPathBase;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String client;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">byte</span>[] clientBytes;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ZookeeperDistributedLock</span><span class="params">(CuratorFramework curator, String zkPathBase, String client)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (client == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"client must not be null"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (zkPathBase == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"zkPathBase must not be null"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.curator = curator;</span><br><span class="line">        <span class="keyword">this</span>.zkPathBase = zkPathBase;</span><br><span class="line">        <span class="keyword">this</span>.client = client;</span><br><span class="line">        <span class="keyword">this</span>.clientBytes = client.getBytes(Charset.forName(<span class="string">"UTF-8"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 封装curator工厂</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ConcurrentHashMap&lt;String, CuratorFramework&gt; CACHE = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> String zkPathBase;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> CuratorFramework curator;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">static</span> &#123;</span><br><span class="line">            Runtime.getRuntime().addShutdownHook(<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">for</span> (CuratorFramework curator : CACHE.values()) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            curator.close();</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                            log.error(<span class="string">"closing curator failed"</span>, e);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> CuratorFramework <span class="title">getZkClient</span><span class="params">(String zkHosts)</span> </span>&#123;</span><br><span class="line">            CuratorFramework zkClient = CACHE.get(zkHosts);</span><br><span class="line">            <span class="keyword">if</span> (zkClient == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (ZookeeperDistributedLock.class) &#123;</span><br><span class="line">                    zkClient = CACHE.get(zkHosts);</span><br><span class="line">                    <span class="keyword">if</span> (zkClient == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        ExponentialBackoffRetry retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);</span><br><span class="line">                        zkClient = CuratorFrameworkFactory.builder()</span><br><span class="line">                                .connectString(zkHosts)</span><br><span class="line">                                .sessionTimeoutMs(<span class="number">120000</span>)</span><br><span class="line">                                .connectionTimeoutMs(<span class="number">15000</span>)</span><br><span class="line">                                .retryPolicy(retryPolicy)</span><br><span class="line">                                .build();</span><br><span class="line"></span><br><span class="line">                        zkClient.start();</span><br><span class="line">                        CACHE.put(zkHosts, zkClient);</span><br><span class="line">                        <span class="keyword">if</span> (CACHE.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">                            log.warn(<span class="string">"More than one singleton exist"</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> zkClient;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Factory</span><span class="params">(String zkHosts, String zkBase)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.curator = getZkClient(zkHosts);</span><br><span class="line">            <span class="keyword">this</span>.zkPathBase = fixFlash(zkBase + <span class="string">"/"</span> + <span class="string">"global_lock"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> DistributedLock <span class="title">lockForClient</span><span class="params">(String client)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> ZookeeperDistributedLock(<span class="keyword">this</span>.curator, <span class="keyword">this</span>.zkPathBase, client);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> DistributedLock <span class="title">lockForCurrentThread</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> lockForClient(threadProcessAndHost());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">threadProcessAndHost</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Thread.currentThread().getId() + <span class="string">"-"</span> + processAndHost();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">processAndHost</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> ManagementFactory.getRuntimeMXBean().getName();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getClient</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.client;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">lock</span><span class="params">(String lockPath)</span> </span>&#123;</span><br><span class="line">        lockPath = normalize(lockPath);</span><br><span class="line"></span><br><span class="line">        log.debug(client + <span class="string">" trying to lock "</span> + lockPath);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            curator.create()</span><br><span class="line">                    .creatingParentsIfNeeded()</span><br><span class="line">                    .withMode(CreateMode.EPHEMERAL)</span><br><span class="line">                    .forPath(lockPath, clientBytes);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException.NodeExistsException e) &#123;</span><br><span class="line">            log.debug(client + <span class="string">" see "</span> + lockPath + <span class="string">" is already locked"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Error while "</span> + client + <span class="string">" trying to lock "</span> + lockPath, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String lockOwner = peekLock(lockPath);</span><br><span class="line">        <span class="keyword">if</span> (client.equals(lockOwner)) &#123;</span><br><span class="line">            log.info(client + <span class="string">" acquired lock at "</span> + lockPath);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            log.debug(client + <span class="string">" failed to acquire lock at "</span> + lockPath + <span class="string">", which is held by "</span> + lockOwner);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">lock</span><span class="params">(String lockPath, <span class="keyword">long</span> timeout)</span> </span>&#123;</span><br><span class="line">        lockPath = normalize(lockPath);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (lock(lockPath)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (timeout == <span class="number">0</span>) &#123;</span><br><span class="line">            timeout = Long.MAX_VALUE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        log.debug(client + <span class="string">" will wait for lock path "</span> + lockPath);</span><br><span class="line">        <span class="keyword">long</span> waitStart = System.currentTimeMillis();</span><br><span class="line">        Random random = ThreadLocalRandom.current();</span><br><span class="line">        <span class="comment">// 10 seconds</span></span><br><span class="line">        <span class="keyword">long</span> sleep = <span class="number">10</span> * <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (System.currentTimeMillis() - waitStart &lt;= timeout) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep((<span class="keyword">long</span>) (<span class="number">1000</span> + sleep * random.nextDouble()));</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (lock(lockPath)) &#123;</span><br><span class="line">                log.debug(client + <span class="string">" waited "</span> + (System.currentTimeMillis() - waitStart) + <span class="string">" ms for lock path "</span> + lockPath);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// timeout</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isLocked</span><span class="params">(String lockPath)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> peekLock(lockPath) != <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isLockedByMe</span><span class="params">(String lockPath)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> client.equals(peekLock(lockPath));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">peekLock</span><span class="params">(String lockPath)</span> </span>&#123;</span><br><span class="line">        lockPath = normalize(lockPath);</span><br><span class="line"></span><br><span class="line">        lockPath = normalize(lockPath);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">byte</span>[] bytes = curator.getData().forPath(lockPath);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> String(bytes, Charset.forName(<span class="string">"UTF-8"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException.NoNodeException ex) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Error while peeking at "</span> + lockPath, ex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">(String lockPath)</span> <span class="keyword">throws</span> IllegalStateException </span>&#123;</span><br><span class="line">        lockPath = normalize(lockPath);</span><br><span class="line"></span><br><span class="line">        log.debug(client + <span class="string">" trying to unlock "</span> + lockPath);</span><br><span class="line"></span><br><span class="line">        String owner = peekLock(lockPath);</span><br><span class="line">        <span class="keyword">if</span> (owner == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(client + <span class="string">" cannot unlock path "</span> + lockPath + <span class="string">" which is not locked currently"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!client.equals(owner)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(client + <span class="string">" cannot unlock path "</span> + lockPath + <span class="string">" which is locked by "</span> + owner);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            curator.delete().guaranteed().deletingChildrenIfNeeded().forPath(lockPath);</span><br><span class="line"></span><br><span class="line">            log.info(client + <span class="string">" released lock at "</span> + lockPath);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Error while "</span> + client + <span class="string">" trying to unlock "</span> + lockPath, ex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">purgeLocks</span><span class="params">(String lockPathRoot)</span> </span>&#123;</span><br><span class="line">        lockPathRoot = normalize(lockPathRoot);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            curator.delete().guaranteed().deletingChildrenIfNeeded().forPath(lockPathRoot);</span><br><span class="line"></span><br><span class="line">            log.info(client + <span class="string">" purged all locks under "</span> + lockPathRoot);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Error while "</span> + client + <span class="string">" trying to purge "</span> + lockPathRoot, ex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">normalize</span><span class="params">(String lockPath)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!lockPath.startsWith(zkPathBase)) &#123;</span><br><span class="line">            lockPath = zkPathBase + (lockPath.startsWith(<span class="string">"/"</span>) ? <span class="string">""</span> : <span class="string">"/"</span>) + lockPath;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> fixFlash(lockPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">fixFlash</span><span class="params">(String path)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!path.startsWith(<span class="string">"/"</span>)) &#123;</span><br><span class="line">            path = <span class="string">"/"</span> + path;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (path.endsWith(<span class="string">"/"</span>)) &#123;</span><br><span class="line">            path = path.substring(<span class="number">0</span>, path.length() - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> n = Integer.MAX_VALUE; n &gt; path.length(); ) &#123;</span><br><span class="line">            n = path.length();</span><br><span class="line">            path = path.replaceAll(<span class="string">"//"</span>, <span class="string">"/"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> path;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="精准去重-举例"><a href="#精准去重-举例" class="headerlink" title="精准去重-举例"></a>精准去重-举例</h3><p>此处举个使用精准去重的例子，我们使用flink消费kafka数据入ClickHouse的过程中按天去重。</p>
+<p><strong>使用字典</strong></p>
+<p>自定义MapFunction，把字符串通过字典转为编码id。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class BitIndexBuilderMap(topic: String) extends RichMapFunction[String, (String, Int)] &#123;</span><br><span class="line">    <span class="keyword">var</span> dict: AppendTrieDictionary[String] = _</span><br><span class="line"></span><br><span class="line">    <span class="function">override def <span class="title">open</span><span class="params">(parameters: Configuration)</span>: Unit </span>= &#123;</span><br><span class="line">      dict = HdfsDao.flinkReadDict(<span class="string">"traffic"</span>, topic)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override def <span class="title">map</span><span class="params">(in: String)</span>: <span class="params">(String, Int)</span> </span>= &#123;</span><br><span class="line">      (in, dict.getIdFromValue(in))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>构建Bitmap</strong></p>
+<p>自定义ProcessFunction，此处我们使用性能较好的RoaringBitmap构建Bitmap，并且在第二天0时清空Bitmap。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.traffic.task.function</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.task.dao.HdfsDao</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.configuration.Configuration</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.KeyedProcessFunction</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector</span><br><span class="line"><span class="keyword">import</span> org.apache.kylin.dict.AppendTrieDictionary</span><br><span class="line"><span class="keyword">import</span> org.roaringbitmap.buffer.MutableRoaringBitmap</span><br><span class="line"></span><br><span class="line">class BitDistinctFunction(topic: String = "") extends KeyedProcessFunction[Int, (String, Int), String] &#123;</span><br><span class="line">  val dict: AppendTrieDictionary[String] = HdfsDao.flinkReadDict(<span class="string">"traffic"</span>, topic)</span><br><span class="line">  <span class="keyword">var</span> bitmap: MutableRoaringBitmap = _</span><br><span class="line"></span><br><span class="line">  <span class="function">override def <span class="title">open</span><span class="params">(parameters: Configuration)</span>: Unit </span>= &#123;</span><br><span class="line">    bitmap = <span class="keyword">new</span> MutableRoaringBitmap()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">override def <span class="title">processElement</span><span class="params">(i: (String, Int)</span>, context: KeyedProcessFunction[Int, <span class="params">(String, Int)</span>, String]#Context, out: Collector[String]): Unit </span>= &#123;</span><br><span class="line">    <span class="keyword">if</span> (!bitmap.contains(i._2)) &#123;</span><br><span class="line">      bitmap.add(i._2)</span><br><span class="line">      out.collect(i._1)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      println(<span class="string">"repeat data is : "</span> + i._1)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    context.timerService().registerEventTimeTimer(tomorrowZeroTimestampMs(System.currentTimeMillis(), <span class="number">8</span>) + <span class="number">1</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">override def <span class="title">onTimer</span><span class="params">(timestamp: Long, ctx: KeyedProcessFunction[Int, (String, Int)</span>, String]#OnTimerContext, out: Collector[String]): Unit </span>= &#123;</span><br><span class="line">    bitmap.clear()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 根据当前时间戳获取第二天0时0分0秒的时间戳</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">  <span class="function">def <span class="title">tomorrowZeroTimestampMs</span><span class="params">(now: Long, timeZone: Int)</span>: Long </span>= now - (now + timeZone * <span class="number">3600000</span>) % <span class="number">86400000</span> + <span class="number">86400000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>自定义Sink</strong></p>
+<p>自定义Sink入ClickHouse：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.traffic.task.dao</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.core.bean.Constants</span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.task.sink.CkSinkBuilderSinkFunction</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.connector.jdbc.&#123;JdbcConnectionOptions, JdbcExecutionOptions, JdbcSink&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.sink.SinkFunction</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@date</span> 2021-07-15 15:10</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@description</span> clickhouse操作</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">object ClickHouseDao &#123;</span><br><span class="line">  <span class="function">def <span class="title">insert</span><span class="params">(sql: String)</span>: SinkFunction[Array[String]] </span>= &#123;</span><br><span class="line">    JdbcSink.sink(sql,</span><br><span class="line">      <span class="keyword">new</span> CkSinkBuilderSinkFunction,</span><br><span class="line">      <span class="keyword">new</span> JdbcExecutionOptions.Builder()</span><br><span class="line">        .withBatchSize(<span class="number">1000</span>)</span><br><span class="line">        .build(),</span><br><span class="line">      <span class="keyword">new</span> JdbcConnectionOptions.JdbcConnectionOptionsBuilder()</span><br><span class="line">        .withDriverName(Constants.CLICKHOUSE_DRIVER)</span><br><span class="line">        .withUrl(Constants.CLICKHOUSE_URL)</span><br><span class="line">        .withUsername(Constants.CLICKHOUSE_USER)</span><br><span class="line">        .withPassword(Constants.CLICKHOUSE_PASSWORD)</span><br><span class="line">        .build()</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>任务</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.traffic.task.service</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Properties</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.core.bean.Constants</span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.core.util.&#123;EnvUtil, PropertiesUtil&#125;</span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.task.dao.ClickHouseDao</span><br><span class="line"><span class="keyword">import</span> com.xyueji.traffic.task.function.&#123;BitDistinctFunction, BitIndexBuilderMap&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.JobExecutionResult</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.serialization.SimpleStringSchema</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.scala._</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@date</span> 2021-07-23 15:18</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@description</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">KafkaToClickHouse</span></span>&#123;</span><br><span class="line">  <span class="function">def <span class="title">toCkFromKafka</span><span class="params">(sql: String, topic: String)</span>: JobExecutionResult </span>= &#123;</span><br><span class="line">    val env = EnvUtil.getFlinkStreamEnv()</span><br><span class="line">    val properties = <span class="keyword">new</span> Properties()</span><br><span class="line">    properties.setProperty(Constants.KAFKA_BOOTSTRAP_SERVERS, PropertiesUtil.getValue(Constants.KAFKA_BOOTSTRAP_SERVERS))</span><br><span class="line">    properties.setProperty(Constants.KAFKA_GROUP_ID, PropertiesUtil.getValue(Constants.KAFKA_GROUP_ID))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    val consumer = <span class="keyword">new</span> FlinkKafkaConsumer[String](topic, <span class="keyword">new</span> SimpleStringSchema(), properties)</span><br><span class="line">    consumer.setStartFromEarliest()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以字典编码+BitMap做精准去重</span></span><br><span class="line">    val consumeStream = env</span><br><span class="line">      .addSource(consumer)</span><br><span class="line">      .map(<span class="keyword">new</span> BitIndexBuilderMap(topic))</span><br><span class="line">      .keyBy(_._2)</span><br><span class="line">      .process(<span class="keyword">new</span> BitDistinctFunction(topic))</span><br><span class="line">      .map(line =&gt; line.split(<span class="string">","</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以RocksDB做精准去重</span></span><br><span class="line">    <span class="comment">//    val consumeStream = env</span></span><br><span class="line">    <span class="comment">//      .addSource(consumer)</span></span><br><span class="line">    <span class="comment">//      .keyBy(_.mkString)</span></span><br><span class="line">    <span class="comment">//      .process(new RocksDBDistinctFunction)</span></span><br><span class="line">    <span class="comment">//      .map(line =&gt; line.split(","))</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    consumeStream.addSink(ClickHouseDao.insert(sql))</span><br><span class="line">    env.execute()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">object KafkaToClickHouse &#123;</span><br><span class="line">  <span class="function">def <span class="title">main</span><span class="params">(args: Array[String])</span>: Unit </span>= &#123;</span><br><span class="line">    val sql =</span><br><span class="line">      <span class="string">""</span><span class="string">"</span></span><br><span class="line"><span class="string">        | insert into road_sect_speed (</span></span><br><span class="line"><span class="string">        |  logtime,</span></span><br><span class="line"><span class="string">        |  roadsect_id,</span></span><br><span class="line"><span class="string">        |  gotime,</span></span><br><span class="line"><span class="string">        |  gocount,</span></span><br><span class="line"><span class="string">        |  golen,</span></span><br><span class="line"><span class="string">        |  period</span></span><br><span class="line"><span class="string">        |) values (</span></span><br><span class="line"><span class="string">        |  	?,</span></span><br><span class="line"><span class="string">        |  	?,</span></span><br><span class="line"><span class="string">        |  	?,</span></span><br><span class="line"><span class="string">        |  	?,</span></span><br><span class="line"><span class="string">        |  	?,</span></span><br><span class="line"><span class="string">        |  	?</span></span><br><span class="line"><span class="string">        |  )</span></span><br><span class="line"><span class="string">      "</span><span class="string">""</span>.stripMargin</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> KafkaToClickHouse().toCkFromKafka(sql, Constants.ROAD_REAL_TIME_TABLE)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>其他精准去重</strong></p>
+<ul>
+<li>基于Redis自增id，实时生成编码，进行去重。</li>
+<li>使用Flink自带的RocksDB进行去重，此方式不适合大数据量。</li>
+</ul>
+<p>此处我们提供RocksDB去重例子，RocksDBDistinctFunction：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xyueji.traffic.task.function</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.state.StateTtlConfig.&#123;StateVisibility, UpdateType&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.state.&#123;StateTtlConfig, ValueState, ValueStateDescriptor&#125;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.time.Time</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.configuration.Configuration</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.functions.KeyedProcessFunction</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@author</span> xiongzhigang</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@date</span> 2021-07-30 14:54</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@description</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">class RocksDBDistinctFunction extends KeyedProcessFunction[String, String, String]&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">var</span> existState: ValueState[Boolean] = _</span><br><span class="line"></span><br><span class="line">  <span class="function">override def <span class="title">open</span><span class="params">(parameters: Configuration)</span>: Unit </span>= &#123;</span><br><span class="line">    val stateTtlConfig = StateTtlConfig.newBuilder(Time.days(<span class="number">1</span>))</span><br><span class="line">      .setStateVisibility(StateVisibility.NeverReturnExpired)</span><br><span class="line">      .setUpdateType(UpdateType.OnCreateAndWrite)</span><br><span class="line">      .cleanupInRocksdbCompactFilter(<span class="number">10000</span>)</span><br><span class="line">      .build()</span><br><span class="line"></span><br><span class="line">    val valueStateDesc = <span class="keyword">new</span> ValueStateDescriptor(<span class="string">"dict-state"</span>, Boolean.getClass)</span><br><span class="line">    valueStateDesc.enableTimeToLive(stateTtlConfig)</span><br><span class="line"></span><br><span class="line">    existState = <span class="keyword">this</span>.getRuntimeContext.getState(valueStateDesc).asInstanceOf[ValueState[Boolean]]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">override def <span class="title">processElement</span><span class="params">(i: String, context: KeyedProcessFunction[String, String, String]#Context, out: Collector[String])</span>: Unit </span>= &#123;</span><br><span class="line">    <span class="keyword">if</span> (existState.value() == <span class="keyword">null</span>) &#123;</span><br><span class="line">      existState.update(<span class="keyword">true</span>)</span><br><span class="line">      out.collect(i)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      println(<span class="string">"repeat data is: "</span> + i)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>参考：</p>
+<ul>
+<li><a href="https://www.infoq.cn/article/ydplyzwccq5spr_iktvz" target="_blank" rel="noopener">快手 Druid 精确去重的设计和实现</a></li>
+<li><a href="https://hexiaoqiao.github.io/blog/2016/11/27/exact-count-and-global-dictionary-of-apache-kylin/" target="_blank" rel="noopener">Apache Kylin精确计数与全局字典揭秘</a></li>
+</ul>
+
+      
+      
+        <div class="page-reward">
+          <p><a href="javascript:void(0)" onclick="dashangToggle()" class="dashang">赏</a></p>
+          <div class="hide_box"></div>
+          <div class="shang_box">
+            <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()">×</a>
+            <div class="shang_tit">
+              <p>纯属好玩</p>
+            </div>
+            <div class="shang_payimg">
+              <img src="/img/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+            </div>
+              <div class="pay_explain">扫码打赏，你说多少就多少</div>
+            <div class="shang_payselect">
+              
+                <div class="pay_item checked" data-id="alipay">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/alipay.png" alt="支付宝" /></span>
+                </div>
+              
+              
+                <div class="pay_item" data-id="wechat">
+                  <span class="radiobox"></span>
+                  <span class="pay_logo"><img src="/img/weixin.png" alt="微信" /></span>
+                </div>
+              
+            </div>
+            <div class="shang_info">
+              <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script type="text/javascript">
+          $(".pay_item").click(function(){
+            $(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+            var dataid=$(this).attr('data-id');
+            $(".shang_payimg img").attr("src","/img/"+dataid+"img.jpg");
+            $("#shang_pay_txt").text(dataid=="alipay"?"支付宝":"微信");
+          });
+          function dashangToggle(){
+
+            $(".hide_box").fadeToggle();
+            $(".shang_box").fadeToggle();
+          }
+        </script>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="">精准去重-字典编码+Bitmap</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 月 迹 的个人博客">月 迹</a></p>
+        <p><span>发布时间:</span>2021年09月02日 - 16时59分</p>
+        <p><span>最后更新:</span>2021年09月02日 - 16时59分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="" title="精准去重-字典编码+Bitmap">https://xyueji.github.io/精准去重-字典编码+Bitmap.html</a>
+            <span class="copy-path" data-clipboard-text="原文: https://xyueji.github.io/精准去重-字典编码+Bitmap.html　　作者: 月 迹" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="元数据平台-数据血缘.html" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          元数据平台-数据血缘
+        
+      </div>
+    </a>
+  
+  
+    <a href="大数据监控-Metrics2录入指标到OpenTSDB.html" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">大数据监控-Metrics2录入指标到OpenTSDB</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#AppendTrie树"><span class="toc-number">1.</span> <span class="toc-text">AppendTrie树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构建字典任务"><span class="toc-number">2.</span> <span class="toc-text">构建字典任务</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#分布式锁"><span class="toc-number">2.0.1.</span> <span class="toc-text">分布式锁</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#精准去重-举例"><span class="toc-number">3.</span> <span class="toc-text">精准去重-举例</span></a></li></ol>
+</div>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+    }
+</script>
+
+
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/gitalk/1.6.2/gitalk.min.css">
+<div id="gitalk-container" class="gitment-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '8864436c2b03c3753a80',
+        clientSecret: '252abc963e694743b034294b00a36ec6c7ee2152',
+        id: '精准去重-字典编码+Bitmap.html',
+        owner: 'xyueji',
+        repo: 'xyueji.github.io',
+        admin: 'xyueji',
+        proxy: 'https://still-shadow-c49f.xyueji.workers.dev/?https://github.com/login/oauth/access_token'
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="元数据平台-数据血缘.html" title="上一篇: 元数据平台-数据血缘">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="大数据监控-Metrics2录入指标到OpenTSDB.html" title="下一篇: 大数据监控-Metrics2录入指标到OpenTSDB">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="统计HDFS元数据.html">统计HDFS元数据</a></li><li class="post-list-item"><a class="post-list-link" href="元数据平台-数据血缘.html">元数据平台-数据血缘</a></li><li class="post-list-item"><a class="post-list-link" href="">精准去重-字典编码+Bitmap</a></li><li class="post-list-item"><a class="post-list-link" href="大数据监控-Metrics2录入指标到OpenTSDB.html">大数据监控-Metrics2录入指标到OpenTSDB</a></li><li class="post-list-item"><a class="post-list-link" href="Spark解决数据倾斜问题.html">Spark解决数据倾斜问题</a></li><li class="post-list-item"><a class="post-list-link" href="Spark-Shuffle原理.html">Spark-Shuffle原理</a></li><li class="post-list-item"><a class="post-list-link" href="MapReduce-Shuffle过程.html">MapReduce-Shuffle过程</a></li><li class="post-list-item"><a class="post-list-link" href="Git开发规范.html">Git开发规范</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--如何计算实时热门商品.html">Flink学习--如何计算实时热门商品</a></li><li class="post-list-item"><a class="post-list-link" href="Flink学习--基本概念与环境搭建.html">Flink学习--基本概念与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="docker-compose搭建大数据环境.html">docker-compose搭建大数据环境</a></li><li class="post-list-item"><a class="post-list-link" href="Mac-docker动态给Container添加端口映射.html">Mac-docker动态给Container添加端口映射</a></li><li class="post-list-item"><a class="post-list-link" href="Vue+SpringBoot项目docker一键部署.html">Vue+SpringBoot项目docker一键部署</a></li><li class="post-list-item"><a class="post-list-link" href="vue-simple-uploader+springboot大文件上传.html">vue-simple-uploader+springboot大文件上传</a></li><li class="post-list-item"><a class="post-list-link" href="IDEA连接Impala.html">IDEA连接Impala</a></li><li class="post-list-item"><a class="post-list-link" href="HBase基本知识.html">HBase基本知识</a></li><li class="post-list-item"><a class="post-list-link" href="IDE破解.html">IDE破解</a></li><li class="post-list-item"><a class="post-list-link" href="salt-api配置.html">salt-api配置</a></li><li class="post-list-item"><a class="post-list-link" href="线上HBase表重建.html">线上HBase表重建</a></li><li class="post-list-item"><a class="post-list-link" href="Alluxio+Presto多版本测试.html">Alluxio+Presto多版本测试</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-top命令详解.html">Linux-top命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="Linux-free命令详解.html">Linux-free命令详解</a></li><li class="post-list-item"><a class="post-list-link" href="hbase的hbck工具.html">hbase的hbck工具</a></li><li class="post-list-item"><a class="post-list-link" href="JanusGraph.html">JanusGraph</a></li><li class="post-list-item"><a class="post-list-link" href="iptables禁用启用端口.html">iptables禁用启用端口</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix系统表.html">Phoenix系统表</a></li><li class="post-list-item"><a class="post-list-link" href="Phoenix安装问题.html">Phoenix安装问题</a></li><li class="post-list-item"><a class="post-list-link" href="Prometheus安装-HDFS指标收集.html">Prometheus安装+HDFS指标收集</a></li></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    <script>
+        $(".post-list").addClass("toc-article");
+        $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+   <!-- 代码块复制功能-->
+   <script src="/js/clipboard-use.js"></script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2022 月 迹
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" style="color: #000">Hexo</a>  Theme <a href="https://github.com/luuman/hexo-theme-spfk" target="_blank" style="color: #000">spfk</a> by luuman
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数:
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量:
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="js/main.js"></script>
+
+    <!--<script>-->
+        <!--$(document).ready(function() {-->
+            <!--var backgroundnum = 0;-->
+            <!--var backgroundimg = "url(/background/bg-" + backgroundnum +".jpg)";-->
+            <!--$("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+            <!--$(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});-->
+        <!--})-->
+    <!--</script>-->
+
+
+
+<!-- Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-168200248-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-168200248-1');
+</script>
+
+<!-- End Google Analytics -->
+
+
+
+<script>
+	var _hmt = _hmt || [];
+	(function() {
+		var hm = document.createElement("script");
+		hm.src = "https://hm.baidu.com/hm.js?1c0d5d76b7455fc584663ce315f75837";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(hm, s);
+	})();
+</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+    
+    
+    
+        <div class="search-result-list" ></div>
+        <div class="search-cover"></div>
+    <script type = "text/javascript" >
+        $('#search').bind('keypress',function(event){
+            if(event.keyCode == "13"){
+                search()
+            }
+        });
+
+    function search() {
+        var searchTool = {
+            data: [],
+            arrList: [],
+            oldList: [],
+            init() {
+                this.fetchJson()
+            },
+            fetchJson() {
+                window.fetch('/content.json?t=' + (+new Date()), {
+                    method: 'get',
+                }).then((res) => {
+                    return res.json()
+                }).then((data) => {
+                    this.data = data
+                    let keywords = $('#search').val()
+                    this.searchList(keywords)
+                }).catch((err) => {
+                    console.log(err)
+                });
+            },
+            // 搜索字符串里面是否存在关键字
+            isSreachIndexOF(oldstr, kw) {
+                // console.log(oldstr, kw)
+                var istrue = false
+                // console.log('isSreachIndexOF', oldstr && toString.call(oldstr) === '[object Array]')
+                if (oldstr && toString.call(oldstr) === '[object Array]') {
+                    for (var i = 0; i < oldstr.length; i++) {
+                        oldstr[i].toLowerCase() === kw.toLowerCase() ? istrue = true : null
+                    }
+                    return istrue
+                }
+                if (!oldstr || !kw) return false
+                istrue = oldstr.toLowerCase().indexOf(kw.toLowerCase()) > -1
+                return istrue
+            },
+            searchList(keywolds) {
+                let divList = ''
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        let tagsK = item.tags.map(item => item.name).join('-')
+                        let categoriesK = item.categories.map(item => item.name).join('-')
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(tagsK, keywolds) || this.isSreachIndexOF(categoriesK, keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            divList += `
+                          <li>
+                            <a href="/${item.path}" class="search-result-title">${item.title}</a>
+                            <div class="main">
+                              <div class="left">
+                                <span>${item.author ? item.author : 'xyueji'}</span>
+                                ${item.tags.map(tags => `<a href="/tags/${tags.slug}" class="search-result-tags">${tags.name}</a>`)}
+                              </div>
+                              <div class="right">${this.getFriendlyTime(item.date.replace('T', ' '), new Date())}</div>
+                            </div>
+                          </li>`
+                        }
+                    })
+                    if (this.oldList.length) {
+                        this.clear()
+                    }
+                    if (this.arrList.length) this.add()
+                }
+                if (!divList) {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <div style="text-align: center;font-size: 30px; margin-top: 50px;" ">抱歉，未搜索到相关结果</div>`
+                } else {
+                    divList = `<a class="search_close" href="javascript:void(0)" onclick="searchToggle()">×</a> <ul>` + divList + `</ul>`
+                }
+                $('.search-result-list').html(divList)
+                $('.search-result-list').fadeToggle();
+                $('.search-cover').fadeToggle();
+            },
+            clear() {
+                this.oldList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'none'
+                })
+                this.oldList = []
+            },
+            add() {
+                this.arrList.forEach(item => {
+                    $(".search-result-list li")[item].style.display = 'block'
+                })
+                this.oldList = this.arrList
+            },
+            searchGo(keywolds) {
+                this.arrList = []
+                if (!keywolds) {
+                    if (this.oldList.length) this.clear()
+                } else {
+                    this.data.forEach((item, index) => {
+                        if (this.isSreachIndexOF(item.title, keywolds) || this.isSreachIndexOF(item.tags.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.categories.map(item => item.name).join('-'), keywolds) || this.isSreachIndexOF(item.content, keywolds)) {
+                            this.arrList.push(index)
+                        }
+                    })
+                    if (this.oldList.length) this.clear()
+                    if (this.arrList.length) this.add()
+                }
+            },
+            /**
+             * 获取指定时间的友好时间字符串。
+             * @param str 指定的时间字符串，如yyyy-MM-dd HH:mm:ss
+             * @param now 当前时间，允许时间戳，GMT时间，如果该参数为undefined，则使用浏览器时间。
+             */
+            getFriendlyTime(str, now) {
+                var currentTime = new Date(now);
+                var arr = str.split(/\s+/gi);
+                var temp = 0, arr1, arr2, oldTime, delta;
+                var getIntValue = function (ss, defaultValue) {
+                    try {
+                        return parseInt(ss, 10);
+                    } catch (e) {
+                        return defaultValue;
+                    }
+                };
+                var getWidthString = function (num) {
+                    return num < 10 ? ('0' + num) : num;
+                };
+                if (arr.length >= 2) {
+                    arr1 = arr[0].split(/[\/\-]/gi);
+                    arr2 = arr[1].split(':');
+                    oldTime = new Date();
+                    oldTime.setYear(getIntValue(arr1[0], currentTime.getFullYear()));
+                    oldTime.setMonth(getIntValue(arr1[1], currentTime.getMonth() + 1) - 1);
+                    oldTime.setDate(getIntValue(arr1[2], currentTime.getDate()));
+
+                    oldTime.setHours(getIntValue(arr2[0], currentTime.getHours()));
+                    oldTime.setMinutes(getIntValue(arr2[1], currentTime.getMinutes()));
+                    oldTime.setSeconds(getIntValue(arr2[2], currentTime.getSeconds()));
+
+                    delta = currentTime.getTime() - oldTime.getTime();
+
+                    if (delta <= 60 * 1000) {
+                        return '1分钟内';
+                    } else if (delta < 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 1000)) + '分钟前';
+                    } else if (delta < 24 * 60 * 60 * 1000) {
+                        return Math.floor(delta / (60 * 60 * 1000)) + '小时前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000)) + '天前';
+                    } else if (delta < 24 * 60 * 60 * 1000 * 30 * 12) {
+                        return Math.floor(delta / (24 * 60 * 60 * 1000 * 30)) + '月前';
+                    } else if (currentTime.getFullYear() != oldTime.getFullYear()) {
+                        return [getWidthString(oldTime.getFullYear()), getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-')
+                    } else {
+                        return [getWidthString(oldTime.getMonth() + 1), getWidthString(oldTime.getDate())].join('-');
+                    }
+                }
+                return '';
+            }
+        }
+        searchTool.init()
+    }
+    function searchToggle() {
+        $('.search-cover').fadeToggle();
+        $('.search-result-list').fadeToggle();
+    }
+</script>
+
+
+  </div>
+</body>
+</html>
